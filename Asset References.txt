@@ -1,0 +1,38 @@
+Spritesheets
+Scooby Doo Sprites - https://www.spriters-resource.com/game_boy_advance/scoobytcc/sheet/40650/
+Shaggy Sprites - https://www.spriters-resource.com/game_boy_advance/scoobytcc/sheet/40651/
+Joker Sprites - https://www.spriters-resource.com/arcade/batman/sheet/110272/
+		https://www.spriters-resource.com/nes/batman/sheet/15102/
+Creeper Sprites - https://www.spriters-resource.com/game_boy_advance/scoobytcc/sheet/40657/
+Freddy Krueger Sprites - https://www.spriters-resource.com/nes/nightmareonelmstreet/sheet/61577/
+Gremlin Sprites - https://www.spriters-resource.com/game_boy_advance/gremlins/sheet/10981/
+Garfield Sprites - https://www.spriters-resource.com/game_boy_advance/garfield/sheet/11456/
+Jason Voorhees Sprites - https://www.spriters-resource.com/nes/fridaythe13th/sheet/24130/
+Michael Jackson Sprites - https://www.spriters-resource.com/genesis_32x_scd/mjmoonwalker/sheet/22904/
+Scorpion Sprites - https://www.spriters-resource.com/nes/mortalkombat3bootleg/sheet/93098/
+Terminator Sprites - https://www.spriters-resource.com/genesis_32x_scd/robocopvstheterminator/sheet/81099/
+Food Sprites - https://www.spriters-resource.com/arcade/threewonders/sheet/29430/
+Dutchman - https://www.spriters-resource.com/playstation/spongebobsquarepantssupersponge/sheet/153082/
+Skull - https://www.spriters-resource.com/pc_computer/koumajoudensetsuscarletsymphony/sheet/88960/
+Turtle - https://www.spriters-resource.com/genesis_32x_scd/eccojr/sheet/65601/
+Ghost - https://www.spriters-resource.com/nes/nightmareonelmstreet/sheet/114782/
+Ghidorah - https://www.spriters-resource.com/nes/godzillamom/sheet/91220/
+Pterodactyl - https://www.spriters-resource.com/game_boy_advance/scoobydoo2/sheet/163910/
+
+Audio
+Chomp Sound Effect - https://www.partnersinrhyme.com/soundfx/human_sounds/human_aud-chomp_wav.shtml
+Menu Music - https://www.fesliyanstudios.com/royalty-free-music/downloads-c/halloween-music/59
+Game Music - https://soundcloud.com/shikamarukun/whats-new-scooby-doo
+Stun Sound Effect - https://orangefreesounds.com/cartoon-dizzy-birds-sound-effect/
+Button Click - https://mixkit.co/free-sound-effects/click/
+
+Menu images
+Logo - https://fontmeme.com/fonts/scooby-doo-font/
+Mansion Background - https://pixabay.com/photos/villa-house-grim-dark-old-villa-3237114/
+Scooby Gang - https://toppng.com/scooby-doo-and-friends-transparent-PNG-free-PNG-Images_46747
+Ghost - https://www.nicepng.com/maxp/u2y3q8u2q8i1u2u2/
+Wolfman - https://www.pikpng.com/transpng/iiJmbmo/
+Burger - http://clipart-library.com/clipart/172906.htm
+Baguette - https://www.picpng.com/baguette-food-milanese-png-72806
+Apple - https://www.picpng.com/apple-png-25204
+Cake - https://www.picpng.com/birthday-cake-candle-flame-png-43652

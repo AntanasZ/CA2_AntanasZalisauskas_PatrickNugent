@@ -1,0 +1,18 @@
+-Scooby Food Fight is a competitive game played by two players.
+-Player 1 controls Shaggy and player 2 controls Scooby.
+-The controls for each player can be viewed and changed in the settings menu.
+-Each player must collect as many falling food items as possible within 2 minutes.
+-Enemies will spawn and stun the player for a few seconds if they collide with one of them.
+-Each food item has a different score value as shown below:
+
+Apple: 10
+Orange: 10
+Carrot: 20
+Cookies: 25
+Pancake: 30
+Donut: 30
+Melon: 35
+Ice Cream: 40
+Cake: 50
+
+
