@@ -33,6 +33,7 @@ namespace Category
 		kEnemyProjectile = 1 << 10,
 		kParticleSystem = 1 << 11,
 		kSoundEffect = 1 << 12,
+		kNetwork = 1 << 13,
 
 		kAircraft = kPlayerAircraft | kAlliedAircraft | kEnemyAircraft,
 		kCharacter = kPlayerCharacter1 | kPlayerCharacter2 | kEnemyCharacter,

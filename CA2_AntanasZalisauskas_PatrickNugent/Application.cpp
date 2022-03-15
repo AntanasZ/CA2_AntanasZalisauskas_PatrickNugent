@@ -16,6 +16,7 @@
 #include "MenuState.hpp"
 #include "PauseState.hpp"
 #include "SettingsState.hpp"
+#include "MultiplayerGameState.hpp"
 
 const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 
@@ -26,9 +27,9 @@ const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 /// </summary>
 Application::Application()
 :m_window(sf::VideoMode(1024, 768), "Scooby Food Fight", sf::Style::Close)
-, m_player_1(true)
-, m_player_2(false)
-, m_stack(State::Context(m_window, m_textures, m_fonts, m_player_1, m_player_2, m_music, m_sounds))
+, m_key_binding_1(1)
+, m_key_binding_2(2)
+, m_stack(State::Context(m_window, m_textures, m_fonts, m_music, m_sounds, m_key_binding_1, m_key_binding_2))
 , m_statistics_numframes(0)
 {
 	m_window.setKeyRepeatEnabled(false);
@@ -119,7 +120,10 @@ void Application::RegisterStates()
 	m_stack.RegisterState<TitleState>(StateID::kTitle);
 	m_stack.RegisterState<MenuState>(StateID::kMenu);
 	m_stack.RegisterState<GameState>(StateID::kGame);
+	m_stack.RegisterState<MultiplayerGameState>(StateID::kHostGame, true);
+	m_stack.RegisterState<MultiplayerGameState>(StateID::kJoinGame, false);
 	m_stack.RegisterState<PauseState>(StateID::kPause);
+	m_stack.RegisterState<PauseState>(StateID::kNetworkPause, true);
 	m_stack.RegisterState<SettingsState>(StateID::kSettings);
 	m_stack.RegisterState<GameOverState>(StateID::kGameOver);
 }

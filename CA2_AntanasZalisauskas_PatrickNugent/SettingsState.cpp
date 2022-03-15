@@ -71,39 +71,32 @@ bool SettingsState::Update(sf::Time)
 
 bool SettingsState::HandleEvent(const sf::Event& event)
 {
-	bool isKeyBinding = false;
+	bool is_key_binding = false;
 
 	// Iterate through all key binding buttons to see if they are being pressed, waiting for the user to enter a key
-	for (std::size_t action = 0; action < static_cast<int>(PlayerAction::kActionCount); ++action)
+	for (std::size_t i = 0; i < 2 * (static_cast<int>(PlayerAction::kActionCount)); ++i)
 	{
-		if (m_binding_buttons[action]->IsActive())
+		if (m_binding_buttons[i]->IsActive())
 		{
-			isKeyBinding = true;
+			is_key_binding = true;
 			if (event.type == sf::Event::KeyReleased)
 			{
-				switch(action)
-				{
-				case 0:
-				case 1:
-				case 2:
-					GetContext().player1->AssignKey(static_cast<PlayerAction>(action), event.key.code);
-					m_binding_buttons[action]->Deactivate();
-					break;
-				case 3:
-				case 4:
-				case 5:
-					GetContext().player2->AssignKey(static_cast<PlayerAction>(action), event.key.code);
-					m_binding_buttons[action]->Deactivate();
-					break;
-				}
-				
+				// Player 1
+				if (i < static_cast<int>(PlayerAction::kActionCount))
+					GetContext().keys1->AssignKey(static_cast<PlayerAction>(i), event.key.code);
+
+				// Player 2
+				else
+					GetContext().keys2->AssignKey(static_cast<PlayerAction>(i - static_cast<int>(PlayerAction::kActionCount)), event.key.code);
+
+				m_binding_buttons[i]->Deactivate();
 			}
 			break;
 		}
 	}
 
 	// If pressed button changed key bindings, update labels; otherwise consider other buttons in container
-	if (isKeyBinding)
+	if (is_key_binding)
 		UpdateLabels();
 	else
 		m_gui_container.HandleEvent(event);
@@ -113,21 +106,17 @@ bool SettingsState::HandleEvent(const sf::Event& event)
 
 void SettingsState::UpdateLabels()
 {
-	Player& player1 = *GetContext().player1;
-	Player& player2 = *GetContext().player2;
-
 	for (std::size_t i = 0; i < static_cast<int>(PlayerAction::kActionCount); ++i)
 	{
-		if(i <= 2)
-		{
-			sf::Keyboard::Key key = player1.GetAssignedKey(static_cast<PlayerAction>(i));
-			m_binding_labels[i]->SetText(Utility::toString(key));
-		}
-		else
-		{
-			sf::Keyboard::Key key = player2.GetAssignedKey(static_cast<PlayerAction>(i));
-			m_binding_labels[i]->SetText(Utility::toString(key));
-		}
+		auto action = static_cast<PlayerAction>(i);
+
+		// Get keys of both players
+		sf::Keyboard::Key key1 = GetContext().keys1->GetAssignedKey(action);
+		sf::Keyboard::Key key2 = GetContext().keys2->GetAssignedKey(action);
+
+		// Assign both key strings to labels
+		m_binding_labels[i]->SetText(Utility::toString(key1));
+		m_binding_labels[i + static_cast<int>(PlayerAction::kActionCount)]->SetText(Utility::toString(key2));
 	}
 }
 

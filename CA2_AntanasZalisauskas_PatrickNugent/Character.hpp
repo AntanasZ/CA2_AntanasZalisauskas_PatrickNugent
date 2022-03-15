@@ -33,6 +33,8 @@ public:
 
 	void UpdateMovementPattern(sf::Time dt);
 	float GetMaxSpeed() const;
+	int GetIdentifier();
+	void SetIdentifier(int identifier);
 	bool GetCanJump() const;
 	float GetJumpHeight() const;
 	int GetScore() const;
@@ -69,5 +71,7 @@ private:
 	bool m_is_marked_for_removal;
 	float m_travelled_distance;
 	int m_directions_index;
+
+	int m_identifier;
 };
 

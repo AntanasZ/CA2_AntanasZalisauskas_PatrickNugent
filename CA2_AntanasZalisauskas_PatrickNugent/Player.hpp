@@ -8,6 +8,8 @@
 
 #pragma once
 #include "Command.hpp"
+#include "KeyBinding.hpp"
+#include <SFML/Network/TcpSocket.hpp>
 #include <SFML/Window/Event.hpp>
 #include <map>
 #include "CommandQueue.hpp"
@@ -16,19 +18,30 @@
 class Player
 {
 public:
-	Player(bool is_player_1);
+	Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding);
 	void HandleEvent(const sf::Event& event, CommandQueue& commands);
 	void HandleRealtimeInput(CommandQueue& commands);
+	void HandleRealtimeNetworkInput(CommandQueue& commands);
+
+	//React to events or realtime state changes recevied over the network
+	void HandleNetworkEvent(PlayerAction action, CommandQueue& commands);
+	void HandleNetworkRealtimeChange(PlayerAction action, bool action_enabled);
 
 	void AssignKey(PlayerAction action, sf::Keyboard::Key key);
 	sf::Keyboard::Key GetAssignedKey(PlayerAction action) const;
+
+	void DisableAllRealtimeActions();
+	bool IsLocal() const;
 
 private:
 	void InitialiseActions();
 	static bool IsRealtimeAction(PlayerAction action);
 
 private:
-	std::map<sf::Keyboard::Key, PlayerAction> m_key_binding;
+	const KeyBinding* m_key_binding;
 	std::map<PlayerAction, Command> m_action_binding;
+	std::map<PlayerAction, bool> m_action_proxies;
+	int m_identifier;
+	sf::TcpSocket* m_socket;
 };
 

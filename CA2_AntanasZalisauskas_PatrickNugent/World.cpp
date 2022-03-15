@@ -24,7 +24,7 @@
 //Some logic related to jumping and gravity made with help from this tutorial
 //https://www.youtube.com/watch?v=6WopQvdNRSA&ab_channel=HilzeVonck
 
-World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds)
+World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds, bool networked)
 	: m_target(output_target)
 	, m_camera(output_target.getDefaultView())
 	, m_textures()
@@ -44,6 +44,10 @@ World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sou
 	, m_player_2_stun_countdown()
 	, m_game_countdown(sf::seconds(120))
 	, m_game_over(false)
+	, m_player_characters()
+	, m_networked_world(networked)
+	, m_network_node(nullptr)
+	, m_finish_sprite(nullptr)
 {
 	m_scene_texture.create(m_target.getSize().x, m_target.getSize().y);
 	LoadTextures();
@@ -317,7 +321,7 @@ void World::BuildScene()
 	AddPickups();
 }
 
-CommandQueue& World::getCommandQueue()
+CommandQueue& World::GetCommandQueue()
 {
 	return m_command_queue;
 }
@@ -393,6 +397,22 @@ sf::FloatRect World::GetBattlefieldBounds() const
 	bounds.width += 100.f;
 
 	return bounds;
+}
+
+bool World::PollGameAction(GameActions::Action& out)
+{
+	return m_network_node->PollGameAction(out);
+}
+
+void World::SetCurrentBattleFieldPosition(float lineY)
+{
+	m_camera.setCenter(m_camera.getCenter().x, lineY - m_camera.getSize().y / 2);
+	m_spawn_position.y = m_world_bounds.height;
+}
+
+void World::SetWorldHeight(float height)
+{
+	m_world_bounds.height = height;
 }
 
 /// <summary>
@@ -554,6 +574,39 @@ void World::AddPickups()
 	AddPickup(PickupType::kIceCream, 40, 0.f, yPosition);
 	AddPickup(PickupType::kMelon, 35, 0.f, yPosition);
 	AddPickup(PickupType::kPancake, 30, 0.f, yPosition);
+}
+
+Character* World::GetCharacter(int identifier) const
+{
+	for (Character* a : m_player_characters)
+	{
+		if (a->GetIdentifier() == identifier)
+		{
+			return a;
+		}
+	}
+	return nullptr;
+}
+
+Character* World::AddCharacter(int identifier)
+{
+	std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
+	player->setPosition(m_camera.getCenter());
+	player->SetIdentifier(identifier);
+
+	m_player_characters.emplace_back(player.get());
+	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(player));
+	return m_player_characters.back();
+}
+
+void World::RemoveCharacter(int identifier)
+{
+	Character* character = GetCharacter(identifier);
+	if (character)
+	{
+		character->Destroy();
+		m_player_characters.erase(std::find(m_player_characters.begin(), m_player_characters.end(), character));
+	}
 }
 
 bool MatchesCategories(SceneNode::Pair& colliders, Category::Type type1, Category::Type type2)

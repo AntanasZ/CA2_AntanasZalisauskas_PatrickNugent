@@ -7,6 +7,7 @@
 /// </summary>
 
 #include "Entity.hpp"
+
 #include <iostream>
 #include <ostream>
 
@@ -73,4 +74,9 @@ void Entity::Destroy()
 bool Entity::IsDestroyed() const
 {
 	return m_hitpoints <= 0;
+}
+
+void Entity::Remove()
+{
+	Destroy();
 }

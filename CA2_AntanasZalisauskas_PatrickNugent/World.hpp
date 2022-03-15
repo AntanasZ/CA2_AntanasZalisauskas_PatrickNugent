@@ -27,11 +27,11 @@
 #include "PickupType.hpp"
 #include "SoundPlayer.hpp"
 #include "BloomEffect.hpp"
+#include "NetworkNode.hpp"
 
-//Foward
 namespace sf
 {
-	class RenderWindow;
+	class RenderTarget;
 }
 
 /// <summary>
@@ -45,11 +45,28 @@ namespace sf
 class World : private sf::NonCopyable
 {
 public:
-	explicit World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds);
+	explicit World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds, bool networked = false);
 	void Update(sf::Time dt);
 	void Draw();
-	CommandQueue& getCommandQueue();
+
+	CommandQueue& GetCommandQueue();
 	bool IsGameOver() const;
+
+	void SetCurrentBattleFieldPosition(float line_y);
+	void SetWorldHeight(float height);
+
+	void AddEnemy(CharacterType type, bool isFlying, float relX, float relY);
+	void AddPickup(PickupType type, int value, float relX, float relY);
+	
+	Character* GetCharacter(int identifier) const;
+	Character* AddCharacter(int identifier);
+	void RemoveCharacter(int identifier);
+
+	sf::FloatRect GetViewBounds() const;
+	sf::FloatRect GetBattlefieldBounds() const;
+
+	bool PollGameAction(GameActions::Action& out);
+
 
 private:
 	void LoadTextures();
@@ -57,13 +74,9 @@ private:
 	void AdaptPlayerPosition();
 	void AdaptPlayerVelocity(sf::Time dt);
 
-	sf::FloatRect GetViewBounds() const;
-	sf::FloatRect GetBattlefieldBounds() const;
 	void SpawnEnemies();
 	void SpawnFlyingEnemies();
 	void SpawnPickups();
-	void AddEnemy(CharacterType type, bool isFlying, float relX, float relY);
-	void AddPickup(PickupType type, int value, float relX, float relY);
 	void AddEnemies();
 	void AddPickups();
 	void GuideMissiles();
@@ -117,6 +130,7 @@ private:
 	std::vector<Character*>	m_active_enemies;
 	Character* m_player_character_1;
 	Character* m_player_character_2;
+	std::vector<Character*> m_player_characters;
 	float m_gravity;
 	sf::Time m_enemy_spawn_countdown;
 	sf::Time m_flying_enemy_spawn_countdown;
@@ -127,6 +141,10 @@ private:
 	sf::Time m_gameover_countdown;
 	TextNode* m_game_timer_display;
 	bool m_game_over;
+
 	BloomEffect m_bloom_effect;
+	bool m_networked_world;
+	NetworkNode* m_network_node;
+	SpriteNode* m_finish_sprite;
 };
 
