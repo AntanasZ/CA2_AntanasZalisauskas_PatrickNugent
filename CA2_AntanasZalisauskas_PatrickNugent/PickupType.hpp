@@ -1,13 +1,4 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #pragma once
-
 /// <summary>
 /// Edited by: Patrick Nugent
 ///
@@ -16,6 +7,10 @@
 /// </summary>
 enum class PickupType
 {
+	kHealthRefill,
+	kMissileRefill,
+	kFireSpread,
+	kFireRate,
 	kApple,
 	kOrange,
 	kCake,

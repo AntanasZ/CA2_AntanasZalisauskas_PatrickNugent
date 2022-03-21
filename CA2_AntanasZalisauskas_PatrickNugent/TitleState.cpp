@@ -1,15 +1,8 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "TitleState.hpp"
 #include "Utility.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/System/Sleep.hpp>
 
 #include "ResourceHolder.hpp"
 
@@ -50,7 +43,7 @@ bool TitleState::Update(sf::Time dt)
 
 bool TitleState::HandleEvent(const sf::Event& event)
 {
-	if(event.type == sf::Event::KeyPressed)
+	if(event.type == sf::Event::KeyReleased)
 	{
 		RequestStackPop();
 		RequestStackPush(StateID::kMenu);

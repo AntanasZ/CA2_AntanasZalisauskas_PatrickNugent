@@ -1,17 +1,9 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 template<typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::Load(Identifier id, const std::string& filename)
 {
 	//Create and load resource
 	std::unique_ptr<Resource> resource(new Resource());
-	if (!resource->loadFromFile(filename))
+	if(!resource->loadFromFile(filename))
 	{
 		throw std::runtime_error("ResouceHolder::load - Failed to load " + filename);
 	}
@@ -56,3 +48,4 @@ void ResourceHolder<Resource, Identifier>::InsertResource(Identifier id, std::un
 	auto inserted = m_resource_map.insert(std::make_pair(id, std::move(resource)));
 	assert(inserted.second);
 }
+

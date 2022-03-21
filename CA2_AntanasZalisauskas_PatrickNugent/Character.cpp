@@ -14,6 +14,7 @@
 
 #include "DataTables.hpp"
 #include "ResourceHolder.hpp"
+#include "SoundNode.hpp"
 #include "Utility.hpp"
 
 /// <summary>
@@ -62,7 +63,10 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 	m_show_stun(true),
 	m_can_jump(true),
 	m_jump_height(Table[static_cast<int>(type)].m_jump_height),
-	m_is_invulnerable(false)
+	m_is_invulnerable(false),
+	m_stun_timer(),
+	m_is_marked_for_removal(false),
+	m_identifier(0)
 {
 	Utility::CentreOrigin(m_sprite);
 
@@ -317,4 +321,49 @@ bool Character::GetInvulnerable()
 void Character::SetInvulnerable(bool value)
 {
 	m_is_invulnerable = value;
+}
+
+int Character::GetIdentifier()
+{
+	return m_identifier;
+}
+
+void Character::SetIdentifier(int identifier)
+{
+	m_identifier = identifier;
+}
+
+void Character::Remove()
+{
+	Entity::Remove();
+}
+
+void Character::PlayLocalSound(CommandQueue& commands, SoundEffect effect)
+{
+	sf::Vector2f world_position = GetWorldPosition();
+
+	Command command;
+	command.category = Category::kSoundEffect;
+	command.action = DerivedAction<SoundNode>(
+		[effect, world_position](SoundNode& node, sf::Time)
+		{
+			node.PlaySound(effect, world_position);
+		});
+
+	commands.Push(command);
+}
+
+sf::Time Character::GetStunTimer()
+{
+	return m_stun_timer;
+}
+
+void Character::AddToStunTimer(sf::Time seconds)
+{
+	m_stun_timer += seconds;
+}
+
+void Character::ResetStunTimer()
+{
+	m_stun_timer = sf::Time::Zero;
 }

@@ -1,14 +1,5 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "Pickup.hpp"
 
-#include <iostream>
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "DataTables.hpp"
@@ -24,7 +15,7 @@ Pickup::Pickup(PickupType type, int value, const TextureHolder& textures)
 	: Entity(1)
 	, m_type(type)
 	, m_value(value)
-	, m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture))
+	, m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture))//, Table[static_cast<int>(type)].m_texture_rect)
 {
 	Utility::CentreOrigin(m_sprite);
 }

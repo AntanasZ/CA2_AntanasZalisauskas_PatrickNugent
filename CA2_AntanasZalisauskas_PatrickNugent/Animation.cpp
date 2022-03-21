@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "Animation.hpp"
 
 #include <SFML/Graphics/RenderTarget.hpp>
@@ -120,12 +112,12 @@ void Animation::Update(sf::Time dt)
 		textureRect.left += textureRect.width;
 
 		// If we reach the end of the texture
-		/*if (textureRect.left + textureRect.width > textureBounds.x)
-		{
-			// Move it down one line
-			textureRect.left = 0;
-			textureRect.top += textureRect.height;
-		}*/
+		//if (textureRect.left + textureRect.width > textureBounds.x)
+		//{
+		//	// Move it down one line
+		//	textureRect.left = 0;
+		//	textureRect.top += textureRect.height;
+		//}
 
 		// And progress to next frame
 		m_elapsed_time -= timePerFrame;

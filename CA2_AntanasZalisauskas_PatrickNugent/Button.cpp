@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "Button.hpp"
 #include "ResourceIdentifiers.hpp"
 #include "ResourceHolder.hpp"
@@ -16,23 +8,18 @@
 
 #include "ButtonType.hpp"
 
-/// <summary>
-/// Edited by: Patrick Nugent
-///
-///	Set button text color to purple
-/// </summary>
-
 namespace GUI
 {
 	Button::Button(State::Context context)
-		: m_sprite(context.textures->Get(Textures::kButtons))
-		, m_text("", context.fonts->Get(Fonts::Main), 16)
-		, m_is_toggle(false)
-		, m_sounds(*context.sounds)
+	: m_sprite(context.textures->Get(Textures::kButtons))
+	, m_text("", context.fonts->Get(Fonts::Main), 16)
+	, m_is_toggle(false)
+	, m_sounds(*context.sounds)
 	{
 		ChangeTexture(ButtonType::Normal);
 		sf::FloatRect bounds = m_sprite.getLocalBounds();
 		m_text.setPosition(bounds.width / 2, bounds.height / 2);
+
 	}
 
 	void Button::SetCallback(Callback callback)
@@ -73,15 +60,15 @@ namespace GUI
 	{
 		Component::Activate();
 		//If toggle then show button is pressed or toggled
-		if (m_is_toggle)
+		if(m_is_toggle)
 		{
 			ChangeTexture(ButtonType::Pressed);
 		}
-		if (m_callback)
+		if(m_callback)
 		{
 			m_callback();
 		}
-		if (!m_is_toggle)
+		if(!m_is_toggle)
 		{
 			Deactivate();
 		}
@@ -91,9 +78,9 @@ namespace GUI
 	void Button::Deactivate()
 	{
 		Component::Deactivate();
-		if (m_is_toggle)
+		if(m_is_toggle)
 		{
-			if (IsSelected())
+			if(IsSelected())
 			{
 				ChangeTexture(ButtonType::Selected);
 			}

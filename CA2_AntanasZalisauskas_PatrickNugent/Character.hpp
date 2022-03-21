@@ -31,6 +31,9 @@ public:
 	Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts);
 	unsigned int GetCategory() const override;
 
+	int GetIdentifier();
+	void SetIdentifier(int identifier);
+
 	void UpdateMovementPattern(sf::Time dt);
 	float GetMaxSpeed() const;
 	bool GetCanJump() const;
@@ -43,9 +46,14 @@ public:
 	void SetStunned(bool value);
 	bool GetInvulnerable();
 	void SetInvulnerable(bool value);
+	sf::Time GetStunTimer();
+	void AddToStunTimer(sf::Time seconds);
+	void ResetStunTimer();
 
 	sf::FloatRect GetBoundingRect() const override;
 	bool IsMarkedForRemoval() const override;
+	void Remove() override;
+	void PlayLocalSound(CommandQueue& commands, SoundEffect effect);
 
 private:
 	virtual void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
@@ -65,9 +73,12 @@ private:
 	bool m_is_stunned;
 	bool m_show_stun;
 	bool m_is_invulnerable;
+	sf::Time m_stun_timer;
 
 	bool m_is_marked_for_removal;
 	float m_travelled_distance;
 	int m_directions_index;
+
+	int m_identifier;
 };
 
