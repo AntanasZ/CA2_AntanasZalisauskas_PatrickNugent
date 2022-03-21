@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "Application.hpp"
 
 #include "GameOverState.hpp"
@@ -20,11 +12,6 @@
 
 const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 
-/// <summary>
-/// Edited by: Antanas Zalisauskas
-///
-///	Included player 2
-/// </summary>
 Application::Application()
 :m_window(sf::VideoMode(1024, 768), "Scooby Food Fight", sf::Style::Close)
 , m_key_binding_1(1)
@@ -126,4 +113,5 @@ void Application::RegisterStates()
 	m_stack.RegisterState<PauseState>(StateID::kNetworkPause, true);
 	m_stack.RegisterState<SettingsState>(StateID::kSettings);
 	m_stack.RegisterState<GameOverState>(StateID::kGameOver);
+	//m_stack.RegisterState<GameOverState>(StateID::kMissionSuccess, "Mission Successful!");
 }

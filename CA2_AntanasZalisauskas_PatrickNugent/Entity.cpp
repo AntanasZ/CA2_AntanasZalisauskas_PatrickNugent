@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "Entity.hpp"
 
 #include <iostream>
@@ -53,6 +45,12 @@ int Entity::GetHitPoints() const
 	return m_hitpoints;
 }
 
+void Entity::SetHitpoints(int points)
+{
+	//assert(points > 0);
+	m_hitpoints = points;
+}
+
 void Entity::Repair(unsigned int points)
 {
 	assert(points > 0);
@@ -63,7 +61,7 @@ void Entity::Damage(int points)
 {
 	assert(points > 0);
 	m_hitpoints -= points;
-	std::cout << "After Damage: " << m_hitpoints << std::endl;
+	std::cout << "After damage: " << m_hitpoints << std::endl;
 }
 
 void Entity::Destroy()

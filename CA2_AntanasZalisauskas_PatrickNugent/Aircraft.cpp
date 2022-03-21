@@ -1,4 +1,6 @@
-/*#include "Aircraft.hpp"
+
+#include "Aircraft.hpp"
+
 
 #include <iostream>
 
@@ -375,7 +377,7 @@ void Aircraft::CheckPickupDrop(CommandQueue& commands)
 void Aircraft::CreatePickup(SceneNode& node, const TextureHolder& textures) const
 {
 	auto type = static_cast<PickupType>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
-	std::unique_ptr<Pickup> pickup(new Pickup(type, textures));
+	std::unique_ptr<Pickup> pickup(new Pickup(type, 0, textures));
 	pickup->setPosition(GetWorldPosition());
 	pickup->SetVelocity(0.f, 0.f);
 	node.AttachChild(std::move(pickup));
@@ -414,7 +416,7 @@ void Aircraft::PlayLocalSound(CommandQueue& commands, SoundEffect effect)
 
 	commands.Push(command);
 }
-*/
+
 
 
 

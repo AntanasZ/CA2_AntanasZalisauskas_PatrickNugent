@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #define _USE_MATH_DEFINES
 #include "Utility.hpp"
 
@@ -28,6 +20,10 @@ namespace
 
 	auto RandomEngine = CreateRandomEngine();
 }
+
+
+
+//TODO should we just implement for base class - sf::Transformable?
 void Utility::CentreOrigin(sf::Sprite& sprite)
 {
 	sf::FloatRect bounds = sprite.getLocalBounds();

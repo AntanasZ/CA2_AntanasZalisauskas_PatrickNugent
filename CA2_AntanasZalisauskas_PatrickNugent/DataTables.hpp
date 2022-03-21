@@ -1,19 +1,12 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #pragma once
 #include <functional>
 #include <vector>
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/System/Time.hpp>
 
-#include "ResourceIdentifiers.hpp"
 #include "Character.hpp"
+#include "ResourceIdentifiers.hpp"
 
 class Aircraft;
 
@@ -32,8 +25,10 @@ struct AircraftData
 	int m_hitpoints;
 	float m_speed;
 	Textures m_texture;
+	sf::IntRect m_texture_rect;
 	sf::Time m_fire_interval;
 	std::vector<Direction> m_directions;
+	bool m_has_roll_animation;
 };
 
 /// <summary>
@@ -80,6 +75,7 @@ struct PickupData
 {
 	std::function<void(Character&)> m_action;
 	Textures m_texture;
+	//sf::IntRect m_texture_rect;
 	std::vector<Direction> m_directions;
 	float m_speed;
 };
@@ -90,9 +86,11 @@ struct ParticleData
 	sf::Time						m_lifetime;
 };
 
-std::vector<CharacterData> InitializeCharacterData();
+
+std::vector<AircraftData> InitializeAircraftData();
 std::vector<ProjectileData> InitializeProjectileData();
 std::vector<PickupData> InitializePickupData();
-std::vector<PlatformData> InitializePlatformData();
 std::vector<ParticleData> InitializeParticleData();
 
+std::vector<CharacterData> InitializeCharacterData();
+std::vector<PlatformData> InitializePlatformData();

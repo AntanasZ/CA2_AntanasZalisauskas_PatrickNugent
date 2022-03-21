@@ -72,24 +72,24 @@ void StateStack::ApplyPendingChanges()
 	{
 		switch (change.action)
 		{
-		case Action::Push:
-			m_stack.emplace_back(CreateState(change.state_id));
-			break;
-		case Action::Pop:
-			m_stack.back()->OnDestroy();
-			m_stack.pop_back();
-			if (!m_stack.empty())
-			{
-				m_stack.back()->OnActivate();
-			}
-			break;
-		case Action::Clear:
-			for (State::Ptr& state : m_stack)
-			{
-				state->OnDestroy();
-			}
-			m_stack.clear();
-			break;
+			case Action::Push:
+				m_stack.emplace_back(CreateState(change.state_id));
+				break;
+			case Action::Pop:
+				m_stack.back()->OnDestroy();
+				m_stack.pop_back();
+				if(!m_stack.empty())
+				{
+					m_stack.back()->OnActivate();
+				}
+				break;
+			case Action::Clear:
+				for(State::Ptr& state : m_stack)
+				{
+					state->OnDestroy();
+				}
+				m_stack.clear();
+				break;
 		}
 	}
 	m_pending_list.clear();

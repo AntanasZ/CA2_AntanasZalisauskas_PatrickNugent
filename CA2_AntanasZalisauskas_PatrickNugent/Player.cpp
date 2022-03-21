@@ -1,16 +1,10 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "Player.hpp"
-#include "Character.hpp"
+#include "Aircraft.hpp"
 #include "NetworkProtocol.hpp"
 #include <SFML/Network/Packet.hpp>
 #include <algorithm>
+
+#include "Character.hpp"
 
 /// <summary>
 /// Edited by: Antanas Zalisauskas
@@ -19,21 +13,22 @@
 /// </summary>
 struct CharacterMover
 {
-	CharacterMover(float vx, float vy) : velocity(vx, vy)
+	CharacterMover(float vx, float vy, int identifier) : velocity(vx, vy), character_id(identifier)
 	{
 
 	}
 
 	void operator()(Character& character, sf::Time) const
 	{
-		if(!character.GetStunned())
+		if (!character.GetStunned())
 		{
 			character.Accelerate(velocity * character.GetMaxSpeed());
 		}
-		
+
 	}
 
 	sf::Vector2f velocity;
+	int character_id;
 };
 
 /// <summary>
@@ -47,29 +42,83 @@ struct CharacterMover
 /// </summary>
 struct CharacterJump
 {
-	CharacterJump() = default;
+	CharacterJump(int identifier) : character_id(identifier)
+	{
+		
+	}
 
 	void operator()(Character& character, sf::Time dt) const
 	{
-		if(character.GetCanJump() && !character.GetStunned()) //if player can jump, jump
+		if (character.GetCanJump() && !character.GetStunned()) //if player can jump, jump
 		{
 			character.ToggleCanJump(false); //set can jump to false
 
 			character.SetVelocity(0.f, -sqrtf(2.0f * 981.f * character.GetJumpHeight()));
 		}
-		
+
 	}
+
+	int character_id;
 };
 
-/// <summary>
-/// Edited by: Antanas Zalisauskas
-///
-///	Changed constructor to take in a bool to determine whether the player is player 1
-///	and assign appropriate key bindings based on this bool
-/// </summary>
-/// <param name="is_player_1">Bool value which determines if this player is player 1(true) or player 2(false)</param>
-Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding) 
+struct AircraftMover
+{
+	AircraftMover(float vx, float vy, int identifier)
+	: velocity(vx, vy)
+	, aircraft_id(identifier)
+	{
+		
+	}
+
+	void operator()(Aircraft& aircraft, sf::Time) const
+	{
+		if (aircraft.GetIdentifier() == aircraft_id)
+		{
+			aircraft.Accelerate(velocity * aircraft.GetMaxSpeed());
+		}
+	}
+
+	sf::Vector2f velocity;
+	int aircraft_id;
+};
+
+struct AircraftFireTrigger
+{
+	AircraftFireTrigger(int identifier)
+		: aircraft_id(identifier)
+	{
+	}
+
+	void operator() (Aircraft& aircraft, sf::Time) const
+	{
+		if (aircraft.GetIdentifier() == aircraft_id)
+			aircraft.Fire();
+	}
+
+	int aircraft_id;
+};
+
+struct AircraftMissileTrigger
+{
+	AircraftMissileTrigger(int identifier)
+		: aircraft_id(identifier)
+	{
+	}
+
+	void operator() (Aircraft& aircraft, sf::Time) const
+	{
+		if (aircraft.GetIdentifier() == aircraft_id)
+			aircraft.LaunchMissile();
+	}
+
+	int aircraft_id;
+};
+
+
+
+Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
+	, m_current_mission_status(MissionStatus::kMissionRunning)
 	, m_identifier(identifier)
 	, m_socket(socket)
 {
@@ -77,8 +126,11 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
 	InitialiseActions();
 
 	// Assign all categories to player's aircraft
-	for (auto& pair : m_action_binding)
-		pair.second.category = Category::kPlayerAircraft;
+	for(auto & pair : m_action_binding)
+	{
+		pair.second.category = Category::kPlayerCharacter1;
+	}
+		
 }
 
 void Player::HandleNetworkEvent(PlayerAction action, CommandQueue& commands)
@@ -90,6 +142,7 @@ void Player::HandleNetworkRealtimeChange(PlayerAction action, bool actionEnabled
 {
 	m_action_proxies[action] = actionEnabled;
 }
+
 
 void Player::HandleEvent(const sf::Event& event, CommandQueue& commands)
 {
@@ -134,31 +187,6 @@ void Player::HandleEvent(const sf::Event& event, CommandQueue& commands)
 	}
 }
 
-void Player::HandleRealtimeInput(CommandQueue& commands)
-{
-	// Check if this is a networked game and local player or just a single player game
-	if ((m_socket && IsLocal()) || !m_socket)
-	{
-		// Lookup all actions and push corresponding commands to queue
-		std::vector<PlayerAction> activeActions = m_key_binding->GetRealtimeActions();
-		for (PlayerAction action : activeActions)
-			commands.Push(m_action_binding[action]);
-	}
-}
-
-void Player::HandleRealtimeNetworkInput(CommandQueue& commands)
-{
-	if (m_socket && !IsLocal())
-	{
-		// Traverse all realtime input proxies. Because this is a networked game, the input isn't handled directly
-		for (auto pair : m_action_proxies)
-		{
-			if (pair.second && IsRealtimeAction(pair.first))
-				commands.Push(m_action_binding[pair.first]);
-		}
-	}
-}
-
 bool Player::IsLocal() const
 {
 	// No key binding means this player is remote
@@ -167,7 +195,7 @@ bool Player::IsLocal() const
 
 void Player::DisableAllRealtimeActions()
 {
-	for (auto& action : m_action_proxies)
+	for(auto & action : m_action_proxies)
 	{
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::PacketType::PlayerRealtimeChange);
@@ -178,68 +206,60 @@ void Player::DisableAllRealtimeActions()
 	}
 }
 
-/*void Player::AssignKey(PlayerAction action, sf::Keyboard::Key key)
+void Player::HandleRealtimeInput(CommandQueue& commands)
 {
-	//Remove all keys that are already bound to action
-	for(auto itr = m_key_binding.begin(); itr != m_key_binding.end();)
+	// Check if this is a networked game and local player or just a single player game
+	if ((m_socket && IsLocal()) || !m_socket)
 	{
-		if(itr->second == action)
-		{
-			m_key_binding.erase(itr++);
-		}
-		else
-		{
-			++itr;
-		}
+		// Lookup all actions and push corresponding commands to queue
+		std::vector<PlayerAction> activeActions = m_key_binding->GetRealtimeActions();
+		for(PlayerAction action : activeActions)
+			commands.Push(m_action_binding[action]);
 	}
-	m_key_binding[key] = action;
 }
 
-sf::Keyboard::Key Player::GetAssignedKey(PlayerAction action) const
+void Player::HandleRealtimeNetworkInput(CommandQueue& commands)
 {
-	for(auto pair : m_key_binding)
+	if (m_socket && !IsLocal())
 	{
-		if(pair.second == action)
+		// Traverse all realtime input proxies. Because this is a networked game, the input isn't handled directly
+		for(auto pair : m_action_proxies)
 		{
-			return pair.first;
+			if (pair.second && IsRealtimeAction(pair.first))
+				commands.Push(m_action_binding[pair.first]);
 		}
 	}
-	return sf::Keyboard::Unknown;
-}*/
+}
 
-/// <summary>
-/// Edited by: Antanas Zalisauskas
-///
-///	-Changed DerivedAction to work with Character and CharacterMover
-///	-Commented out methods relating to firing missiles and projectiles
-/// </summary>
+void Player::HandleNetworkEvent(PlayerAction action, CommandQueue& commands)
+{
+	commands.Push(m_action_binding[action]);
+}
+
+void Player::HandleNetworkRealtimeChange(PlayerAction action, bool actionEnabled)
+{
+	m_action_proxies[action] = actionEnabled;
+}
+
+
+void Player::SetMissionStatus(MissionStatus status)
+{
+	m_current_mission_status = status;
+}
+
+MissionStatus Player::GetMissionStatus() const
+{
+	return m_current_mission_status;
+}
+
 void Player::InitialiseActions()
 {
-	const float player_speed = 200.f;
-
-	m_action_binding[PlayerAction::kPlayer1MoveLeft].action = DerivedAction<Character>(CharacterMover(-1, 0.f));
-	m_action_binding[PlayerAction::kPlayer1MoveRight].action = DerivedAction<Character>(CharacterMover(+1, 0.f));
-	m_action_binding[PlayerAction::kPlayer1MoveUp].action = DerivedAction<Character>(CharacterJump());
-
-	m_action_binding[PlayerAction::kPlayer2MoveLeft].action = DerivedAction<Character>(CharacterMover(-1, 0.f));
-	m_action_binding[PlayerAction::kPlayer2MoveRight].action = DerivedAction<Character>(CharacterMover(+1, 0.f));
-	m_action_binding[PlayerAction::kPlayer2MoveUp].action = DerivedAction<Character>(CharacterJump());
+	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Character>(CharacterMover(-1, 0, m_identifier));
+	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Character>(CharacterMover(+1, 0, m_identifier));
+	m_action_binding[PlayerAction::kMoveUp].action = DerivedAction<Character>(CharacterJump(m_identifier));
+	//m_action_binding[PlayerAction::kMoveDown].action = DerivedAction<Aircraft>(AircraftMover(0, +1, m_identifier));
+	//m_action_binding[PlayerAction::kFire].action = DerivedAction<Aircraft>(AircraftFireTrigger(m_identifier));
+	//m_action_binding[PlayerAction::kLaunchMissile].action = DerivedAction<Aircraft>(AircraftMissileTrigger(m_identifier));
 }
 
-bool Player::IsRealtimeAction(PlayerAction action)
-{
-	switch(action)
-	{
-	case PlayerAction::kPlayer1MoveLeft:
-	case PlayerAction::kPlayer1MoveRight:
-	case PlayerAction::kPlayer1MoveUp:
-	case PlayerAction::kPlayer2MoveLeft:
-	case PlayerAction::kPlayer2MoveRight:
-	case PlayerAction::kPlayer2MoveUp:
-	//case PlayerAction::kMoveDown:
-	//case PlayerAction::kFire:
-		return true;
-	default:
-		return false;
-	}
-}
+

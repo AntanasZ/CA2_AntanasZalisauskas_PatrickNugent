@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #pragma once
 #include "Command.hpp"
 #include "KeyBinding.hpp"
@@ -13,6 +5,7 @@
 #include <SFML/Window/Event.hpp>
 #include <map>
 #include "CommandQueue.hpp"
+#include "MissionStatus.hpp"
 #include "PlayerAction.hpp"
 
 class Player
@@ -27,20 +20,24 @@ public:
 	void HandleNetworkEvent(PlayerAction action, CommandQueue& commands);
 	void HandleNetworkRealtimeChange(PlayerAction action, bool action_enabled);
 
-	void AssignKey(PlayerAction action, sf::Keyboard::Key key);
-	sf::Keyboard::Key GetAssignedKey(PlayerAction action) const;
+	
+	void SetMissionStatus(MissionStatus status);
+	MissionStatus GetMissionStatus() const;
+
+	void DisableAllRealtimeActions();
+	bool IsLocal() const;
 
 	void DisableAllRealtimeActions();
 	bool IsLocal() const;
 
 private:
 	void InitialiseActions();
-	static bool IsRealtimeAction(PlayerAction action);
 
 private:
 	const KeyBinding* m_key_binding;
 	std::map<PlayerAction, Command> m_action_binding;
 	std::map<PlayerAction, bool> m_action_proxies;
+	MissionStatus m_current_mission_status;
 	int m_identifier;
 	sf::TcpSocket* m_socket;
 };

@@ -1,28 +1,18 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "World.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
 #include <limits>
-#include <stdlib.h>
-#include <time.h>
-#include <cmath>
 
+#include "ParticleNode.hpp"
+#include "ParticleType.hpp"
 #include "Pickup.hpp"
 #include "Platform.hpp"
-#include "Utility.hpp"
-#include "SoundPlayer.hpp"
+#include "PlatformType.hpp"
 #include "PostEffect.hpp"
-
-//Some logic related to jumping and gravity made with help from this tutorial
-//https://www.youtube.com/watch?v=6WopQvdNRSA&ab_channel=HilzeVonck
+#include "Projectile.hpp"
+#include "SoundNode.hpp"
+#include "Utility.hpp"
 
 World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sounds, bool networked)
 	: m_target(output_target)
@@ -32,69 +22,67 @@ World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sou
 	, m_sounds(sounds)
 	, m_scenegraph()
 	, m_scene_layers()
-	, m_world_bounds(0.f, 0.f, m_camera.getSize().x, m_camera.getSize().y)
-	, m_spawn_position(m_camera.getSize().x/2.f, m_world_bounds.height - m_camera.getSize().y /2.f)
+	, m_world_bounds(0.f, 0.f, m_camera.getSize().x, m_camera.getSize().y)//5000.f)
+	, m_spawn_position(m_camera.getSize().x / 2.f, m_world_bounds.height - m_camera.getSize().y / 2.f)
 	, m_scrollspeed(-50.f)
-	, m_player_character_1(nullptr)
-	, m_player_character_2(nullptr)
-	, m_gravity(981.f)
+	, m_scrollspeed_compensation(1.f)
+	, m_player_characters()
+	//	, m_enemy_spawn_points()
+	, m_active_enemies()
 	, m_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
 	, m_player_1_stun_countdown()
 	, m_player_2_stun_countdown()
-	, m_game_countdown(sf::seconds(120))
-	, m_game_over(false)
-	, m_player_characters()
 	, m_networked_world(networked)
 	, m_network_node(nullptr)
 	, m_finish_sprite(nullptr)
+	, m_gravity(981.f)
+	, m_game_countdown(sf::seconds(10))
 {
 	m_scene_texture.create(m_target.getSize().x, m_target.getSize().y);
+
 	LoadTextures();
 	BuildScene();
-	//std::cout << m_camera.getSize().x << m_camera.getSize().y << std::endl;
 	m_camera.setCenter(m_spawn_position);
 }
 
-/// <summary>
-/// Edited By: Patrick Nugent
-///
-///	-Added enemy and pickup spawn timers
-/// -Added win message
-///
-/// Edited By: Antanas Zalisauskas
-///
-///	-Added stun timers
-/// -Added game timer
-/// </summary>
+void World::SetWorldScrollCompensation(float compensation)
+{
+	m_scrollspeed_compensation = compensation;
+}
+
 void World::Update(sf::Time dt)
 {
-	//Check if remaining game time is greater than 0
+	//Scroll the world
+	//m_camera.move(0, m_scrollspeed * dt.asSeconds()*m_scrollspeed_compensation);
 	if (m_game_countdown > sf::Time::Zero)
 	{
 		//Decrease and Display remaining game time
 		m_game_countdown -= dt;
 		DisplayRemainingGameTime();
 
-		//m_player_aircraft->SetVelocity(0.f, 0.f);
-		m_player_character_1->SetVelocity(0.f, m_player_character_1->GetVelocity().y);
-		m_player_character_2->SetVelocity(0.f, m_player_character_2->GetVelocity().y);
+		for (Character* a : m_player_characters)
+		{
+			a->SetVelocity(0.f, a->GetVelocity().y);
+		}
 
 		DestroyEntitiesOutsideView();
+		//GuideMissiles();
 
 		//Forward commands to the scenegraph until the command queue is empty
 		while (!m_command_queue.IsEmpty())
 		{
 			m_scenegraph.OnCommand(m_command_queue.Pop(), dt);
 		}
-
 		AdaptPlayerVelocity(dt);
 
 		HandleCollisions();
 		//Remove all destroyed entities
+		//RemoveWrecks() only destroys the entities, not the pointers in m_player_aircraft
+		auto first_to_remove = std::remove_if(m_player_characters.begin(), m_player_characters.end(), std::mem_fn(&Character::IsMarkedForRemoval));
+		m_player_characters.erase(first_to_remove, m_player_characters.end());
 		m_scenegraph.RemoveWrecks();
 
-		//Spawn an enemy every 5 seconds and reset the spawn timer
 		m_enemy_spawn_countdown += dt;
 		if (m_enemy_spawn_countdown >= sf::seconds(5.0f))
 		{
@@ -118,37 +106,22 @@ void World::Update(sf::Time dt)
 			m_pickup_spawn_countdown = sf::seconds(0.f);
 		}
 
-		if (m_player_character_1->GetInvulnerable())
+		for (Character* a : m_player_characters)
 		{
-			//un-stun the player after 3 seconds
-			m_player_1_stun_countdown += dt;
-			if (m_player_1_stun_countdown >= sf::seconds(3.0f))
+			if(a->GetInvulnerable())
 			{
-				m_player_character_1->SetStunned(false);
-			}
+				a->AddToStunTimer(dt);
+				if (a->GetStunTimer() >= sf::seconds(3.0f))
+				{
+					a->SetStunned(false);
+				}
 
-			//enable collisions with enemies again after 5 seconds
-			if (m_player_1_stun_countdown >= sf::seconds(5.0f))
-			{
-				m_player_character_1->SetInvulnerable(false);
-				m_player_1_stun_countdown = sf::seconds(0.f);
-			}
-		}
-
-		if (m_player_character_2->GetInvulnerable())
-		{
-			//un-stun the player after 3 seconds
-			m_player_2_stun_countdown += dt;
-			if (m_player_2_stun_countdown >= sf::seconds(3.0f))
-			{
-				m_player_character_2->SetStunned(false);
-			}
-
-			//enable collisions with enemies again after 5 seconds
-			if (m_player_2_stun_countdown >= sf::seconds(5.0f))
-			{
-				m_player_character_2->SetInvulnerable(false);
-				m_player_2_stun_countdown = sf::seconds(0.f);
+				//enable collisions with enemies again after 5 seconds
+				if (a->GetStunTimer() >= sf::seconds(5.0f))
+				{
+					a->SetInvulnerable(false);
+					a->ResetStunTimer();
+				}
 			}
 		}
 
@@ -170,25 +143,26 @@ void World::Update(sf::Time dt)
 		}
 		else
 		{
-			if (m_player_character_1->GetScore() > m_player_character_2->GetScore())
+			//TODO - Rework because this causes game crash with how 2 players work now
+			/*if (m_player_characters[0]->GetScore() > m_player_characters[1]->GetScore())
 			{
-				m_game_timer_display->SetString("Player 1 wins with " + std::to_string(m_player_character_1->GetScore()) + " points!");
+				m_game_timer_display->SetString("Player 1 wins with " + std::to_string(m_player_characters[0]->GetScore()) + " points!");
 			}
-			else if (m_player_character_2->GetScore() > m_player_character_1->GetScore())
+			else if (m_player_characters[1]->GetScore() > m_player_characters[0]->GetScore())
 			{
-				m_game_timer_display->SetString("Player 2 wins with " + std::to_string(m_player_character_2->GetScore()) + " points!");
+				m_game_timer_display->SetString("Player 2 wins with " + std::to_string(m_player_characters[1]->GetScore()) + " points!");
 			}
 			else
 			{
-				m_game_timer_display->SetString("It's a draw, both players have " + std::to_string(m_player_character_1->GetScore()) + " points");
-			}
+				m_game_timer_display->SetString("It's a draw, both players have " + std::to_string(m_player_characters[1]->GetScore()) + " points");
+			}*/
 		}
 	}
 }
 
 void World::Draw()
 {
-	if (PostEffect::IsSupported())
+	if(PostEffect::IsSupported())
 	{
 		m_scene_texture.clear();
 		m_scene_texture.setView(m_camera);
@@ -201,23 +175,97 @@ void World::Draw()
 		m_target.setView(m_camera);
 		m_target.draw(m_scenegraph);
 	}
-	//m_window.setView(m_camera);
-	//m_window.draw(m_scenegraph);
 }
 
-/// <summary>
-/// Edited by: Patrick Nugent
-///
-///	-Added enemy textures
-/// -Added pickup textures
-///
-///	Edited by: Antanas Zalisauskas
-///	-Added platform textures
-///	-Added scooby and shaggy textures
-///	-Added mansion texture
-/// </summary>
+Character* World::GetCharacter(int identifier) const
+{
+	for(Character * a : m_player_characters)
+	{
+		if (a->GetIdentifier() == identifier)
+		{
+			return a;
+		}
+	}
+	return nullptr;
+}
+
+void World::RemoveCharacter(int identifier)
+{
+	Character* character = GetCharacter(identifier);
+	if (character)
+	{
+		character->Destroy();
+		m_player_characters.erase(std::find(m_player_characters.begin(), m_player_characters.end(), character));
+	}
+}
+
+Character* World::AddCharacter(int identifier)
+{
+	/*CharacterType player_character;
+	if(m_player_characters.empty())
+	{
+		player_character = CharacterType::kShaggy;
+	}
+	else
+	{
+		player_character = CharacterType::kScooby;
+	}*/
+	
+	std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
+	player->setPosition(m_camera.getCenter());
+	player->SetIdentifier(identifier);
+	m_player_characters.emplace_back(player.get());
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(player));
+
+	return m_player_characters.back();
+}
+
+//void World::CreatePickup(sf::Vector2f position, PickupType type)
+//{
+//	std::unique_ptr<Pickup> pickup(new Pickup(type, m_textures));
+//	pickup->setPosition(position);
+//	pickup->SetVelocity(0.f, 1.f);
+//	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(pickup));
+//}
+
+bool World::PollGameAction(GameActions::Action& out)
+{
+	return m_network_node->PollGameAction(out);
+}
+
+void World::SetCurrentBattleFieldPosition(float lineY)
+{
+	m_camera.setCenter(m_camera.getCenter().x, lineY - m_camera.getSize().y / 2);
+	m_spawn_position.y = m_world_bounds.height;
+}
+
+void World::SetWorldHeight(float height)
+{
+	m_world_bounds.height = height;
+}
+
+bool World::HasAlivePlayer() const
+{
+	return !m_player_characters.empty();
+}
+
+bool World::HasPlayerReachedEnd() const
+{
+	if(Character* character = GetCharacter(1))
+	{
+		return !m_world_bounds.contains(character->getPosition());
+	}
+	return false;
+}
+
 void World::LoadTextures()
 {
+	m_textures.Load(Textures::kEntities, "Media/Textures/Entities.png");
+	m_textures.Load(Textures::kJungle, "Media/Textures/Jungle.png");
+	m_textures.Load(Textures::kExplosion, "Media/Textures/Explosion.png");
+	m_textures.Load(Textures::kParticle, "Media/Textures/Particle.png");
+	m_textures.Load(Textures::kFinishLine, "Media/Textures/FinishLine.png");
+
 	m_textures.Load(Textures::kShaggy, "Media/Textures/ShaggyIdle.png");
 	m_textures.Load(Textures::kShaggyStunned, "Media/Textures/ShaggyStunned.png");
 	m_textures.Load(Textures::kShaggyRunning, "Media/Textures/ShaggyRunning.png");
@@ -251,19 +299,12 @@ void World::LoadTextures()
 	m_textures.Load(Textures::kPancake, "Media/Textures/Pancake.png");
 }
 
-/// <summary>
-/// Edited by: Antanas Zalisauskas
-///
-///	-Changed method to work with m_player_character variables and added player 1 and 2 to game
-///	-Changed background texture used
-///	-Added platforms to the level
-/// </summary>
 void World::BuildScene()
 {
 	//Initialize the different layers
 	for (std::size_t i = 0; i < static_cast<int>(Layers::kLayerCount); ++i)
 	{
-		Category::Type category = (i == static_cast<int>(Layers::kAir)) ? Category::Type::kScene : Category::Type::kNone;
+		Category::Type category = (i == static_cast<int>(Layers::kLowerAir)) ? Category::Type::kScene : Category::Type::kNone;
 		SceneNode::Ptr layer(new SceneNode(category));
 		m_scene_layers[i] = layer.get();
 		m_scenegraph.AttachChild(std::move(layer));
@@ -271,42 +312,54 @@ void World::BuildScene()
 
 	//Prepare the background
 	sf::Texture& texture = m_textures.Get(Textures::kMansion);
-	sf::IntRect textureRect(m_world_bounds);
+	//sf::IntRect textureRect(m_world_bounds);
 	//Tile the texture to cover our world
 	texture.setRepeated(true);
 
+	//float view_height = m_camera.getSize().y;
+	sf::IntRect texture_rect(m_world_bounds);
+	//texture_rect.height += static_cast<int>(view_height);
+
 	//Add the background sprite to our scene
-	std::unique_ptr<SpriteNode> background_sprite(new SpriteNode(texture, textureRect));
+	std::unique_ptr<SpriteNode> background_sprite(new SpriteNode(texture, texture_rect));
 	background_sprite->setPosition(m_world_bounds.left, m_world_bounds.top);
 	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(background_sprite));
 
+	// Add the finish line to the scene
+	/*sf::Texture& finish_texture = m_textures.Get(Textures::kFinishLine);
+	std::unique_ptr<SpriteNode> finish_sprite(new SpriteNode(finish_texture));
+	finish_sprite->setPosition(0.f, -76.f);
+	m_finish_sprite = finish_sprite.get();
+	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(finish_sprite));*/
+
+	// Add particle node to the scene
+	//std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(ParticleType::kSmoke, m_textures));
+	//m_scene_layers[static_cast<int>(Layers::kLowerAir)]->AttachChild(std::move(smokeNode));
+
+	//// Add propellant particle node to the scene
+	//std::unique_ptr<ParticleNode> propellantNode(new ParticleNode(ParticleType::kPropellant, m_textures));
+	//m_scene_layers[static_cast<int>(Layers::kLowerAir)]->AttachChild(std::move(propellantNode));
+
 	//Prepare platforms
 	std::unique_ptr<Platform> ground_platform(new Platform(PlatformType::kGroundPlatform, m_textures));
-	ground_platform->setPosition(m_world_bounds.width/2, 755.f);
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(ground_platform));
+	ground_platform->setPosition(m_world_bounds.width / 2, 755.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(ground_platform));
 
 	std::unique_ptr<Platform> platform1(new Platform(PlatformType::kAirPlatform, m_textures));
 	platform1->setPosition(525.f, 450.f);
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(platform1));
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platform1));
 
 	std::unique_ptr<Platform> platform2(new Platform(PlatformType::kAirPlatform, m_textures));
 	platform2->setPosition(800.f, 600.f);
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(platform2));
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platform2));
 
 	std::unique_ptr<Platform> platform3(new Platform(PlatformType::kAirPlatform, m_textures));
 	platform3->setPosition(250.f, 600.f);
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(platform3));
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platform3));
 
-	//Add player character
-	std::unique_ptr<Character> player1(new Character(CharacterType::kShaggy, m_textures, m_fonts));
-	m_player_character_1 = player1.get();
-	m_player_character_1->setPosition(m_spawn_position);
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(player1));
-
-	std::unique_ptr<Character> player2(new Character(CharacterType::kScooby, m_textures, m_fonts));
-	m_player_character_2 = player2.get();
-	m_player_character_2->setPosition(m_spawn_position);
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(player2));
+	// Add sound effect node
+	std::unique_ptr<SoundNode> soundNode(new SoundNode(m_sounds));
+	m_scenegraph.AttachChild(std::move(soundNode));
 
 	//Add game timer
 	std::unique_ptr<TextNode> gameTimerDisplay(new TextNode(m_fonts, ""));
@@ -314,6 +367,13 @@ void World::BuildScene()
 	gameTimerDisplay->SetColor(sf::Color::Yellow);
 	m_game_timer_display = gameTimerDisplay.get();
 	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(gameTimerDisplay));
+
+	if(m_networked_world)
+	{
+		std::unique_ptr<NetworkNode> network_node(new NetworkNode());
+		m_network_node = network_node.get();
+		m_scenegraph.AttachChild(std::move(network_node));
+	}
 
 	srand(time(NULL));
 
@@ -328,55 +388,34 @@ CommandQueue& World::GetCommandQueue()
 
 void World::AdaptPlayerPosition()
 {
-	//Keep the player on the screen
-	//sf::FloatRect view_bounds(m_camera.getCenter() - m_camera.getSize() / 2.f, m_camera.getSize());
+	//Keep all players on the screen, at least border_distance from the border
 	sf::FloatRect view_bounds = GetViewBounds();
-
 	const float border_distance = 48.f;
-	//sf::Vector2f position = m_player_character_1->GetWorldPosition();
-	sf::Vector2f position = m_player_character_1->getPosition();
-	position.x = std::max(position.x, view_bounds.left + border_distance);
-	position.x = std::min(position.x, view_bounds.left + view_bounds.width - border_distance);
-	position.y = std::max(position.y, view_bounds.top + border_distance);
-	position.y = std::min(position.y, view_bounds.top + view_bounds.height - border_distance - 10.f);
-	m_player_character_1->setPosition(position);
 
-	position = m_player_character_2->getPosition();
-	position.x = std::max(position.x, view_bounds.left + border_distance);
-	position.x = std::min(position.x, view_bounds.left + view_bounds.width - border_distance);
-	position.y = std::max(position.y, view_bounds.top + border_distance);
-	position.y = std::min(position.y, view_bounds.top + view_bounds.height - border_distance);
-	m_player_character_2->setPosition(position);
-
+	for (Character* character : m_player_characters)
+	{
+		sf::Vector2f position = character->getPosition();
+		position.x = std::max(position.x, view_bounds.left + border_distance);
+		position.x = std::min(position.x, view_bounds.left + view_bounds.width - border_distance);
+		position.y = std::max(position.y, view_bounds.top + border_distance);
+		position.y = std::min(position.y, view_bounds.top + view_bounds.height - border_distance - 10.f);
+		character->setPosition(position);
+	}
 }
 
-/// <summary>
-/// Edited by: Antanas Zalisauskas
-///
-///	Added gravity to players
-/// </summary>
 void World::AdaptPlayerVelocity(sf::Time dt)
 {
-	//sf::Vector2f velocity = m_player_character_1->GetVelocity();
-	////if moving diagonally then reduce velocity
-	//if (velocity.x != 0.f && velocity.y != 0.f)
-	//{
-	//	m_player_character_1->SetVelocity(velocity / std::sqrt(2.f));
-	//}
-
-	//velocity = m_player_character_2->GetVelocity();
-	////if moving diagonally then reduce velocity
-	//if (velocity.x != 0.f && velocity.y != 0.f)
-	//{
-	//	m_player_character_2->SetVelocity(velocity / std::sqrt(2.f));
-	//}
-
-	//Add gravity to players
-	m_player_character_1->Accelerate(0.f, m_gravity * dt.asSeconds());
-	m_player_character_2->Accelerate(0.f, m_gravity * dt.asSeconds());
-
-	//Add scrolling velocity
-	//m_player_character->Accelerate(0.f, m_scrollspeed);
+	for (Character* character : m_player_characters)
+	{
+		//sf::Vector2f velocity = aircraft->GetVelocity();
+		////if moving diagonally then reduce velocity
+		//if (velocity.x != 0.f && velocity.y != 0.f)
+		//{
+		//	aircraft->SetVelocity(velocity / std::sqrt(2.f));
+		//}
+		//Add gravity velocity
+		character->Accelerate(0.f, m_gravity * dt.asSeconds());
+	}
 }
 
 sf::FloatRect World::GetViewBounds() const
@@ -384,11 +423,6 @@ sf::FloatRect World::GetViewBounds() const
 	return sf::FloatRect(m_camera.getCenter() - m_camera.getSize() / 2.f, m_camera.getSize());
 }
 
-/// <summary>
-/// Edited By: Antanas
-///	changed .top & .height to .left & .width
-/// </summary>
-/// <returns></returns>
 sf::FloatRect World::GetBattlefieldBounds() const
 {
 	//Return camera bounds + a small area at the top where enemies spawn offscreen
@@ -399,30 +433,27 @@ sf::FloatRect World::GetBattlefieldBounds() const
 	return bounds;
 }
 
-bool World::PollGameAction(GameActions::Action& out)
-{
-	return m_network_node->PollGameAction(out);
-}
-
-void World::SetCurrentBattleFieldPosition(float lineY)
-{
-	m_camera.setCenter(m_camera.getCenter().x, lineY - m_camera.getSize().y / 2);
-	m_spawn_position.y = m_world_bounds.height;
-}
-
-void World::SetWorldHeight(float height)
-{
-	m_world_bounds.height = height;
-}
-
-/// <summary>
-/// Edited By: Patrick Nugent
-///
-///	-Reworked to use Character class instead of aircraft
-/// -Added enemy randomiser code
-/// </summary>
 void World::SpawnEnemies()
 {
+	//Spawn an enemy when they are relevant - they are relevant when they enter the battlefield bounds
+	//while(!m_enemy_spawn_points.empty() && m_enemy_spawn_points.back().m_y > GetBattlefieldBounds().top)
+	//{
+	//	SpawnPoint spawn = m_enemy_spawn_points.back();
+	//	std::cout << static_cast<int>(spawn.m_type) << std::endl;
+	//	std::unique_ptr<Aircraft> enemy(new Aircraft(spawn.m_type, m_textures, m_fonts));
+	//	enemy->setPosition(spawn.m_x, spawn.m_y);
+	//	enemy->setRotation(180.f);
+	//	//If the game is networked the server is responsible for spawning pickups
+	//	if(m_networked_world)
+	//	{
+	//		enemy->DisablePickups();
+	//	}
+	//	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(enemy));
+	//	//Enemy is spawned, remove from list to spawn
+	//	m_enemy_spawn_points.pop_back();
+	//	
+	//}
+
 	//Spawn a random enemy from the vector of enemy spawn points
 	int randomEnemy = rand() % 12;
 	CharacterSpawnPoint spawn = m_enemy_spawn_points[randomEnemy];
@@ -434,7 +465,7 @@ void World::SpawnEnemies()
 	{
 		enemy->FlipSprite();
 	}
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(enemy));
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(enemy));
 }
 
 /// <summary>
@@ -481,13 +512,11 @@ void World::SpawnPickups()
 	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(pickup));
 }
 
-/// <summary>
-/// Edited By: Patrick Nugent
-///
-///	-Changed to add to a specific enemy list depending on type
-/// </summary>
 void World::AddEnemy(CharacterType type, bool isFlying, float relX, float relY)
 {
+	/*SpawnPoint spawn(type, m_spawn_position.x + relX, m_spawn_position.y - relY);
+	m_enemy_spawn_points.emplace_back(spawn);*/
+
 	CharacterSpawnPoint spawn(type, m_spawn_position.x + relX, m_spawn_position.y - relY);
 	if (isFlying)
 	{
@@ -497,7 +526,6 @@ void World::AddEnemy(CharacterType type, bool isFlying, float relX, float relY)
 	{
 		m_enemy_spawn_points.emplace_back(spawn);
 	}
-
 }
 
 /// <summary>
@@ -515,13 +543,13 @@ void World::AddPickup(PickupType type, int value, float relX, float relY)
 	m_pickup_spawn_points.emplace_back(spawn);
 }
 
-/// <summary>
-/// Edited By: Patrick Nugent
-///
-///	-Added enemy types
-/// </summary>
 void World::AddEnemies()
 {
+	if(m_networked_world)
+	{
+		return;
+	}
+
 	//Add all enemies - both the left and right side versions
 	AddEnemy(CharacterType::kCreeperLeft, false, -500.f, -329.5f);
 	AddEnemy(CharacterType::kCreeperRight, false, 500.f, -329.5f);
@@ -548,7 +576,46 @@ void World::AddEnemies()
 	AddEnemy(CharacterType::kSkullRight, true, 500.f, -150.f);
 	AddEnemy(CharacterType::kDutchmanLeft, true, -500.f, 200.f);
 	AddEnemy(CharacterType::kDutchmanRight, true, 500.f, 200.f);
+
+	//Add all enemies
+	/*AddEnemy(::kRaptor, 0.f, 500.f);
+	AddEnemy(AircraftType::kRaptor, 0.f, 1000.f);
+	AddEnemy(AircraftType::kRaptor, +100.f, 1150.f);
+	AddEnemy(AircraftType::kRaptor, -100.f, 1150.f);
+	AddEnemy(AircraftType::kAvenger, 70.f, 1500.f);
+	AddEnemy(AircraftType::kAvenger, -70.f, 1500.f);
+	AddEnemy(AircraftType::kAvenger, -70.f, 1710.f);
+	AddEnemy(AircraftType::kAvenger, 70.f, 1700.f);
+	AddEnemy(AircraftType::kAvenger, 30.f, 1850.f);
+	AddEnemy(AircraftType::kRaptor, 300.f, 2200.f);
+	AddEnemy(AircraftType::kRaptor, -300.f, 2200.f);
+	AddEnemy(AircraftType::kRaptor, 0.f, 2200.f);
+	AddEnemy(AircraftType::kRaptor, 0.f, 2500.f);
+	AddEnemy(AircraftType::kAvenger, -300.f, 2700.f);
+	AddEnemy(AircraftType::kAvenger, -300.f, 2700.f);
+	AddEnemy(AircraftType::kRaptor, 0.f, 3000.f);
+	AddEnemy(AircraftType::kRaptor, 250.f, 3250.f);
+	AddEnemy(AircraftType::kRaptor, -250.f, 3250.f);
+	AddEnemy(AircraftType::kAvenger, 0.f, 3500.f);
+	AddEnemy(AircraftType::kAvenger, 0.f, 3700.f);
+	AddEnemy(AircraftType::kRaptor, 0.f, 3800.f);
+	AddEnemy(AircraftType::kAvenger, 0.f, 4000.f);
+	AddEnemy(AircraftType::kAvenger, -200.f, 4200.f);
+	AddEnemy(AircraftType::kRaptor, 200.f, 4200.f);
+	AddEnemy(AircraftType::kRaptor, 0.f, 4400.f);*/
+
+	//Sort according to y value so that lower enemies are checked first
+	//SortEnemies();
 }
+
+//void World::SortEnemies()
+//{
+//	//Sort all enemies according to their y-value, such that lower enemies are checked first for spawning
+//	std::sort(m_enemy_spawn_points.begin(), m_enemy_spawn_points.end(), [](SpawnPoint lhs, SpawnPoint rhs)
+//	{
+//		return lhs.m_y < rhs.m_y;
+//	});
+//}
 
 /// <summary>
 /// Created By: Patrick Nugent
@@ -576,46 +643,55 @@ void World::AddPickups()
 	AddPickup(PickupType::kPancake, 30, 0.f, yPosition);
 }
 
-Character* World::GetCharacter(int identifier) const
+/*void World::GuideMissiles()
 {
-	for (Character* a : m_player_characters)
+	// Setup command that stores all enemies in mActiveEnemies
+	Command enemyCollector;
+	enemyCollector.category = Category::kEnemyAircraft;
+	enemyCollector.action = DerivedAction<Aircraft>([this](Aircraft& enemy, sf::Time)
 	{
-		if (a->GetIdentifier() == identifier)
+		if (!enemy.IsDestroyed())
+			m_active_enemies.emplace_back(&enemy);
+	});
+
+	// Setup command that guides all missiles to the enemy which is currently closest to the player
+	Command missileGuider;
+	missileGuider.category = Category::kAlliedProjectile;
+	missileGuider.action = DerivedAction<Projectile>([this](Projectile& missile, sf::Time)
+	{
+		// Ignore unguided bullets
+		if (!missile.IsGuided())
+			return;
+
+		float minDistance = std::numeric_limits<float>::max();
+		Character* closestEnemy = nullptr;
+
+		// Find closest enemy
+		for(Character * enemy :  m_active_enemies)
 		{
-			return a;
+			float enemyDistance = Distance(missile, *enemy);
+
+			if (enemyDistance < minDistance)
+			{
+				closestEnemy = enemy;
+				minDistance = enemyDistance;
+			}
 		}
-	}
-	return nullptr;
-}
 
-Character* World::AddCharacter(int identifier)
-{
-	std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
-	player->setPosition(m_camera.getCenter());
-	player->SetIdentifier(identifier);
+		if (closestEnemy)
+			missile.GuideTowards(closestEnemy->GetWorldPosition());
+	});
 
-	m_player_characters.emplace_back(player.get());
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(player));
-	return m_player_characters.back();
-}
-
-void World::RemoveCharacter(int identifier)
-{
-	Character* character = GetCharacter(identifier);
-	if (character)
-	{
-		character->Destroy();
-		m_player_characters.erase(std::find(m_player_characters.begin(), m_player_characters.end(), character));
-	}
-}
+	// Push commands, reset active enemies
+	m_command_queue.Push(enemyCollector);
+	m_command_queue.Push(missileGuider);
+	m_active_enemies.clear();
+}*/
 
 bool MatchesCategories(SceneNode::Pair& colliders, Category::Type type1, Category::Type type2)
 {
 	unsigned int category1 = colliders.first->GetCategory();
 	unsigned int category2 = colliders.second->GetCategory();
-
-	//std::cout << category1 << category2 << std::endl;
-
 	if(type1 & category1 && type2 & category2)
 	{
 		return true;
@@ -631,30 +707,18 @@ bool MatchesCategories(SceneNode::Pair& colliders, Category::Type type1, Categor
 	}
 }
 
-/// <summary>
-/// Edited by: Antanas Zalisauskas
-///
-///	-Added Collision between players and platforms
-///	-Added Collision between players and enemies
-///
-/// Edited by: Patrick Nugent
-///
-///	-Added Collision between players and pickups
-/// -Added sounds for enemy and pickup collisions
-/// </summary>
 void World::HandleCollisions()
 {
 	std::set<SceneNode::Pair> collision_pairs;
 	m_scenegraph.CheckSceneCollision(m_scenegraph, collision_pairs);
 	for(SceneNode::Pair pair : collision_pairs)
 	{
-	
-		if(MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter1))
+		if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter1))
 		{
 			auto& platform = static_cast<Platform&>(*pair.first);
 			auto& player = static_cast<Character&>(*pair.second);
 
-			if(player.GetWorldPosition().y < platform.GetWorldPosition().y)
+			if (player.GetWorldPosition().y < platform.GetWorldPosition().y)
 			{
 				player.ToggleCanJump(true);
 				player.move(0.f, -1.f);
@@ -666,7 +730,6 @@ void World::HandleCollisions()
 				player.SetVelocity(player.GetVelocity().x, 0);
 			}
 		}
-
 		else if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter2))
 		{
 			auto& platform = static_cast<Platform&>(*pair.first);
@@ -684,8 +747,7 @@ void World::HandleCollisions()
 				player.SetVelocity(player.GetVelocity().x, 0);
 			}
 		}
-
-		else if(MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kEnemyCharacter) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kEnemyCharacter))
+		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kEnemyCharacter) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kEnemyCharacter))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
 			if (!player.GetInvulnerable())
@@ -695,7 +757,6 @@ void World::HandleCollisions()
 				player.SetInvulnerable(true);
 			}
 		}
-
 		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kPickup) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kPickup))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
@@ -707,6 +768,34 @@ void World::HandleCollisions()
 			player.AddScore(pickup.GetValue());
 			pickup.Destroy();
 		}
+		//else if(MatchesCategories(pair, Category::Type::kPlayerAircraft, Category::Type::kEnemyAircraft))
+		//{
+		//	auto& player = static_cast<Aircraft&>(*pair.first);
+		//	auto& enemy = static_cast<Aircraft&>(*pair.second);
+		//	//Collision
+		//	player.Damage(enemy.GetHitPoints());
+		//	enemy.Destroy();
+		//}
+
+		//else if (MatchesCategories(pair, Category::Type::kPlayerAircraft, Category::Type::kPickup))
+		//{
+		//	auto& player = static_cast<Character&>(*pair.first);
+		//	auto& pickup = static_cast<Pickup&>(*pair.second);
+		//	//Apply the pickup effect
+		//	pickup.Apply(player);
+		//	pickup.Destroy();
+		//	player.PlayLocalSound(m_command_queue, SoundEffect::kCollectPickup);
+		//}
+
+		//else if (MatchesCategories(pair, Category::Type::kPlayerAircraft, Category::Type::kEnemyProjectile) || MatchesCategories(pair, Category::Type::kEnemyAircraft, Category::Type::kAlliedProjectile))
+		//{
+		//	auto& aircraft = static_cast<Aircraft&>(*pair.first);
+		//	auto& projectile = static_cast<Projectile&>(*pair.second);
+		//	//Apply the projectile damage to the plane
+		//	aircraft.Damage(projectile.GetDamage());
+		//	projectile.Destroy();
+		//}
+
 
 	}
 }
@@ -714,14 +803,13 @@ void World::HandleCollisions()
 void World::DestroyEntitiesOutsideView()
 {
 	Command command;
-	command.category = Category::Type::kEnemyCharacter | Category::Type::kPickup;
+	command.category = Category::Type::kEnemyAircraft | Category::Type::kProjectile;
 	command.action = DerivedAction<Entity>([this](Entity& e, sf::Time)
 	{
 		//Does the object intersect with the battlefield
 		if (!GetBattlefieldBounds().intersects(e.GetBoundingRect()))
 		{
-			//std::cout << "Destroying Entity" << std::endl;
-			e.Destroy();
+			e.Remove();
 		}
 	});
 	m_command_queue.Push(command);
@@ -736,7 +824,7 @@ void World::DisplayRemainingGameTime()
 {
 	int minutes = (int)(m_game_countdown.asSeconds() / 60);
 	int seconds = (int)(m_game_countdown.asSeconds()) % 60;
-	
+
 	m_game_timer_display->SetString(std::to_string(minutes) + ":" + std::to_string(seconds));
 }
 
@@ -752,8 +840,27 @@ bool World::IsGameOver() const
 
 void World::UpdateSounds()
 {
-	// Set listener's position to player position
-	m_sounds.SetListenerPosition(m_player_character_1->GetWorldPosition());
+	sf::Vector2f listener_position;
+
+	// 0 players (multiplayer mode, until server is connected) -> view center
+	if (m_player_characters.empty())
+	{
+		listener_position = m_camera.getCenter();
+	}
+
+	// 1 or more players -> mean position between all aircrafts
+	else
+	{
+		for (Character* character : m_player_characters)
+		{
+			listener_position += character->GetWorldPosition();
+		}
+
+		listener_position /= static_cast<float>(m_player_characters.size());
+	}
+
+	// Set listener's position
+	m_sounds.SetListenerPosition(listener_position);
 
 	// Remove unused sounds
 	m_sounds.RemoveStoppedSounds();

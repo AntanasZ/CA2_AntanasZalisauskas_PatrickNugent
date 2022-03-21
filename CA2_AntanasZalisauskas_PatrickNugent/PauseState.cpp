@@ -1,17 +1,13 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "PauseState.hpp"
 #include "ResourceHolder.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <SFML/Graphics/View.hpp>
+
+#include "Button.hpp"
+#include "Utility.hpp"
+
 
 #include "Button.hpp"
 #include "Utility.hpp"
@@ -33,18 +29,18 @@ PauseState::PauseState(StateStack& stack, Context context, bool let_updates_thro
 	returnButton->setPosition(0.5f * window_size.x - 100, 0.4f * window_size.y + 75);
 	returnButton->SetText("Return");
 	returnButton->SetCallback([this]()
-		{
-			RequestStackPop();
-		});
+	{
+		RequestStackPop();
+	});
 
 	auto backToMenuButton = std::make_shared<GUI::Button>(context);
 	backToMenuButton->setPosition(0.5f * window_size.x - 100, 0.4f * window_size.y + 125);
 	backToMenuButton->SetText("Back to menu");
 	backToMenuButton->SetCallback([this]()
-		{
-			RequestStackClear();
-			RequestStackPush(StateID::kMenu);
-		});
+	{
+		RequestStackClear();
+		RequestStackPush(StateID::kMenu);
+	});
 
 	m_gui_container.Pack(returnButton);
 	m_gui_container.Pack(backToMenuButton);

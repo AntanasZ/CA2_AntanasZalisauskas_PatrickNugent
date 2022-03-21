@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "SoundPlayer.hpp"
 #include "SoundEffect.hpp"
 
@@ -24,13 +16,13 @@ namespace
 	const float MinDistance3D = std::sqrt(MinDistance2D * MinDistance2D + ListenerZ * ListenerZ);
 }
 
-/// <summary>
-/// Edited by: Patrick Nugent
-///
-///	-Added pickup, button and stun sounds
-/// </summary>
 SoundPlayer::SoundPlayer()
 {
+	m_sound_buffers.Load(SoundEffect::kAlliedGunfire, "Media/Sound/AlliedGunfire.wav");
+	m_sound_buffers.Load(SoundEffect::kEnemyGunfire, "Media/Sound/EnemyGunfire.wav");
+	m_sound_buffers.Load(SoundEffect::kExplosion1, "Media/Sound/Explosion1.wav");
+	m_sound_buffers.Load(SoundEffect::kExplosion2, "Media/Sound/Explosion2.wav");
+	m_sound_buffers.Load(SoundEffect::kLaunchMissile, "Media/Sound/LaunchMissile.wav");
 	m_sound_buffers.Load(SoundEffect::kCollectPickup, "Media/Sound/CollectPickup.wav");
 	m_sound_buffers.Load(SoundEffect::kButton, "Media/Sound/Button.wav");
 	m_sound_buffers.Load(SoundEffect::kStun, "Media/Sound/Stun.wav");

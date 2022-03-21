@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "GameOverState.hpp"
 
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -14,15 +6,8 @@
 #include "Player.hpp"
 #include "ResourceHolder.hpp"
 #include "Utility.hpp"
-#include "Character.hpp"
 
-/// <summary>
-/// Edited by: Patrick Nugent
-///
-///	-Added player score check
-/// -Added game over text
-/// </summary>
-GameOverState::GameOverState(StateStack& stack, Context context)
+GameOverState::GameOverState(StateStack& stack, Context context)//, const std::string& text)
 	: State(stack, context)
 	, m_game_over_text()
 	, m_elapsed_time(sf::Time::Zero)
@@ -32,9 +17,8 @@ GameOverState::GameOverState(StateStack& stack, Context context)
 
 	m_game_over_text.setFont(font);
 	std::string text;
-
+	//m_game_over_text.setString(text);
 	m_game_over_text.setString("Game Over");
-
 	m_game_over_text.setCharacterSize(70);
 	Utility::CentreOrigin(m_game_over_text);
 	m_game_over_text.setPosition(0.5f * windowSize.x, 0.4f * windowSize.y);
@@ -56,7 +40,7 @@ void GameOverState::Draw()
 
 bool GameOverState::Update(sf::Time dt)
 {
-	// Show state for 5 seconds, after return to menu
+	// Show state for 3 seconds, after return to menu
 	m_elapsed_time += dt;
 	if (m_elapsed_time > sf::seconds(5))
 	{

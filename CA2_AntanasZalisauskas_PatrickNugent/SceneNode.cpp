@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "SceneNode.hpp"
 
 #include <algorithm>
@@ -80,7 +72,7 @@ void SceneNode::draw(sf::RenderTarget& target, sf::RenderStates states) const
 	//Draw the node and children with changed transform
 	DrawCurrent(target, states);
 	DrawChildren(target, states);
-	//sf::FloatRect rect = GetBoundingRect();
+	sf::FloatRect rect = GetBoundingRect();
 	//DrawBoundingRect(target, states, rect);
 }
 

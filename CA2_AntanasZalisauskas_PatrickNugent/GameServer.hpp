@@ -15,9 +15,9 @@ class GameServer
 public:
 	explicit GameServer(sf::Vector2f battlefield_size);
 	~GameServer();
-	void NotifyPlayerSpawn(sf::Int32 aircraft_identifier);
-	void NotifyPlayerRealtimeChange(sf::Int32 aircraft_identifier, sf::Int32 action, bool action_enabled);
-	void NotifyPlayerEvent(sf::Int32 aircraft_identifier, sf::Int32 action);
+	void NotifyPlayerSpawn(sf::Int32 character_identifier);
+	void NotifyPlayerRealtimeChange(sf::Int32 character_identifier, sf::Int32 action, bool action_enabled);
+	void NotifyPlayerEvent(sf::Int32 character_identifier, sf::Int32 action);
 
 private:
 	struct RemotePeer
@@ -25,7 +25,8 @@ private:
 		RemotePeer();
 		sf::TcpSocket m_socket;
 		sf::Time m_last_packet_time;
-		std::vector<sf::Int32> m_aircraft_identifiers;
+		//std::vector<sf::Int32> m_aircraft_identifiers;
+		std::vector<sf::Int32> m_character_identifiers;
 		bool m_ready;
 		bool m_timed_out;
 	};
@@ -35,6 +36,13 @@ private:
 		sf::Vector2f m_position;
 		sf::Int32 m_hitpoints;
 		sf::Int32 m_missile_ammo;
+		std::map<sf::Int32, bool> m_realtime_actions;
+	};
+
+	struct CharacterInfo
+	{
+		sf::Vector2f m_position;
+		sf::Int32 m_hitpoints;
 		std::map<sf::Int32, bool> m_realtime_actions;
 	};
 
@@ -71,11 +79,11 @@ private:
 	sf::FloatRect m_battlefield_rect;
 	float m_battlefield_scrollspeed;
 
-	std::size_t m_aircraft_count;
-	std::map<sf::Int32, AircraftInfo> m_aircraft_info;
+	std::size_t m_character_count;
+	std::map<sf::Int32, CharacterInfo> m_character_info;
 
 	std::vector<PeerPtr> m_peers;
-	sf::Int32 m_aircraft_identifier_counter;
+	sf::Int32 m_character_identifier_counter;
 	bool m_waiting_thread_end;
 
 	sf::Time m_last_spawn_time;

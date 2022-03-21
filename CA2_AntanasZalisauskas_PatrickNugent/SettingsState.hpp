@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #pragma once
 #include "State.hpp"
 
@@ -33,16 +25,14 @@ public:
 
 private:
 	void UpdateLabels();
-	void AddButtonLabel(PlayerAction action, float y, const std::string& text, Context context, bool is_player_1);
+	void AddButtonLabel(std::size_t index, std::size_t x, std::size_t y, const std::string& text, Context context);
 
 
 private:
 	sf::Sprite m_background_sprite;
 	GUI::Container m_gui_container;
-	std::array<GUI::Button::Ptr, static_cast<int>(PlayerAction::kActionCount)> m_binding_buttons;
-	std::array<GUI::Label::Ptr, static_cast<int>(PlayerAction::kActionCount)> 	m_binding_labels;
-	sf::Text m_player_1_controls;
-	sf::Text m_player_2_controls;
+	std::array<GUI::Button::Ptr, 2*(static_cast<int>(PlayerAction::kActionCount))> m_binding_buttons;
+	std::array<GUI::Label::Ptr, 2*(static_cast<int>(PlayerAction::kActionCount))> 	m_binding_labels;
 };
 
 

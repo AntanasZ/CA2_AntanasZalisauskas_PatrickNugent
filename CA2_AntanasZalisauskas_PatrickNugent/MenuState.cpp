@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "MenuState.hpp"
 
 #include <SFML/Graphics/RenderWindow.hpp>
@@ -15,11 +7,7 @@
 #include "Button.hpp"
 
 
-/// <summary>
-/// Edited by: Patrick Nugent
-///
-///	Adjusted position values for buttons
-/// </summary>
+
 MenuState::MenuState(StateStack& stack, Context context)
 : State(stack, context)
 {
@@ -36,8 +24,26 @@ MenuState::MenuState(StateStack& stack, Context context)
 		RequestStackPush(StateID::kGame);
 	});
 
+	auto host_play_button = std::make_shared<GUI::Button>(context);
+	host_play_button->setPosition(400, 300);
+	host_play_button->SetText("Host");
+	host_play_button->SetCallback([this]()
+	{
+		RequestStackPop();
+		RequestStackPush(StateID::kHostGame);
+	});
+
+	auto join_play_button = std::make_shared<GUI::Button>(context);
+	join_play_button->setPosition(400, 375);
+	join_play_button->SetText("Join");
+	join_play_button->SetCallback([this]()
+	{
+		RequestStackPop();
+		RequestStackPush(StateID::kJoinGame);
+	});
+
 	auto settings_button = std::make_shared<GUI::Button>(context);
-	settings_button->setPosition(400, 300);
+	settings_button->setPosition(400, 450);
 	settings_button->SetText("Settings");
 	settings_button->SetCallback([this]()
 	{
@@ -45,7 +51,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	});
 
 	auto exit_button = std::make_shared<GUI::Button>(context);
-	exit_button->setPosition(400, 375);
+	exit_button->setPosition(400, 525);
 	exit_button->SetText("Exit");
 	exit_button->SetCallback([this]()
 	{
@@ -53,6 +59,8 @@ MenuState::MenuState(StateStack& stack, Context context)
 	});
 
 	m_gui_container.Pack(play_button);
+	m_gui_container.Pack(host_play_button);
+	m_gui_container.Pack(join_play_button);
 	m_gui_container.Pack(settings_button);
 	m_gui_container.Pack(exit_button);
 

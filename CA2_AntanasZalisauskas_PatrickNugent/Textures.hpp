@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #pragma once
 /// <summary>
 /// Edited by: Antanas Zalisauskas
@@ -17,9 +9,15 @@
 ///
 ///	-Added enums for enemy textures
 /// </summary>
-
 enum class Textures
 {
+	kEntities,
+	kJungle,
+	kTitleScreen,
+	kButtons,
+	kExplosion,
+	kParticle,
+	kFinishLine,
 	kApple,
 	kOrange,
 	kCake,
@@ -29,9 +27,6 @@ enum class Textures
 	kIceCream,
 	kMelon,
 	kPancake,
-	kTitleScreen,
-	kButtons,
-	kParticle,
 	kShaggy,
 	kShaggyStunned,
 	kShaggyRunning,

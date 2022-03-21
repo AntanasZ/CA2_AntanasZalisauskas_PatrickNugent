@@ -1,11 +1,3 @@
-/// <summary>
-/// Name: Patrick Nugent
-/// Student Number: D00218208
-///
-/// Name: Antanas Zalisauskas
-/// Student Number: D00218148
-/// </summary>
-
 #include "MusicPlayer.hpp"
 
 
@@ -13,6 +5,7 @@ MusicPlayer::MusicPlayer()
 	: m_volume(100.f)
 {
 	m_filenames[MusicThemes::kMenuTheme] = "Media/Music/MenuTheme.wav";
+	m_filenames[MusicThemes::kMissionTheme] = "Media/Music/MissionTheme.ogg";
 	m_filenames[MusicThemes::kScoobyDooTheme] = "Media/Music/ScoobyDooTheme.wav";
 }
 
