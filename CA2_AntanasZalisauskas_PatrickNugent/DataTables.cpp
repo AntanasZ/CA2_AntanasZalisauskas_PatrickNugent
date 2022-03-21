@@ -194,10 +194,10 @@ std::vector<CharacterData> InitializeCharacterData()
 	return data;
 }
 
-std::vector<ProjectileData> InitializeProjectileData()
-{
-	return std::vector<ProjectileData>();
-}
+//std::vector<ProjectileData> InitializeProjectileData()
+//{
+//	return std::vector<ProjectileData>();
+//}
 
 /// <summary>
 /// Written by: Antanas Zalisauskas

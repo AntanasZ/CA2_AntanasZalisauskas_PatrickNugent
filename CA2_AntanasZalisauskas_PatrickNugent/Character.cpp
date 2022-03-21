@@ -333,16 +333,6 @@ void Character::SetInvulnerable(bool value)
 	m_is_invulnerable = value;
 }
 
-int Character::GetIdentifier()
-{
-	return m_identifier;
-}
-
-void Character::SetIdentifier(int identifier)
-{
-	m_identifier = identifier;
-}
-
 void Character::Remove()
 {
 	Entity::Remove();

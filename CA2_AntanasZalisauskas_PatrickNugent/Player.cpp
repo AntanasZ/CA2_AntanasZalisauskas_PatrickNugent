@@ -231,16 +231,6 @@ void Player::HandleRealtimeNetworkInput(CommandQueue& commands)
 	}
 }
 
-void Player::HandleNetworkEvent(PlayerAction action, CommandQueue& commands)
-{
-	commands.Push(m_action_binding[action]);
-}
-
-void Player::HandleNetworkRealtimeChange(PlayerAction action, bool actionEnabled)
-{
-	m_action_proxies[action] = actionEnabled;
-}
-
 
 void Player::SetMissionStatus(MissionStatus status)
 {
