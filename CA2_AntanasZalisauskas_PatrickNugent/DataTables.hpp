@@ -86,6 +86,7 @@ struct ParticleData
 	sf::Time						m_lifetime;
 };
 
+
 std::vector<AircraftData> InitializeAircraftData();
 std::vector<ProjectileData> InitializeProjectileData();
 std::vector<PickupData> InitializePickupData();

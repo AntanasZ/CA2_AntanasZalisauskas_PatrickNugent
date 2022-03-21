@@ -245,6 +245,16 @@ int Character::GetScore() const
 	return m_score;
 }
 
+int	Character::GetIdentifier()
+{
+	return m_identifier;
+}
+
+void Character::SetIdentifier(int identifier)
+{
+	m_identifier = identifier;
+}
+
 
 void Character::ToggleCanJump(bool value)
 {

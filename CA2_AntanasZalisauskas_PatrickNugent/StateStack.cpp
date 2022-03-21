@@ -3,7 +3,7 @@
 #include <cassert>
 
 StateStack::StateStack(State::Context context)
-:m_context(context)
+	:m_context(context)
 {
 }
 
@@ -21,7 +21,7 @@ void StateStack::Update(sf::Time dt)
 
 void StateStack::Draw()
 {
-	for(State::Ptr& state:m_stack)
+	for (State::Ptr& state : m_stack)
 	{
 		state->Draw();
 	}
@@ -68,7 +68,7 @@ State::Ptr StateStack::CreateState(StateID state_id)
 
 void StateStack::ApplyPendingChanges()
 {
-	for(PendingChange change : m_pending_list)
+	for (PendingChange change : m_pending_list)
 	{
 		switch (change.action)
 		{
@@ -96,7 +96,7 @@ void StateStack::ApplyPendingChanges()
 }
 
 StateStack::PendingChange::PendingChange(Action action, StateID stateID)
-: action(action)
-, state_id(stateID)
+	: action(action)
+	, state_id(stateID)
 {
 }

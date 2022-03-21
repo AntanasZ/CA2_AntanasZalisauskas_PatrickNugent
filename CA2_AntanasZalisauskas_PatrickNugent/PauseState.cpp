@@ -9,6 +9,8 @@
 #include "Utility.hpp"
 
 
+#include "Button.hpp"
+#include "Utility.hpp"
 
 PauseState::PauseState(StateStack& stack, Context context, bool let_updates_through)
 	: State(stack, context)

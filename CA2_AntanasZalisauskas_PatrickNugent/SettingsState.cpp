@@ -61,7 +61,6 @@ bool SettingsState::HandleEvent(const sf::Event& event)
 				// Player 1
 				if (i < static_cast<int>(PlayerAction::kActionCount))
 					GetContext().keys1->AssignKey(static_cast<PlayerAction>(i), event.key.code);
-				
 				// Player 2
 				else
 					GetContext().keys2->AssignKey(static_cast<PlayerAction>(i - static_cast<int>(PlayerAction::kActionCount)), event.key.code);

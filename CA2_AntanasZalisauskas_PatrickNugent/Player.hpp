@@ -27,6 +27,9 @@ public:
 	void DisableAllRealtimeActions();
 	bool IsLocal() const;
 
+	void DisableAllRealtimeActions();
+	bool IsLocal() const;
+
 private:
 	void InitialiseActions();
 

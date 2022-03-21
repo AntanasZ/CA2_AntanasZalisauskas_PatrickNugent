@@ -133,6 +133,15 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
 		
 }
 
+void Player::HandleNetworkEvent(PlayerAction action, CommandQueue& commands)
+{
+	commands.Push(m_action_binding[action]);
+}
+
+void Player::HandleNetworkRealtimeChange(PlayerAction action, bool actionEnabled)
+{
+	m_action_proxies[action] = actionEnabled;
+}
 
 
 void Player::HandleEvent(const sf::Event& event, CommandQueue& commands)
