@@ -44,7 +44,7 @@ public:
 	CommandQueue& GetCommandQueue();
 
 	//Aircraft* AddAircraft(int identifier);
-	Character* AddCharacter(int identifier);
+	Character* AddCharacter(int identifier, CharacterType character);
 	//void RemoveAircraft(int identifier);
 	void RemoveCharacter(int identifier);
 	void SetCurrentBattleFieldPosition(float line_y);
@@ -120,7 +120,7 @@ private:
 	};
 	
 
-private:
+public:
 	sf::RenderTarget& m_target;
 	sf::RenderTexture m_scene_texture;
 	sf::View m_camera;
