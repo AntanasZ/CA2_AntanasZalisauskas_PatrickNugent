@@ -12,12 +12,15 @@ Michael Jackson Sprites - https://www.spriters-resource.com/genesis_32x_scd/mjmo
 Scorpion Sprites - https://www.spriters-resource.com/nes/mortalkombat3bootleg/sheet/93098/
 Terminator Sprites - https://www.spriters-resource.com/genesis_32x_scd/robocopvstheterminator/sheet/81099/
 Food Sprites - https://www.spriters-resource.com/arcade/threewonders/sheet/29430/
-Dutchman - https://www.spriters-resource.com/playstation/spongebobsquarepantssupersponge/sheet/153082/
-Skull - https://www.spriters-resource.com/pc_computer/koumajoudensetsuscarletsymphony/sheet/88960/
-Turtle - https://www.spriters-resource.com/genesis_32x_scd/eccojr/sheet/65601/
-Ghost - https://www.spriters-resource.com/nes/nightmareonelmstreet/sheet/114782/
-Ghidorah - https://www.spriters-resource.com/nes/godzillamom/sheet/91220/
-Pterodactyl - https://www.spriters-resource.com/game_boy_advance/scoobydoo2/sheet/163910/
+Dutchman Sprites - https://www.spriters-resource.com/playstation/spongebobsquarepantssupersponge/sheet/153082/
+Skull Sprites - https://www.spriters-resource.com/pc_computer/koumajoudensetsuscarletsymphony/sheet/88960/
+Turtle Sprites - https://www.spriters-resource.com/genesis_32x_scd/eccojr/sheet/65601/
+Ghost Sprites - https://www.spriters-resource.com/nes/nightmareonelmstreet/sheet/114782/
+Ghidorah Sprites - https://www.spriters-resource.com/nes/godzillamom/sheet/91220/
+Pterodactyl Sprites - https://www.spriters-resource.com/game_boy_advance/scoobydoo2/sheet/163910/
+Fred Sprites - https://www.spriters-resource.com/game_boy_advance/scoobytcc/sheet/40649/
+Velma Sprites - https://www.spriters-resource.com/game_boy_advance/scoobytcc/sheet/40652/
+Daphne Sprites - https://www.spriters-resource.com/game_boy_advance/scoobytcc/sheet/40648/
 
 Audio
 Chomp Sound Effect - https://www.partnersinrhyme.com/soundfx/human_sounds/human_aud-chomp_wav.shtml
