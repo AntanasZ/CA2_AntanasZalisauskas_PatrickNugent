@@ -278,6 +278,9 @@ void World::LoadTextures()
 	m_textures.Load(Textures::kVelma, "Media/Textures/VelmaIdle.png");
 	m_textures.Load(Textures::kVelmaStunned, "Media/Textures/VelmaStunned.png");
 	m_textures.Load(Textures::kVelmaRunning, "Media/Textures/velmaRunning.png");
+	m_textures.Load(Textures::kDaphne, "Media/Textures/DaphneIdle.png");
+	m_textures.Load(Textures::kDaphneStunned, "Media/Textures/DaphneStunned.png");
+	m_textures.Load(Textures::kDaphneRunning, "Media/Textures/DaphneRunning.png");
 	m_textures.Load(Textures::kMansion, "Media/Textures/Mansion.png");
 	m_textures.Load(Textures::kCreeper, "Media/Textures/CreeperIdle.png");
 	m_textures.Load(Textures::kMichael, "Media/Textures/MichaelIdle.png");
