@@ -398,7 +398,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		packet >> world_height >> current_scroll;
 
 		m_world.SetWorldHeight(world_height);
-		m_world.SetCurrentBattleFieldPosition(current_scroll);
+		//m_world.SetCurrentBattleFieldPosition(current_scroll);
 
 		packet >> character_count;
 		for (sf::Int32 i = 0; i < character_count; ++i)
