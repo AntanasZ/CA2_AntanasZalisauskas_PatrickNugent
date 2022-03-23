@@ -83,28 +83,28 @@ void World::Update(sf::Time dt)
 		m_player_characters.erase(first_to_remove, m_player_characters.end());
 		m_scenegraph.RemoveWrecks();
 
-		m_enemy_spawn_countdown += dt;
-		if (m_enemy_spawn_countdown >= sf::seconds(5.0f))
-		{
-			SpawnEnemies();
-			m_enemy_spawn_countdown = sf::seconds(0.f);
-		}
+		//m_enemy_spawn_countdown += dt;
+		//if (m_enemy_spawn_countdown >= sf::seconds(5.0f))
+		//{
+		//	SpawnEnemies();
+		//	m_enemy_spawn_countdown = sf::seconds(0.f);
+		//}
 
-		//Spawn a flying enemy every 3 seconds and reset the spawn timer
-		m_flying_enemy_spawn_countdown += dt;
-		if (m_flying_enemy_spawn_countdown >= sf::seconds(3.0f))
-		{
-			SpawnFlyingEnemies();
-			m_flying_enemy_spawn_countdown = sf::seconds(0.f);
-		}
+		////Spawn a flying enemy every 3 seconds and reset the spawn timer
+		//m_flying_enemy_spawn_countdown += dt;
+		//if (m_flying_enemy_spawn_countdown >= sf::seconds(3.0f))
+		//{
+		//	SpawnFlyingEnemies();
+		//	m_flying_enemy_spawn_countdown = sf::seconds(0.f);
+		//}
 
-		//Spawn a pickup every 1.5 seconds and reset the spawn timer
-		m_pickup_spawn_countdown += dt;
-		if (m_pickup_spawn_countdown >= sf::seconds(1.5f))
-		{
-			SpawnPickups();
-			m_pickup_spawn_countdown = sf::seconds(0.f);
-		}
+		////Spawn a pickup every 1.5 seconds and reset the spawn timer
+		//m_pickup_spawn_countdown += dt;
+		//if (m_pickup_spawn_countdown >= sf::seconds(1.5f))
+		//{
+		//	SpawnPickups();
+		//	m_pickup_spawn_countdown = sf::seconds(0.f);
+		//}
 
 		for (Character* a : m_player_characters)
 		{
