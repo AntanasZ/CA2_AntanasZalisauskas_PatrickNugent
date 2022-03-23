@@ -83,28 +83,28 @@ void World::Update(sf::Time dt)
 		m_player_characters.erase(first_to_remove, m_player_characters.end());
 		m_scenegraph.RemoveWrecks();
 
-		m_enemy_spawn_countdown += dt;
-		if (m_enemy_spawn_countdown >= sf::seconds(5.0f))
-		{
-			SpawnEnemies();
-			m_enemy_spawn_countdown = sf::seconds(0.f);
-		}
+		//m_enemy_spawn_countdown += dt;
+		//if (m_enemy_spawn_countdown >= sf::seconds(5.0f))
+		//{
+		//	SpawnEnemies();
+		//	m_enemy_spawn_countdown = sf::seconds(0.f);
+		//}
 
-		//Spawn a flying enemy every 3 seconds and reset the spawn timer
-		m_flying_enemy_spawn_countdown += dt;
-		if (m_flying_enemy_spawn_countdown >= sf::seconds(3.0f))
-		{
-			SpawnFlyingEnemies();
-			m_flying_enemy_spawn_countdown = sf::seconds(0.f);
-		}
+		////Spawn a flying enemy every 3 seconds and reset the spawn timer
+		//m_flying_enemy_spawn_countdown += dt;
+		//if (m_flying_enemy_spawn_countdown >= sf::seconds(3.0f))
+		//{
+		//	SpawnFlyingEnemies();
+		//	m_flying_enemy_spawn_countdown = sf::seconds(0.f);
+		//}
 
-		//Spawn a pickup every 1.5 seconds and reset the spawn timer
-		m_pickup_spawn_countdown += dt;
-		if (m_pickup_spawn_countdown >= sf::seconds(1.5f))
-		{
-			SpawnPickups();
-			m_pickup_spawn_countdown = sf::seconds(0.f);
-		}
+		////Spawn a pickup every 1.5 seconds and reset the spawn timer
+		//m_pickup_spawn_countdown += dt;
+		//if (m_pickup_spawn_countdown >= sf::seconds(1.5f))
+		//{
+		//	SpawnPickups();
+		//	m_pickup_spawn_countdown = sf::seconds(0.f);
+		//}
 
 		for (Character* a : m_player_characters)
 		{
@@ -199,7 +199,7 @@ void World::RemoveCharacter(int identifier)
 	}
 }
 
-Character* World::AddCharacter(int identifier, CharacterType character)
+Character* World::AddCharacter(int identifier)
 {
 	/*CharacterType player_character;
 	if(m_player_characters.empty())
@@ -210,29 +210,8 @@ Character* World::AddCharacter(int identifier, CharacterType character)
 	{
 		player_character = CharacterType::kScooby;
 	}*/
-
-	/*if (character == CharacterType::kScooby)
-	{
-		std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
-
-	}
-	else if (character == CharacterType::kShaggy)
-	{
-		std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
-	else if (character == CharacterType::kFred)
-	{
-
-	}
-	else if (character == CharacterType::kVelma)
-	{
-
-	}
-	else
-	{
-
-	}*/
 	
-	std::unique_ptr<Character> player(new Character(character, m_textures, m_fonts));
+	std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
 	player->setPosition(m_camera.getCenter());
 	player->SetIdentifier(identifier);
 	m_player_characters.emplace_back(player.get());
