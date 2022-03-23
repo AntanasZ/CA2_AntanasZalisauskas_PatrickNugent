@@ -9,6 +9,7 @@
 #include "PauseState.hpp"
 #include "SettingsState.hpp"
 #include "MultiplayerGameState.hpp"
+#include "CharacterSelectionState.hpp"
 
 const sf::Time Application::kTimePerFrame = sf::seconds(1.f / 60.f);
 
@@ -109,6 +110,7 @@ void Application::RegisterStates()
 	m_stack.RegisterState<GameState>(StateID::kGame);
 	m_stack.RegisterState<MultiplayerGameState>(StateID::kHostGame, true);
 	m_stack.RegisterState<MultiplayerGameState>(StateID::kJoinGame, false);
+	m_stack.RegisterState<CharacterSelectionState>(StateID::kCharacterSelection);
 	m_stack.RegisterState<PauseState>(StateID::kPause);
 	m_stack.RegisterState<PauseState>(StateID::kNetworkPause, true);
 	m_stack.RegisterState<SettingsState>(StateID::kSettings);
