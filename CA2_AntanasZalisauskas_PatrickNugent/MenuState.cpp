@@ -20,7 +20,8 @@ MenuState::MenuState(StateStack& stack, Context context)
 	play_button->SetText("Play");
 	play_button->SetCallback([this]()
 	{
-		RequestStackPush(StateID::kCharacterSelection);
+		RequestStackPop();
+		RequestStackPush(StateID::kGame);
 	});
 
 	auto host_play_button = std::make_shared<GUI::Button>(context);
