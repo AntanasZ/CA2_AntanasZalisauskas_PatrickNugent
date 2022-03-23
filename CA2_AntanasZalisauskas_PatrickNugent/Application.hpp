@@ -35,6 +35,8 @@ private:
 	KeyBinding m_key_binding_1;
 	KeyBinding m_key_binding_2;
 
+	CharacterType m_character_selection;
+
 	StateStack m_stack;
 
 	sf::Text m_statistics_text;

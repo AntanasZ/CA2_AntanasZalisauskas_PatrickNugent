@@ -9,6 +9,7 @@
 
 #include "MusicPlayer.hpp"
 #include "SoundPlayer.hpp"
+#include "CharacterType.hpp"
 
 namespace sf
 {
@@ -26,7 +27,7 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2);
+		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2, CharacterType& characterSelection);
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
@@ -34,6 +35,7 @@ public:
 		SoundPlayer* sounds;
 		KeyBinding* keys1;
 		KeyBinding* keys2;
+		CharacterType* characterSelection;
 	};
 
 public:

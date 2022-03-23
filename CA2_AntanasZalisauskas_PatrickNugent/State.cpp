@@ -2,7 +2,7 @@
 
 #include "StateStack.hpp"
 
-State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2)
+State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2, CharacterType& characterSelection)
 : window(&window)
 , textures(&textures)
 , fonts(&fonts)
@@ -10,6 +10,7 @@ State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontH
 , sounds(&sounds)
 , keys1(&keys1)
 , keys2(&keys2)
+, characterSelection(&characterSelection)
 {
 }
 

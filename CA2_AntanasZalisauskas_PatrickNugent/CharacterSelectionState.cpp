@@ -18,11 +18,9 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 	auto scooby_button = std::make_shared<GUI::Button>(context);
 	scooby_button->setPosition(400, 225);
 	scooby_button->SetText("Scooby");
-	scooby_button->SetCallback([this]()
+	scooby_button->SetCallback([this, context]()
 		{
-			//CharacterType* player = GetContext().playerCharacter;
-			//m_world.m_player_character = CharacterType::kShaggy;
-			m_world.AddCharacter(1, CharacterType::kScooby);
+			*context.characterSelection = CharacterType::kScooby;
 			RequestStackPop();
 			RequestStackPush(StateID::kGame);
 		});
@@ -30,9 +28,9 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 	auto shaggy_button = std::make_shared<GUI::Button>(context);
 	shaggy_button->setPosition(400, 300);
 	shaggy_button->SetText("Shaggy");
-	shaggy_button->SetCallback([this]()
+	shaggy_button->SetCallback([this, context]()
 		{
-			m_world.AddCharacter(1, CharacterType::kShaggy);
+			*context.characterSelection = CharacterType::kShaggy;
 			RequestStackPop();
 			RequestStackPush(StateID::kGame);
 		});
@@ -40,9 +38,9 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 	auto fred_button = std::make_shared<GUI::Button>(context);
 	fred_button->setPosition(400, 375);
 	fred_button->SetText("Fred");
-	fred_button->SetCallback([this]()
+	fred_button->SetCallback([this, context]()
 		{
-			m_world.AddCharacter(1, CharacterType::kFred);
+			*context.characterSelection = CharacterType::kFred;
 			RequestStackPop();
 			RequestStackPush(StateID::kGame);
 		});
@@ -50,9 +48,9 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 	auto velma_button = std::make_shared<GUI::Button>(context);
 	velma_button->setPosition(400, 450);
 	velma_button->SetText("Velma");
-	velma_button->SetCallback([this]()
+	velma_button->SetCallback([this, context]()
 		{
-			m_world.AddCharacter(1, CharacterType::kVelma);
+			*context.characterSelection = CharacterType::kVelma;
 			RequestStackPop();
 			RequestStackPush(StateID::kGame);
 		});
@@ -60,9 +58,9 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 	auto daphne_button = std::make_shared<GUI::Button>(context);
 	daphne_button->setPosition(400, 525);
 	daphne_button->SetText("Daphne");
-	daphne_button->SetCallback([this]()
+	daphne_button->SetCallback([this, context]()
 		{
-			m_world.AddCharacter(1, CharacterType::kDaphne);
+			*context.characterSelection = CharacterType::kDaphne;
 			RequestStackPop();
 			RequestStackPush(StateID::kGame);
 		});
