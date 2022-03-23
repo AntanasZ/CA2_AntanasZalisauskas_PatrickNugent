@@ -2,7 +2,12 @@
 
 #include "StateStack.hpp"
 
-State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2)
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+///	Added fields for storing character and mode selection
+/// </summary>
+State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2, CharacterType& characterSelection, StateID& modeSelection)
 : window(&window)
 , textures(&textures)
 , fonts(&fonts)
@@ -10,6 +15,8 @@ State::Context::Context(sf::RenderWindow& window, TextureHolder& textures, FontH
 , sounds(&sounds)
 , keys1(&keys1)
 , keys2(&keys2)
+, characterSelection(&characterSelection)
+, modeSelection(&modeSelection)
 {
 }
 

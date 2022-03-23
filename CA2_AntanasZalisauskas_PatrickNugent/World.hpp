@@ -44,7 +44,7 @@ public:
 	CommandQueue& GetCommandQueue();
 
 	//Aircraft* AddAircraft(int identifier);
-	Character* AddCharacter(int identifier);
+	Character* AddCharacter(int identifier, CharacterType type);
 	//void RemoveAircraft(int identifier);
 	void RemoveCharacter(int identifier);
 	void SetCurrentBattleFieldPosition(float line_y);

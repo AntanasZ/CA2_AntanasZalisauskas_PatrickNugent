@@ -9,6 +9,7 @@
 
 #include "MusicPlayer.hpp"
 #include "SoundPlayer.hpp"
+#include "CharacterType.hpp"
 
 namespace sf
 {
@@ -19,6 +20,11 @@ class StateStack;
 class Player;
 class KeyBinding;
 
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+///	Added fields for storing character and mode selection
+/// </summary>
 class State
 {
 public:
@@ -26,7 +32,7 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2);
+		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2, CharacterType& characterSelection, StateID& modeSelection);
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
@@ -34,6 +40,8 @@ public:
 		SoundPlayer* sounds;
 		KeyBinding* keys1;
 		KeyBinding* keys2;
+		CharacterType* characterSelection;
+		StateID* modeSelection;
 	};
 
 public:

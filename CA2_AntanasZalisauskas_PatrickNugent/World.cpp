@@ -199,7 +199,7 @@ void World::RemoveCharacter(int identifier)
 	}
 }
 
-Character* World::AddCharacter(int identifier)
+Character* World::AddCharacter(int identifier, CharacterType type)
 {
 	/*CharacterType player_character;
 	if(m_player_characters.empty())
@@ -211,7 +211,7 @@ Character* World::AddCharacter(int identifier)
 		player_character = CharacterType::kScooby;
 	}*/
 	
-	std::unique_ptr<Character> player(new Character(CharacterType::kShaggy, m_textures, m_fonts));
+	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts));
 	player->setPosition(m_camera.getCenter());
 	player->SetIdentifier(identifier);
 	m_player_characters.emplace_back(player.get());
