@@ -36,6 +36,7 @@ private:
 	KeyBinding m_key_binding_2;
 
 	CharacterType m_character_selection;
+	StateID m_mode_selection;
 
 	StateStack m_stack;
 

@@ -20,6 +20,11 @@ class StateStack;
 class Player;
 class KeyBinding;
 
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+///	Added fields for storing character and mode selection
+/// </summary>
 class State
 {
 public:
@@ -27,7 +32,7 @@ public:
 
 	struct Context
 	{
-		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2, CharacterType& characterSelection);
+		Context(sf::RenderWindow& window, TextureHolder& textures, FontHolder& fonts, MusicPlayer& music, SoundPlayer& sounds, KeyBinding& keys1, KeyBinding& keys2, CharacterType& characterSelection, StateID& modeSelection);
 		sf::RenderWindow* window;
 		TextureHolder* textures;
 		FontHolder* fonts;
@@ -36,6 +41,7 @@ public:
 		KeyBinding* keys1;
 		KeyBinding* keys2;
 		CharacterType* characterSelection;
+		StateID* modeSelection;
 	};
 
 public:

@@ -7,7 +7,6 @@
 #include "Button.hpp"
 
 
-
 MenuState::MenuState(StateStack& stack, Context context)
 : State(stack, context)
 {
@@ -18,27 +17,30 @@ MenuState::MenuState(StateStack& stack, Context context)
 	auto play_button = std::make_shared<GUI::Button>(context);
 	play_button->setPosition(400, 225);
 	play_button->SetText("Play");
-	play_button->SetCallback([this]()
+	play_button->SetCallback([this, context]()
 	{
+		*context.modeSelection = StateID::kGame;
 		RequestStackPush(StateID::kCharacterSelection);
 	});
 
 	auto host_play_button = std::make_shared<GUI::Button>(context);
 	host_play_button->setPosition(400, 300);
 	host_play_button->SetText("Host");
-	host_play_button->SetCallback([this]()
+	host_play_button->SetCallback([this, context]()
 	{
+		*context.modeSelection = StateID::kHostGame;
 		RequestStackPop();
-		RequestStackPush(StateID::kHostGame);
+		RequestStackPush(StateID::kCharacterSelection);
 	});
 
 	auto join_play_button = std::make_shared<GUI::Button>(context);
 	join_play_button->setPosition(400, 375);
 	join_play_button->SetText("Join");
-	join_play_button->SetCallback([this]()
+	join_play_button->SetCallback([this, context]()
 	{
+		*context.modeSelection = StateID::kJoinGame;
 		RequestStackPop();
-		RequestStackPush(StateID::kJoinGame);
+		RequestStackPush(StateID::kCharacterSelection);
 	});
 
 	auto settings_button = std::make_shared<GUI::Button>(context);

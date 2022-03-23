@@ -7,13 +7,18 @@
 #include "Utility.hpp"
 #include "Button.hpp"
 
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	A menu that allows the player to choose a character and store their selection
+/// </summary>
 CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context context)
 	: State(stack, context)
 , m_world(*context.window, *context.fonts, *context.sounds, false)
 {
-	//sf::Texture& texture = context.textures->Get(Textures::kTitleScreen);
+	sf::Texture& texture = context.textures->Get(Textures::kTitleScreen);
 
-	//m_background_sprite.setTexture(texture);
+	m_background_sprite.setTexture(texture);
 
 	auto scooby_button = std::make_shared<GUI::Button>(context);
 	scooby_button->setPosition(400, 225);
@@ -22,7 +27,7 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 		{
 			*context.characterSelection = CharacterType::kScooby;
 			RequestStackPop();
-			RequestStackPush(StateID::kGame);
+			RequestStackPush(*context.modeSelection);
 		});
 
 	auto shaggy_button = std::make_shared<GUI::Button>(context);
@@ -32,7 +37,7 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 		{
 			*context.characterSelection = CharacterType::kShaggy;
 			RequestStackPop();
-			RequestStackPush(StateID::kGame);
+			RequestStackPush(*context.modeSelection);
 		});
 
 	auto fred_button = std::make_shared<GUI::Button>(context);
@@ -42,7 +47,7 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 		{
 			*context.characterSelection = CharacterType::kFred;
 			RequestStackPop();
-			RequestStackPush(StateID::kGame);
+			RequestStackPush(*context.modeSelection);
 		});
 
 	auto velma_button = std::make_shared<GUI::Button>(context);
@@ -52,7 +57,7 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 		{
 			*context.characterSelection = CharacterType::kVelma;
 			RequestStackPop();
-			RequestStackPush(StateID::kGame);
+			RequestStackPush(*context.modeSelection);
 		});
 
 	auto daphne_button = std::make_shared<GUI::Button>(context);
@@ -62,7 +67,7 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 		{
 			*context.characterSelection = CharacterType::kDaphne;
 			RequestStackPop();
-			RequestStackPush(StateID::kGame);
+			RequestStackPush(*context.modeSelection);
 		});
 
 	auto exit_button = std::make_shared<GUI::Button>(context);
