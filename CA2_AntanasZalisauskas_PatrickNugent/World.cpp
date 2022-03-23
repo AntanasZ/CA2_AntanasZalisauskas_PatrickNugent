@@ -199,7 +199,7 @@ void World::RemoveCharacter(int identifier)
 	}
 }
 
-Character* World::AddCharacter(int identifier)
+Character* World::AddCharacter(int identifier, CharacterType type)
 {
 	/*CharacterType player_character;
 	if(m_player_characters.empty())

@@ -22,6 +22,9 @@ enum class CharacterType
 {
 	kShaggy,
 	kScooby,
+	kFred,
+	kVelma,
+	kDaphne,
 	kCreeperLeft,
 	kCreeperRight,
 	kMichaelLeft,
