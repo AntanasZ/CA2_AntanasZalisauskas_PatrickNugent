@@ -9,6 +9,7 @@
 
 #include "MusicPlayer.hpp"
 #include "SoundPlayer.hpp"
+#include "CharacterType.hpp"
 
 namespace sf
 {
