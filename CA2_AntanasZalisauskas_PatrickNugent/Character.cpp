@@ -38,6 +38,14 @@ Textures ToTextureID(CharacterType type)
 	{
 	case CharacterType::kShaggy:
 		return Textures::kShaggy;
+	case CharacterType::kScooby:
+		return Textures::kScooby;
+	case CharacterType::kFred:
+		return Textures::kFred;
+	case CharacterType::kVelma:
+		return Textures::kVelma;
+	case CharacterType::kDaphne:
+		return Textures::kDaphne;
 	}
 	return Textures::kShaggy;
 }
@@ -70,7 +78,8 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 {
 	Utility::CentreOrigin(m_sprite);
 
-	if(type == CharacterType::kShaggy || type == CharacterType::kScooby)
+	if(type == CharacterType::kShaggy || type == CharacterType::kScooby || type == CharacterType::kFred
+		|| type == CharacterType::kVelma || type == CharacterType::kDaphne)
 	{
 		std::unique_ptr<TextNode> scoreDisplay(new TextNode(fonts, ""));
 
@@ -106,6 +115,46 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 			Utility::CentreOrigin(m_stunned);
 			Utility::CentreOrigin(m_running);
 		}
+		else if (type == CharacterType::kFred)
+		{
+			scoreDisplay->SetColor(sf::Color::Green);
+			m_stunned.SetTexture(textures.Get(Textures::kFredStunned));
+			m_stunned.SetFrameSize(sf::Vector2i(27, 67));
+
+			m_running.SetNumFrames(12);
+			m_running.SetTexture(textures.Get(Textures::kFredRunning));
+			m_running.SetFrameSize(sf::Vector2i(49, 67));
+
+			Utility::CentreOrigin(m_stunned);
+			Utility::CentreOrigin(m_running);
+		}
+		else if (type == CharacterType::kVelma)
+		{
+			scoreDisplay->SetColor(sf::Color::Green);
+			m_stunned.SetTexture(textures.Get(Textures::kVelmaStunned));
+			m_stunned.SetFrameSize(sf::Vector2i(38, 59));
+
+			m_running.SetNumFrames(12);
+			m_running.SetTexture(textures.Get(Textures::kVelmaRunning));
+			m_running.SetFrameSize(sf::Vector2i(36, 59));
+
+			Utility::CentreOrigin(m_stunned);
+			Utility::CentreOrigin(m_running);
+		}
+
+		else if (type == CharacterType::kDaphne)
+		{
+			scoreDisplay->SetColor(sf::Color::Green);
+			m_stunned.SetTexture(textures.Get(Textures::kDaphneStunned));
+			m_stunned.SetFrameSize(sf::Vector2i(25, 59));
+
+			m_running.SetNumFrames(12);
+			m_running.SetTexture(textures.Get(Textures::kDaphneRunning));
+			m_running.SetFrameSize(sf::Vector2i(45, 59));
+
+			Utility::CentreOrigin(m_stunned);
+			Utility::CentreOrigin(m_running);
+		}
 
 		scoreDisplay->setPosition(0, -55);
 		m_score_display = scoreDisplay.get();
@@ -123,10 +172,10 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 unsigned Character::GetCategory() const
 {
 	if (isPlayer())
-		if(m_type == CharacterType::kShaggy)
-			return static_cast<int>(Category::kPlayerCharacter1);
-		else
-			return static_cast<int>(Category::kPlayerCharacter2);
+		//if(m_type == CharacterType::kShaggy)
+		return static_cast<int>(Category::kPlayerCharacter1);
+		//else
+			//return static_cast<int>(Category::kPlayerCharacter2);
 	else
 		return static_cast<int>(Category::kEnemyCharacter);
 }
@@ -213,7 +262,8 @@ void Character::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 
 bool Character::isPlayer() const
 {
-	if (m_type == CharacterType::kShaggy || m_type == CharacterType::kScooby)
+	if (m_type == CharacterType::kShaggy || m_type == CharacterType::kScooby || 
+		m_type == CharacterType::kFred || m_type == CharacterType::kVelma || m_type == CharacterType::kDaphne)
 		return true;
 	else
 		return false;

@@ -125,7 +125,7 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
 	// Set initial action bindings
 	InitialiseActions();
 
-	// Assign all categories to player's aircraft
+	// Assign all categories to player's character
 	for(auto & pair : m_action_binding)
 	{
 		pair.second.category = Category::kPlayerCharacter1;

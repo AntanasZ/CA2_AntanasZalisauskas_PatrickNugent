@@ -22,20 +22,40 @@ std::vector<CharacterData> InitializeCharacterData()
 {
 	std::vector<CharacterData> data(static_cast<int>(CharacterType::kCharacterCount));
 
-	//Shaggy - Player 1
+	//Shaggy - playable character
 	data[static_cast<int>(CharacterType::kShaggy)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kShaggy)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kShaggy)].m_texture = Textures::kShaggy;
 	data[static_cast<int>(CharacterType::kShaggy)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kShaggy)].m_has_run_animation = true;
 
-
-	//Scooby - Player 2
+	//Scooby - playable character
 	data[static_cast<int>(CharacterType::kScooby)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kScooby)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kScooby)].m_texture = Textures::kScooby;
 	data[static_cast<int>(CharacterType::kScooby)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kScooby)].m_has_run_animation = true;
+
+	//Fred - playable character
+	data[static_cast<int>(CharacterType::kFred)].m_hitpoints = 100;
+	data[static_cast<int>(CharacterType::kFred)].m_speed = 200.f;
+	data[static_cast<int>(CharacterType::kFred)].m_texture = Textures::kFred;
+	data[static_cast<int>(CharacterType::kFred)].m_jump_height = 200.f;
+	data[static_cast<int>(CharacterType::kFred)].m_has_run_animation = true;
+
+	//Velma - playable character
+	data[static_cast<int>(CharacterType::kVelma)].m_hitpoints = 100;
+	data[static_cast<int>(CharacterType::kVelma)].m_speed = 200.f;
+	data[static_cast<int>(CharacterType::kVelma)].m_texture = Textures::kVelma;
+	data[static_cast<int>(CharacterType::kVelma)].m_jump_height = 200.f;
+	data[static_cast<int>(CharacterType::kVelma)].m_has_run_animation = true;
+
+	//Daphne - playable character
+	data[static_cast<int>(CharacterType::kDaphne)].m_hitpoints = 100;
+	data[static_cast<int>(CharacterType::kDaphne)].m_speed = 200.f;
+	data[static_cast<int>(CharacterType::kDaphne)].m_texture = Textures::kDaphne;
+	data[static_cast<int>(CharacterType::kDaphne)].m_jump_height = 200.f;
+	data[static_cast<int>(CharacterType::kDaphne)].m_has_run_animation = true;
 
 	//Creeper
 	data[static_cast<int>(CharacterType::kCreeperLeft)].m_hitpoints = 100;
