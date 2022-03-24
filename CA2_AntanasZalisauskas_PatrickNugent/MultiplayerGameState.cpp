@@ -362,7 +362,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		packet >> character_identifier >> character_position.x >> character_position.y;
-		Character* character = m_world.AddCharacter(character_identifier, CharacterType::kShaggy);
+		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection); //CharacterType::kShaggy);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
@@ -376,7 +376,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Vector2f character_position;
 		packet >> character_identifier >> character_position.x >> character_position.y;
 
-		Character* character = m_world.AddCharacter(character_identifier, CharacterType::kShaggy);
+		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 	}
@@ -409,7 +409,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			sf::Vector2f character_position;
 			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints;// >> missile_ammo;
 
-			Character* character = m_world.AddCharacter(character_identifier, CharacterType::kShaggy);
+			Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection);
 			character->setPosition(character_position);
 			character->SetHitpoints(hitpoints);
 			//aircraft->SetMissileAmmo(missile_ammo);
@@ -424,7 +424,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		packet >> character_identifier;
 
-		m_world.AddCharacter(character_identifier, CharacterType::kShaggy);
+		m_world.AddCharacter(character_identifier, CharacterType::kScooby);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys2));
 		m_local_player_identifiers.emplace_back(character_identifier);
 	}
