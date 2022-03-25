@@ -51,6 +51,9 @@ public:
 	void SetWorldHeight(float height);
 
 	void AddEnemy(CharacterType type, bool isFlying, float rel_x, float rel_y);
+	void SpawnEnemies();
+	void SpawnFlyingEnemies();
+	void SpawnPickups();
 	//void SortEnemies();
 
 	bool HasAlivePlayer() const;
@@ -73,9 +76,8 @@ private:
 	void AdaptPlayerVelocity(sf::Time dt);
 
 	
-	void SpawnEnemies();
-	void SpawnFlyingEnemies();
-	void SpawnPickups();
+	
+	
 	void AddEnemies();
 	void AddPickups();
 	//void GuideMissiles();

@@ -464,13 +464,20 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	//New Enemy to be created
 	case Server::PacketType::SpawnEnemy:
 	{
-		float height;
+		m_world.SpawnEnemies();
+		/*float height;
 		sf::Int32 type;
 		float relative_x;
-		packet >> type >> height >> relative_x;
+		packet >> type >> height >> relative_x;*/
 
-		m_world.AddEnemy(static_cast<CharacterType>(type), false, relative_x, height);
+		//m_world.AddEnemy(static_cast<CharacterType>(type), false, relative_x, height);
 		//m_world.SortEnemies();
+	}
+	break;
+
+	case Server::PacketType::SpawnFlyingEnemy:
+	{
+		m_world.SpawnFlyingEnemies();
 	}
 	break;
 
@@ -484,10 +491,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	//Pickup created
 	case Server::PacketType::SpawnPickup:
 	{
-		sf::Int32 type;
+		m_world.SpawnPickups();
+		/*sf::Int32 type;
 		sf::Vector2f position;
 		packet >> type >> position.x >> position.y;
-		std::cout << "Spawning pickup type " << type << std::endl;
+		std::cout << "Spawning pickup type " << type << std::endl;*/
 		//m_world.AddPickup(position, static_cast<PickupType>(type));
 	}
 	break;

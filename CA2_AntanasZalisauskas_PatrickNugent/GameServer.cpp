@@ -31,6 +31,9 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_waiting_thread_end(false)
 	, m_last_spawn_time(sf::Time::Zero)
 	, m_time_for_next_spawn(sf::seconds(5.f))
+	, m_enemy_spawn_countdown()
+	, m_flying_enemy_spawn_countdown()
+	, m_pickup_spawn_countdown()
 {
 	m_listener_socket.setBlocking(false);
 	m_peers[0].reset(new RemotePeer());
@@ -150,7 +153,7 @@ void GameServer::ExecutionThread()
 		//Fixed tick step
 		while(tick_time >= tick_rate)
 		{
-			Tick();
+			Tick(tick_time);
 			tick_time -= tick_rate;
 		}
 
@@ -160,9 +163,43 @@ void GameServer::ExecutionThread()
 	}
 }
 
-void GameServer::Tick()
+void GameServer::Tick(sf::Time tick_time)
 {
 	UpdateClientState();
+
+	m_enemy_spawn_countdown += tick_time;
+	m_flying_enemy_spawn_countdown += tick_time;
+	m_pickup_spawn_countdown += tick_time;
+
+	if(m_enemy_spawn_countdown >= sf::seconds(10.f))
+	{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy);
+
+		SendToAll(packet);
+
+		m_enemy_spawn_countdown = sf::Time::Zero;
+	}
+
+	if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
+	{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy);
+
+		SendToAll(packet);
+
+		m_flying_enemy_spawn_countdown = sf::Time::Zero;
+	}
+
+	if (m_pickup_spawn_countdown >= sf::seconds(5.f))
+	{
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup);
+
+		SendToAll(packet);
+
+		m_pickup_spawn_countdown = sf::Time::Zero;
+	}
 
 	//Check if the game is over = all planes position.y < offset
 	//bool all_aircraft_done = true;

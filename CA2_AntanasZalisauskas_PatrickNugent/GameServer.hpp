@@ -51,7 +51,7 @@ private:
 private:
 	void SetListening(bool enable);
 	void ExecutionThread();
-	void Tick();
+	void Tick(sf::Time tick_time);
 	sf::Time Now() const;
 
 	void HandleIncomingPackets();
@@ -88,5 +88,9 @@ private:
 
 	sf::Time m_last_spawn_time;
 	sf::Time m_time_for_next_spawn;
+
+	sf::Time m_enemy_spawn_countdown;
+	sf::Time m_flying_enemy_spawn_countdown;
+	sf::Time m_pickup_spawn_countdown;
 };
 
