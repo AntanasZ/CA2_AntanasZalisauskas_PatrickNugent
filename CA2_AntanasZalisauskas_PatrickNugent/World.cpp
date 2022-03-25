@@ -37,7 +37,7 @@ World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sou
 	, m_network_node(nullptr)
 	, m_finish_sprite(nullptr)
 	, m_gravity(981.f)
-	, m_game_countdown(sf::seconds(10))
+	, m_game_countdown(sf::seconds(300))
 {
 	m_scene_texture.create(m_target.getSize().x, m_target.getSize().y);
 
@@ -554,10 +554,10 @@ void World::AddPickup(PickupType type, int value, float relX, float relY)
 
 void World::AddEnemies()
 {
-	if(m_networked_world)
+	/*if(m_networked_world)
 	{
 		return;
-	}
+	}*/
 
 	//Add all enemies - both the left and right side versions
 	AddEnemy(CharacterType::kCreeperLeft, false, -500.f, -329.5f);
