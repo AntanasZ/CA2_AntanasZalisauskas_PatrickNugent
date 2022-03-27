@@ -34,6 +34,8 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
+	, m_game_countdown(sf::seconds(15))
+	, m_game_over(false)
 {
 	m_listener_socket.setBlocking(false);
 	m_peers[0].reset(new RemotePeer());
@@ -170,6 +172,25 @@ void GameServer::Tick(sf::Time tick_time)
 	m_enemy_spawn_countdown += tick_time;
 	m_flying_enemy_spawn_countdown += tick_time;
 	m_pickup_spawn_countdown += tick_time;
+
+	if(m_game_countdown >= sf::Time::Zero && !m_game_over)
+	{
+		m_game_countdown -= tick_time;
+
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::PacketType::UpdateGameTimeLeft) << m_game_countdown.asSeconds();
+
+		SendToAll(packet);
+	}
+	else
+	{
+		m_game_over = true;
+
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::PacketType::FinishGame);
+
+		SendToAll(packet);
+	}
 
 	if(m_enemy_spawn_countdown >= sf::seconds(10.f))
 	{
