@@ -20,7 +20,7 @@ struct CharacterMover
 
 	void operator()(Character& character, sf::Time) const
 	{
-		if (!character.GetStunned())
+		if (character.GetIdentifier() == character_id && !character.GetStunned())
 		{
 			character.Accelerate(velocity * character.GetMaxSpeed());
 		}
@@ -49,7 +49,7 @@ struct CharacterJump
 
 	void operator()(Character& character, sf::Time dt) const
 	{
-		if (character.GetCanJump() && !character.GetStunned()) //if player can jump, jump
+		if (character.GetIdentifier() == character_id && character.GetCanJump() && !character.GetStunned()) //if player can jump, jump
 		{
 			character.ToggleCanJump(false); //set can jump to false
 
