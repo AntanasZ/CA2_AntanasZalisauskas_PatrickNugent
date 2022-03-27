@@ -68,6 +68,7 @@ public:
 	bool PollGameAction(GameActions::Action& out);
 	bool IsGameOver() const;
 
+	void DisplayRemainingGameTime(float remaining_time);
 
 private:
 	void LoadTextures();
@@ -83,7 +84,6 @@ private:
 	//void GuideMissiles();
 	void HandleCollisions();
 	void DestroyEntitiesOutsideView();
-	void DisplayRemainingGameTime();
 	void UpdateSounds();
 
 private:

@@ -488,6 +488,20 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	}
 	break;
 
+	case Server::PacketType::UpdateGameTimeLeft:
+	{
+		float remaining_time;
+		packet >> remaining_time;
+		
+		m_world.DisplayRemainingGameTime(remaining_time);
+	}
+	break;
+
+	case Server::PacketType::FinishGame:
+	{
+		RequestStackPush(StateID::kGameOver);
+	}
+
 	//Pickup created
 	case Server::PacketType::SpawnPickup:
 	{

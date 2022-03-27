@@ -55,11 +55,11 @@ void World::Update(sf::Time dt)
 {
 	//Scroll the world
 	//m_camera.move(0, m_scrollspeed * dt.asSeconds()*m_scrollspeed_compensation);
-	if (m_game_countdown > sf::Time::Zero)
-	{
+	//if (m_game_countdown > sf::Time::Zero)
+	//{
 		//Decrease and Display remaining game time
-		m_game_countdown -= dt;
-		DisplayRemainingGameTime();
+		//m_game_countdown -= dt;
+		//DisplayRemainingGameTime();
 
 		for (Character* a : m_player_characters)
 		{
@@ -130,34 +130,34 @@ void World::Update(sf::Time dt)
 		AdaptPlayerPosition();
 
 		UpdateSounds();
-	}
-	else
-	{
-		//End the game and wait 5 seconds while displaying the winning score
-		m_game_countdown = sf::Time::Zero;
-		m_gameover_countdown += dt;
+	//}
+	//else
+	//{
+	//	//End the game and wait 5 seconds while displaying the winning score
+	//	m_game_countdown = sf::Time::Zero;
+	//	m_gameover_countdown += dt;
 
-		if (m_gameover_countdown >= sf::seconds(5.0f))
-		{
-			m_game_over = true;
-		}
-		else
-		{
-			//TODO - Rework because this causes game crash with how 2 players work now
-			/*if (m_player_characters[0]->GetScore() > m_player_characters[1]->GetScore())
-			{
-				m_game_timer_display->SetString("Player 1 wins with " + std::to_string(m_player_characters[0]->GetScore()) + " points!");
-			}
-			else if (m_player_characters[1]->GetScore() > m_player_characters[0]->GetScore())
-			{
-				m_game_timer_display->SetString("Player 2 wins with " + std::to_string(m_player_characters[1]->GetScore()) + " points!");
-			}
-			else
-			{
-				m_game_timer_display->SetString("It's a draw, both players have " + std::to_string(m_player_characters[1]->GetScore()) + " points");
-			}*/
-		}
-	}
+	//	if (m_gameover_countdown >= sf::seconds(5.0f))
+	//	{
+	//		m_game_over = true;
+	//	}
+	//	else
+	//	{
+	//		//TODO - Rework because this causes game crash with how 2 players work now
+	//		/*if (m_player_characters[0]->GetScore() > m_player_characters[1]->GetScore())
+	//		{
+	//			m_game_timer_display->SetString("Player 1 wins with " + std::to_string(m_player_characters[0]->GetScore()) + " points!");
+	//		}
+	//		else if (m_player_characters[1]->GetScore() > m_player_characters[0]->GetScore())
+	//		{
+	//			m_game_timer_display->SetString("Player 2 wins with " + std::to_string(m_player_characters[1]->GetScore()) + " points!");
+	//		}
+	//		else
+	//		{
+	//			m_game_timer_display->SetString("It's a draw, both players have " + std::to_string(m_player_characters[1]->GetScore()) + " points");
+	//		}*/
+	//	}
+	//}
 }
 
 void World::Draw()
@@ -829,11 +829,11 @@ void World::DestroyEntitiesOutsideView()
 ///
 ///	Displays remaining time in the game as minutes and seconds
 /// </summary>
-void World::DisplayRemainingGameTime()
+void World::DisplayRemainingGameTime(float remaining_time)
 {
-	int minutes = (int)(m_game_countdown.asSeconds() / 60);
-	int seconds = (int)(m_game_countdown.asSeconds()) % 60;
-
+	int minutes = (int)(remaining_time / 60);
+	int seconds = (int)(remaining_time) % 60;
+	
 	m_game_timer_display->SetString(std::to_string(minutes) + ":" + std::to_string(seconds));
 }
 
