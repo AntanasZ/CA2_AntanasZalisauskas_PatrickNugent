@@ -34,7 +34,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
-	, m_game_countdown(sf::seconds(15))
+	, m_game_countdown(sf::seconds(30))
 	, m_game_over(false)
 {
 	m_listener_socket.setBlocking(false);
@@ -134,6 +134,8 @@ void GameServer::ExecutionThread()
 	sf::Time tick_time = sf::Time::Zero;
 	sf::Clock frame_clock, tick_clock;
 
+	srand(time(NULL));
+
 	while(!m_waiting_thread_end)
 	{
 		HandleIncomingConnections();
@@ -195,7 +197,9 @@ void GameServer::Tick(sf::Time tick_time)
 	if(m_enemy_spawn_countdown >= sf::seconds(10.f))
 	{
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy);
+		sf::Int8 randomEnemy;
+		randomEnemy = rand() % 12;
+		packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
 
 		SendToAll(packet);
 
@@ -205,7 +209,9 @@ void GameServer::Tick(sf::Time tick_time)
 	if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
 	{
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy);
+		sf::Int8 randomEnemy;
+		randomEnemy = rand() % 12;
+		packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
 
 		SendToAll(packet);
 
@@ -215,7 +221,11 @@ void GameServer::Tick(sf::Time tick_time)
 	if (m_pickup_spawn_countdown >= sf::seconds(5.f))
 	{
 		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup);
+		sf::Int8 randomPickup;
+		sf::Int16 randomPosition;
+		randomPickup = rand() % 9;
+		randomPosition = (rand() % 934) + 90;
+		packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
 
 		SendToAll(packet);
 

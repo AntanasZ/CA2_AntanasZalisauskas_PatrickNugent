@@ -442,30 +442,10 @@ sf::FloatRect World::GetBattlefieldBounds() const
 	return bounds;
 }
 
-void World::SpawnEnemies()
+void World::SpawnEnemies(sf::Int8 enemyType)
 {
-	//Spawn an enemy when they are relevant - they are relevant when they enter the battlefield bounds
-	//while(!m_enemy_spawn_points.empty() && m_enemy_spawn_points.back().m_y > GetBattlefieldBounds().top)
-	//{
-	//	SpawnPoint spawn = m_enemy_spawn_points.back();
-	//	std::cout << static_cast<int>(spawn.m_type) << std::endl;
-	//	std::unique_ptr<Aircraft> enemy(new Aircraft(spawn.m_type, m_textures, m_fonts));
-	//	enemy->setPosition(spawn.m_x, spawn.m_y);
-	//	enemy->setRotation(180.f);
-	//	//If the game is networked the server is responsible for spawning pickups
-	//	if(m_networked_world)
-	//	{
-	//		enemy->DisablePickups();
-	//	}
-	//	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(enemy));
-	//	//Enemy is spawned, remove from list to spawn
-	//	m_enemy_spawn_points.pop_back();
-	//	
-	//}
-
 	//Spawn a random enemy from the vector of enemy spawn points
-	int randomEnemy = rand() % 12;
-	CharacterSpawnPoint spawn = m_enemy_spawn_points[randomEnemy];
+	CharacterSpawnPoint spawn = m_enemy_spawn_points[enemyType];
 	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures, m_fonts));
 	enemy->setPosition(spawn.m_x, spawn.m_y);
 
@@ -481,12 +461,12 @@ void World::SpawnEnemies()
 /// Edited By: Patrick Nugent
 ///
 ///	-Same as SpawnEnemies but handles flying enemies instead
+/// -Made changes so that the random values are passed in
 /// </summary>
-void World::SpawnFlyingEnemies()
+void World::SpawnFlyingEnemies(sf::Int8 enemyType)
 {
 	//Spawn a random flying enemy from the vector of flying enemy spawn points
-	int randomEnemy = rand() % 12;
-	CharacterSpawnPoint spawn = m_flying_enemy_spawn_points[randomEnemy];
+	CharacterSpawnPoint spawn = m_flying_enemy_spawn_points[enemyType];
 	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures, m_fonts));
 	enemy->setPosition(spawn.m_x, spawn.m_y);
 
@@ -506,17 +486,16 @@ void World::SpawnFlyingEnemies()
 /// Edited By: Patrick Nugent
 ///
 /// -Added pickup values
+/// -Made changes so that the random values are passed in
 /// </summary>
-void World::SpawnPickups()
+void World::SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition)
 {
 	//Spawn a random pickup from the vector of pickup spawn points
-	int randomPickup = rand() % 9;
-	PickupSpawnPoint spawn = m_pickup_spawn_points[randomPickup];
+	PickupSpawnPoint spawn = m_pickup_spawn_points[pickupType];
 	std::unique_ptr<Pickup> pickup(new Pickup(spawn.m_type, spawn.m_value, m_textures));
 
-	//Generate a random x value for the pickup's position (within the bounds)
-	int randomPosition = (rand() % 934) + 90;
-	pickup->setPosition((float)randomPosition, spawn.m_y);
+	//Use the random x value for the pickup's position (within the bounds)
+	pickup->setPosition((float)pickupPosition, spawn.m_y);
 
 	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(pickup));
 }
