@@ -51,9 +51,9 @@ public:
 	void SetWorldHeight(float height);
 
 	void AddEnemy(CharacterType type, bool isFlying, float rel_x, float rel_y);
-	void SpawnEnemies();
-	void SpawnFlyingEnemies();
-	void SpawnPickups();
+	void SpawnEnemies(sf::Int8 enemyType);
+	void SpawnFlyingEnemies(sf::Int8 enemyType);
+	void SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition);
 	//void SortEnemies();
 
 	bool HasAlivePlayer() const;

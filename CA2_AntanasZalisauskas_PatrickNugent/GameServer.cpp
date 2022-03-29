@@ -34,7 +34,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
-	, m_game_countdown(sf::seconds(15))
+	, m_game_countdown(sf::seconds(30))
 	, m_game_over(false)
 {
 	m_listener_socket.setBlocking(false);
@@ -133,6 +133,8 @@ void GameServer::ExecutionThread()
 	sf::Time tick_rate = sf::seconds(1.f / 20.f);
 	sf::Time tick_time = sf::Time::Zero;
 	sf::Clock frame_clock, tick_clock;
+
+	srand(time(NULL));
 
 	while(!m_waiting_thread_end)
 	{
