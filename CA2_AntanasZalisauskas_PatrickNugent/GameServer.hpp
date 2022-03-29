@@ -43,6 +43,7 @@ private:
 	{
 		sf::Vector2f m_position;
 		sf::Int32 m_hitpoints;
+		sf::Int8 m_type;
 		std::map<sf::Int32, bool> m_realtime_actions;
 	};
 

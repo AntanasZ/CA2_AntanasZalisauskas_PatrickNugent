@@ -13,7 +13,10 @@ public:
 	virtual bool Update(sf::Time dt);
 	virtual bool HandleEvent(const sf::Event& event);
 	virtual void OnActivate();
+	virtual CharacterType DetermineCharacterFromNumber(sf::Int8 characterNumber);
+	virtual sf::Int32 DetermineNumberFromCharacter(CharacterType characterType);
 	void OnDestroy();
+	void SendCharacterSelection();
 	void DisableAllRealtimeActions();
 
 private:

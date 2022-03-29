@@ -38,6 +38,8 @@ public:
 	float GetMaxSpeed() const;
 	bool GetCanJump() const;
 	float GetJumpHeight() const;
+	CharacterType GetType() const;
+	void SetType(CharacterType type);
 	int GetScore() const;
 	void ToggleCanJump(bool value);
 	void FlipSprite();

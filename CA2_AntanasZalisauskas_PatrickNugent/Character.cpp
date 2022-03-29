@@ -288,6 +288,22 @@ float Character::GetJumpHeight() const
 /// <summary>
 /// Written by: Patrick Nugent
 ///
+///	Added getters and setters for type
+/// </summary>
+/// <returns></returns>
+CharacterType Character::GetType() const
+{
+	return m_type;
+}
+
+void Character::SetType(CharacterType type) 
+{
+	m_type = type;
+}
+
+/// <summary>
+/// Written by: Patrick Nugent
+///
 ///	Added getter for score variable
 /// </summary>
 int Character::GetScore() const

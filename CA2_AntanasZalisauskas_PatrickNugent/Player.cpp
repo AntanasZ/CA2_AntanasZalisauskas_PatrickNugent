@@ -10,6 +10,10 @@
 /// Edited by: Antanas Zalisauskas
 ///
 ///	- Edited to only move player if they're not stunned
+///
+/// Edited by: Patrick Nugent
+///
+///	- Added checks for character identifier
 /// </summary>
 struct CharacterMover
 {
