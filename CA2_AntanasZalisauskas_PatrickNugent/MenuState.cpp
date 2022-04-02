@@ -29,6 +29,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	host_play_button->SetCallback([this, context]()
 	{
 		*context.modeSelection = StateID::kHostGame;
+		RequestStackPop();
 		RequestStackPush(StateID::kCharacterSelection);
 	});
 
@@ -38,6 +39,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	join_play_button->SetCallback([this, context]()
 	{
 		*context.modeSelection = StateID::kJoinGame;
+		RequestStackPop();
 		RequestStackPush(StateID::kCharacterSelection);
 	});
 
