@@ -383,6 +383,16 @@ void Character::SetInvulnerable(bool value)
 	m_is_invulnerable = value;
 }
 
+CharacterType Character::GetType()
+{
+	return m_type;
+}
+
+void Character::SetType(CharacterType type)
+{
+	m_type = type;
+}
+
 void Character::Remove()
 {
 	Entity::Remove();
