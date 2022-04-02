@@ -10,6 +10,7 @@
 #include <SFML/Network/Packet.hpp>
 
 #include "PickupType.hpp"
+#include <sstream>
 
 sf::IpAddress GetAddressFromFile()
 {
@@ -82,7 +83,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	if(m_socket.connect(ip, SERVER_PORT, sf::seconds(5.f)) == sf::TcpSocket::Done)
 	{
 		m_connected = true;
-		SendCharacterSelection();
 	}
 	else
 	{
@@ -93,6 +93,8 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
 	//Play game theme
 	context.music->Play(MusicThemes::kScoobyDooTheme);
+
+	//SendCharacterSelection();
 }
 
 void MultiplayerGameState::Draw()
@@ -314,7 +316,9 @@ void MultiplayerGameState::SendCharacterSelection()
 	{
 		if (Character* character = m_world.GetCharacter(identifier))
 		{
-			packet << identifier << DetermineNumberFromCharacter(character->GetType());
+			packet << identifier;
+			packet << static_cast<sf::Int8>(DetermineNumberFromCharacter(character->GetType()));
+			std::cout << "character number before sending packet: " << DetermineNumberFromCharacter(character->GetType()) << "\n";
 		}
 	}
 
@@ -354,7 +358,7 @@ void MultiplayerGameState::UpdateBroadcastMessage(sf::Time elapsed_time)
 	}
 }
 
-CharacterType MultiplayerGameState::DetermineCharacterFromNumber(sf::Int8 characterNumber)
+CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNumber)
 {
 	if (characterNumber == 1)
 	{
@@ -382,7 +386,7 @@ CharacterType MultiplayerGameState::DetermineCharacterFromNumber(sf::Int8 charac
 	}
 }
 
-sf::Int32 MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterType)
+int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterType)
 {
 	if (characterType == CharacterType::kScooby)
 	{
@@ -437,12 +441,16 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		sf::Int8 character_type;
-		packet >> character_identifier >> character_position.x >> character_position.y >> character_type;
+		packet >> character_identifier >> character_position.x >> character_position.y;
 		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection);
+
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
+
+		SendCharacterSelection();
 		m_game_started = true;
+
 	}
 	break;
 
@@ -450,12 +458,14 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	{
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
-		sf::Int8 character_type;
+		int character_type;
 		packet >> character_identifier >> character_position.x >> character_position.y >> character_type;
 		
 		Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type));
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
+
+		//SendCharacterSelection();
 	}
 	break;
 
@@ -488,7 +498,8 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type));
 			character->setPosition(character_position);
 			character->SetHitpoints(hitpoints);
-			character->SetType(DetermineCharacterFromNumber(character_type));
+			//character->SetType(DetermineCharacterFromNumber(character_type));
+			std::cout << "Initial state: Player " << character_identifier << " with character number " << static_cast<int>(character_type) << " is in the game";
 
 			m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 		}
@@ -606,8 +617,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			sf::Vector2f character_position;
 			sf::Int32 character_identifier;
 			sf::Int32 hitpoints;
-			sf::Int8 character_type;
-			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints >> character_type;
+			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints;
 
 			Character* character = m_world.GetCharacter(character_identifier);
 			bool is_local_character = std::find(m_local_player_identifiers.begin(), m_local_player_identifiers.end(), character_identifier) != m_local_player_identifiers.end();
@@ -616,7 +626,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 				sf::Vector2f interpolated_position = character->getPosition() + (character_position - character->getPosition()) * 0.1f;
 				character->setPosition(interpolated_position);
 				character->SetHitpoints(hitpoints);
-				character->SetType(DetermineCharacterFromNumber(character_type));
+				//character->SetType(DetermineCharacterFromNumber(character_type));
 			}
 		}
 	}

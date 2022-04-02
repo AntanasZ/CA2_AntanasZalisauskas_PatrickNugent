@@ -857,7 +857,7 @@ void World::UpdateSounds()
 		listener_position = m_camera.getCenter();
 	}
 
-	// 1 or more players -> mean position between all aircrafts
+	// 1 or more players -> mean position between all characters
 	else
 	{
 		for (Character* character : m_player_characters)
