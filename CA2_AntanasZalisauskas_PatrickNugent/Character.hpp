@@ -46,6 +46,8 @@ public:
 	void SetStunned(bool value);
 	bool GetInvulnerable();
 	void SetInvulnerable(bool value);
+	CharacterType GetType();
+	void SetType(CharacterType type);
 	sf::Time GetStunTimer();
 	void AddToStunTimer(sf::Time seconds);
 	void ResetStunTimer();

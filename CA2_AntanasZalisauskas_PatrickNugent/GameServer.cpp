@@ -7,6 +7,7 @@
 #include "Aircraft.hpp"
 #include "PickupType.hpp"
 #include "Utility.hpp"
+#include <iostream>
 
 //It is essential to set the sockets to non-blocking - m_socket.setBlocking(false)
 //otherwise the server will hang waiting to read input from a connection
@@ -231,76 +232,6 @@ void GameServer::Tick(sf::Time tick_time)
 
 		m_pickup_spawn_countdown = sf::Time::Zero;
 	}
-
-	//Check if the game is over = all planes position.y < offset
-	//bool all_aircraft_done = true;
-	//for(const auto& current : m_character_info)
-	//{
-	//	//As long one player has not crossed the finish line game on
-	//	if(current.second.m_position.y > 0.f)
-	//	{
-	//		all_aircraft_done = false;
-	//	}
-	//}
-
-	//if(all_aircraft_done)
-	//{
-	//	sf::Packet mission_success_packet;
-	//	mission_success_packet << static_cast<sf::Int32>(Server::PacketType::MissionSuccess);
-	//	SendToAll(mission_success_packet);
-	//}
-
-	////Remove aircraft that have been destroyed
-	//for (auto itr = m_character_info.begin(); itr != m_character_info.end();)
-	//{
-	//	if(itr->second.m_hitpoints <= 0)
-	//	{
-	//		m_character_info.erase(itr++);
-	//	}
-	//	else
-	//	{
-	//		++itr;
-	//	}
-	//}
-
-	//Check if it is time to spawn enemies
-	//if(Now() >= m_time_for_next_spawn + m_last_spawn_time)
-	//{
-	//	//Not going to spawn enemies near the end
-	//	if(m_battlefield_rect.top > 600.f)
-	//	{
-	//		std::size_t enemy_count = 1 + Utility::RandomInt(2);
-	//		float spawn_centre = static_cast<float>(Utility::RandomInt(500) - 250);
-
-	//		//If there is only one enemy it is at the spawn_centre
-	//		float plane_distance = 0.f;
-	//		float next_spawn_position = spawn_centre;
-
-	//		//If there are two then they are centred on the spawn centre
-	//		if(enemy_count == 2)
-	//		{
-	//			plane_distance = static_cast<float>(150 + Utility::RandomInt(250));
-	//			next_spawn_position = spawn_centre - plane_distance / 2.f;
-	//		}
-
-	//		//TODO Do we really need two packets here?
-	//		//Send a spawn packet to the clients
-	//		for (std::size_t i = 0; i < enemy_count; ++i)
-	//		{
-	//			sf::Packet packet;
-	//			packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy);
-	//			packet << static_cast<sf::Int32>(1 + Utility::RandomInt(static_cast<int>(AircraftType::kAircraftCount) - 1));
-	//			packet << m_world_height - m_battlefield_rect.top + 500;
-	//			packet << next_spawn_position;
-
-	//			next_spawn_position += plane_distance / 2.f;
-	//			SendToAll(packet);
-	//		}
-
-	//		m_last_spawn_time = Now();
-	//		m_time_for_next_spawn = sf::milliseconds(2000 + Utility::RandomInt(6000));
-	//	}
-	//}
 }
 
 sf::Time GameServer::Now() const
@@ -372,6 +303,16 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		bool action_enabled;
 		packet >> character_identifier >> action >> action_enabled;
 		NotifyPlayerRealtimeChange(character_identifier, action, action_enabled);
+	}
+	break;
+
+	case Client::PacketType::PlayerCharacterSelect:
+	{
+		sf::Int32 character_identifier;
+		sf::Int8 character_type;
+		packet >> character_identifier >> character_type;
+		m_character_info[character_identifier].m_type = character_type;
+		std::cout << "Player " << character_identifier << " character selection received: number " << static_cast<int>(character_type) << "\n\n";
 	}
 	break;
 
@@ -469,7 +410,7 @@ void GameServer::HandleIncomingConnections()
 		//Order the new client to spawn its player 1
 		m_character_info[m_character_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.width / 2, m_battlefield_rect.top + m_battlefield_rect.height / 2);
 		m_character_info[m_character_identifier_counter].m_hitpoints = 100;
-		//m_character_info[m_character_identifier_counter].m_missile_ammo = 2;
+		m_character_info[m_character_identifier_counter].m_type = 1;
 
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Server::PacketType::SpawnSelf);
@@ -551,7 +492,8 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 		{
 			for(sf::Int32 identifier : m_peers[i]->m_character_identifiers)
 			{
-				packet << identifier << m_character_info[identifier].m_position.x << m_character_info[identifier].m_position.y << m_character_info[identifier].m_hitpoints;// << m_character_info[identifier].m_missile_ammo;
+				packet << identifier << m_character_info[identifier].m_position.x << m_character_info[identifier].m_position.y << m_character_info[identifier].m_hitpoints << m_character_info[identifier].m_type;
+				std::cout << "InformWorldState: player with id " << static_cast<int>(identifier) << " and character number " << (int)m_character_info[identifier].m_type << "\n";
 			}
 		}
 	}

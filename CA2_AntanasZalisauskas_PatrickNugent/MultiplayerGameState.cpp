@@ -11,6 +11,8 @@
 
 #include "PickupType.hpp"
 
+#include <iostream>
+
 sf::IpAddress GetAddressFromFile()
 {
 	{
@@ -302,6 +304,25 @@ void MultiplayerGameState::OnDestroy()
 	}
 }
 
+void MultiplayerGameState::SendCharacterSelection()
+{
+	//Inform server of this client's character choice
+	sf::Packet packet;
+	packet << static_cast<sf::Int32>(Client::PacketType::PlayerCharacterSelect);
+
+	for (sf::Int32 identifier : m_local_player_identifiers)
+	{
+		if (Character* character = m_world.GetCharacter(identifier))
+		{
+			packet << identifier;
+			packet << static_cast<sf::Int8>(DetermineNumberFromCharacter(character->GetType()));
+			std::cout << "character number before sending packet: " << DetermineNumberFromCharacter(character->GetType()) << "\n";
+		}
+	}
+
+	m_socket.send(packet);
+}
+
 void MultiplayerGameState::DisableAllRealtimeActions()
 {
 	m_active_state = false;
@@ -332,6 +353,62 @@ void MultiplayerGameState::UpdateBroadcastMessage(sf::Time elapsed_time)
 			Utility::CentreOrigin(m_broadcast_text);
 			m_broadcast_elapsed_time = sf::Time::Zero;
 		}
+	}
+}
+
+CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNumber)
+{
+	if (characterNumber == 1)
+	{
+		return CharacterType::kScooby;
+	}
+	else if (characterNumber == 2)
+	{
+		return CharacterType::kShaggy;
+	}
+	else if (characterNumber == 3)
+	{
+		return CharacterType::kFred;
+	}
+	else if (characterNumber == 4)
+	{
+		return CharacterType::kVelma;
+	}
+	else if (characterNumber == 2)
+	{
+		return CharacterType::kDaphne;
+	}
+	else
+	{
+		return CharacterType::kShaggy;
+	}
+}
+
+int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterType)
+{
+	if (characterType == CharacterType::kScooby)
+	{
+		return 1;
+	}
+	else if (characterType == CharacterType::kShaggy)
+	{
+		return 2;
+	}
+	else if (characterType == CharacterType::kFred)
+	{
+		return 3;
+	}
+	else if (characterType == CharacterType::kVelma)
+	{
+		return 4;
+	}
+	else if (characterType == CharacterType::kDaphne)
+	{
+		return 5;
+	}
+	else
+	{
+		return 2;
 	}
 }
 
@@ -366,6 +443,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
+		SendCharacterSelection();
 		m_game_started = true;
 	}
 	break;
@@ -405,11 +483,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		{
 			sf::Int32 character_identifier;
 			sf::Int32 hitpoints;
-			//sf::Int32 missile_ammo;
+			sf::Int8 character_type;
 			sf::Vector2f character_position;
-			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints;// >> missile_ammo;
+			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints >> character_type;
 
-			Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection);
+			Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type));
 			character->setPosition(character_position);
 			character->SetHitpoints(hitpoints);
 			//aircraft->SetMissileAmmo(missile_ammo);
@@ -514,11 +592,6 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		packet >> pickupType;
 		packet >> pickupPosition;
 		m_world.SpawnPickups(pickupType, pickupPosition);
-		/*sf::Int32 type;
-		sf::Vector2f position;
-		packet >> type >> position.x >> position.y;
-		std::cout << "Spawning pickup type " << type << std::endl;*/
-		//m_world.AddPickup(position, static_cast<PickupType>(type));
 	}
 	break;
 

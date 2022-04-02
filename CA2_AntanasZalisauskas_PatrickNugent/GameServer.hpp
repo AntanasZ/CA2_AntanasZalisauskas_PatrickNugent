@@ -44,6 +44,7 @@ private:
 		sf::Vector2f m_position;
 		sf::Int32 m_hitpoints;
 		std::map<sf::Int32, bool> m_realtime_actions;
+		sf::Int8 m_type;
 	};
 
 	typedef std::unique_ptr<RemotePeer> PeerPtr;
