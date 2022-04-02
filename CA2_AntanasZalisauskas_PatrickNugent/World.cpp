@@ -490,14 +490,17 @@ void World::SpawnFlyingEnemies(sf::Int8 enemyType)
 /// </summary>
 void World::SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition)
 {
-	//Spawn a random pickup from the vector of pickup spawn points
-	PickupSpawnPoint spawn = m_pickup_spawn_points[pickupType];
-	std::unique_ptr<Pickup> pickup(new Pickup(spawn.m_type, spawn.m_value, m_textures));
+	if(pickupType >= 0 && pickupType < m_pickup_spawn_points.size())
+	{
+		//Spawn a random pickup from the vector of pickup spawn points
+		PickupSpawnPoint spawn = m_pickup_spawn_points[pickupType];
+		std::unique_ptr<Pickup> pickup(new Pickup(spawn.m_type, spawn.m_value, m_textures));
 
-	//Use the random x value for the pickup's position (within the bounds)
-	pickup->setPosition((float)pickupPosition, spawn.m_y);
+		//Use the random x value for the pickup's position (within the bounds)
+		pickup->setPosition((float)pickupPosition, spawn.m_y);
 
-	m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(pickup));
+		m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(pickup));
+	}
 }
 
 void World::AddEnemy(CharacterType type, bool isFlying, float relX, float relY)

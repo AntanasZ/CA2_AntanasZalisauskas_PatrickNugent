@@ -76,6 +76,7 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 	exit_button->SetCallback([this]()
 		{
 			RequestStackPop();
+			RequestStackPush(StateID::kMenu);
 		});
 
 	m_gui_container.Pack(scooby_button);
