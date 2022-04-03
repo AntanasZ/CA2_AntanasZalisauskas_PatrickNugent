@@ -44,7 +44,7 @@ public:
 	CommandQueue& GetCommandQueue();
 
 	//Aircraft* AddAircraft(int identifier);
-	Character* AddCharacter(int identifier, CharacterType type);
+	Character* AddCharacter(int identifier, CharacterType type, bool local_player);
 	//void RemoveAircraft(int identifier);
 	void RemoveCharacter(int identifier);
 	void SetCurrentBattleFieldPosition(float line_y);
@@ -85,6 +85,8 @@ private:
 	void HandleCollisions();
 	void DestroyEntitiesOutsideView();
 	void UpdateSounds();
+
+	void UpdateCameraPosition();
 
 private:
 	struct SpawnPoint
@@ -158,5 +160,7 @@ private:
 	sf::Time m_gameover_countdown;
 	TextNode* m_game_timer_display;
 	bool m_game_over;
+
+	int m_local_player_identifier;
 };
 
