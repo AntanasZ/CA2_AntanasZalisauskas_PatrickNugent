@@ -130,6 +130,7 @@ void World::Update(sf::Time dt)
 		AdaptPlayerPosition();
 
 		UpdateSounds();
+		UpdateCameraPosition();
 	//}
 	//else
 	//{
@@ -199,7 +200,7 @@ void World::RemoveCharacter(int identifier)
 	}
 }
 
-Character* World::AddCharacter(int identifier, CharacterType type)
+Character* World::AddCharacter(int identifier, CharacterType type, bool local_player)
 {
 	/*CharacterType player_character;
 	if(m_player_characters.empty())
@@ -210,12 +211,20 @@ Character* World::AddCharacter(int identifier, CharacterType type)
 	{
 		player_character = CharacterType::kScooby;
 	}*/
-	
+
+	if (local_player)
+	{
+		//m_local_character = player.get();
+		m_local_player_identifier = identifier;
+	}
+
 	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts));
 	player->setPosition(m_camera.getCenter());
 	player->SetIdentifier(identifier);
 	m_player_characters.emplace_back(player.get());
 	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(player));
+
+	
 
 	return m_player_characters.back();
 }
@@ -855,4 +864,20 @@ void World::UpdateSounds()
 
 	// Remove unused sounds
 	m_sounds.RemoveStoppedSounds();
+}
+
+/// <summary>
+/// Written by: Antanas Zalisauskas
+///
+///	Updates local players camera based on their position
+/// </summary>
+void World::UpdateCameraPosition()
+{
+	if(!m_player_characters.empty())
+	{
+		if(GetCharacter(m_local_player_identifier) != nullptr)
+		{
+			m_camera.setCenter(m_player_characters[m_local_player_identifier-1]->GetWorldPosition().x, m_camera.getCenter().y);
+		}
+	}
 }

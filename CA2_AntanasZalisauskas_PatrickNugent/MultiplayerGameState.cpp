@@ -412,6 +412,13 @@ int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterTy
 	}
 }
 
+/// <summary>
+/// Edited by: Antanas Zalisauskas
+///
+///	Updated code which calls AddCharacter method to pass in a bool for local player parameter
+/// </summary>
+/// <param name="packet_type"></param>
+/// <param name="packet"></param>
 void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packet)
 {
 	switch (static_cast<Server::PacketType>(packet_type))
@@ -439,7 +446,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		packet >> character_identifier >> character_position.x >> character_position.y;
-		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection); //CharacterType::kShaggy);
+		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, true); //CharacterType::kShaggy);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
@@ -454,7 +461,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Vector2f character_position;
 		packet >> character_identifier >> character_position.x >> character_position.y;
 
-		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection);
+		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, false);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 	}
@@ -487,7 +494,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			sf::Vector2f character_position;
 			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints >> character_type;
 
-			Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type));
+			Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 			character->setPosition(character_position);
 			character->SetHitpoints(hitpoints);
 			//aircraft->SetMissileAmmo(missile_ammo);
@@ -502,7 +509,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		packet >> character_identifier;
 
-		m_world.AddCharacter(character_identifier, CharacterType::kScooby);
+		m_world.AddCharacter(character_identifier, CharacterType::kScooby, false);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys2));
 		m_local_player_identifiers.emplace_back(character_identifier);
 	}
