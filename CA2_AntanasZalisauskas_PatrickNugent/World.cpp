@@ -200,6 +200,12 @@ void World::RemoveCharacter(int identifier)
 	}
 }
 
+/// <summary>
+/// Edited by: Antanas Zalisaukas
+///
+///	Added a bool parameter and check to see if the character being added is a local player
+///	and store their identifier if they are
+/// </summary>
 Character* World::AddCharacter(int identifier, CharacterType type, bool local_player)
 {
 	/*CharacterType player_character;
@@ -214,7 +220,6 @@ Character* World::AddCharacter(int identifier, CharacterType type, bool local_pl
 
 	if (local_player)
 	{
-		//m_local_character = player.get();
 		m_local_player_identifier = identifier;
 	}
 
