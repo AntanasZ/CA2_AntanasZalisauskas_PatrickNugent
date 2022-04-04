@@ -23,6 +23,8 @@ public:
 	
 	void SetMissionStatus(MissionStatus status);
 	MissionStatus GetMissionStatus() const;
+	
+	int GetIdentifier() const;
 
 	void DisableAllRealtimeActions();
 	bool IsLocal() const;

@@ -351,6 +351,23 @@ void Character::AddScore(int points)
 	UpdateScore();
 }
 
+
+/// <summary>
+/// Written By: Patrick Nugent
+///
+///	Added getter and setter for character score
+/// </summary>
+int Character::GetScore()
+{
+	return m_score;
+}
+
+void Character::SetScore(int score)
+{
+	m_score = score;
+	UpdateScore();
+}
+
 /// <summary>
 /// Written By: Antanas Zalisauskas
 ///

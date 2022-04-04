@@ -42,6 +42,8 @@ public:
 	void ToggleCanJump(bool value);
 	void FlipSprite();
 	void AddScore(int points);
+	int GetScore();
+	void SetScore(int score);
 	bool GetStunned();
 	void SetStunned(bool value);
 	bool GetInvulnerable();

@@ -1,6 +1,12 @@
 #pragma once
 #include <SFML/System/Vector2.hpp>
 
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+/// Added overloaded constructor for Action which takes in value
+/// </summary>
+
 const unsigned short SERVER_PORT = 50000;
 
 namespace Server
@@ -45,7 +51,8 @@ namespace GameActions
 {
 	enum Type
 	{
-		EnemyExplode
+		EnemyExplode,
+		CollectPickup
 	};
 
 	struct Action
@@ -60,8 +67,14 @@ namespace GameActions
 			
 		}
 
+		Action(Type type, sf::Int8 value) :type(type), value(value)
+		{
+
+		}
+
 		Type type;
 		sf::Vector2f position;
+		sf::Int8 value;
 	};
 }
 

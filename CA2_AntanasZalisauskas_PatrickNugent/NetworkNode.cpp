@@ -1,5 +1,11 @@
 #include "NetworkNode.hpp"
 
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+/// Added overloaded constructor for NotifyGameAction which takes in value
+/// </summary>
+
 NetworkNode::NetworkNode()
 : SceneNode()
 , m_pending_actions()
@@ -9,6 +15,12 @@ NetworkNode::NetworkNode()
 void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Vector2f position)
 {
 	m_pending_actions.push(GameActions::Action(type, position));
+}
+
+
+void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Int8 value)
+{
+	m_pending_actions.push(GameActions::Action(type, value));
 }
 
 bool NetworkNode::PollGameAction(GameActions::Action& out)

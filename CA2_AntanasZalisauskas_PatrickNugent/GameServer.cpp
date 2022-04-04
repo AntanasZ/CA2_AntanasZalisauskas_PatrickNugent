@@ -362,9 +362,9 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 			sf::Int32 character_identifier;
 			sf::Int16 character_score;
 			sf::Vector2f character_position;
-			packet >> character_identifier >> character_position.x >> character_position.y;
+			packet >> character_identifier >> character_position.x >> character_position.y >> character_score;
 			m_character_info[character_identifier].m_position = character_position;
-			//m_character_info[character_identifier].m_score = character_score;
+			m_character_info[character_identifier].m_score = character_score;
 		}
 	}
 	break;
@@ -415,7 +415,6 @@ void GameServer::HandleIncomingConnections()
 		packet << m_character_identifier_counter;
 		packet << m_character_info[m_character_identifier_counter].m_position.x;
 		packet << m_character_info[m_character_identifier_counter].m_position.y;
-		packet << m_character_info[m_character_identifier_counter].m_score;
 
 		m_peers[m_connected_players]->m_character_identifiers.emplace_back(m_character_identifier_counter);
 
@@ -534,7 +533,7 @@ void GameServer::UpdateClientState()
 
 	for(const auto& character : m_character_info)
 	{
-		update_client_state_packet << character.first << character.second.m_position.x << character.second.m_position.y;
+		update_client_state_packet << character.first << character.second.m_position.x << character.second.m_position.y << character.second.m_score;
 	}
 
 	SendToAll(update_client_state_packet);

@@ -234,14 +234,6 @@ Character* World::AddCharacter(int identifier, CharacterType type, bool local_pl
 	return m_player_characters.back();
 }
 
-//void World::CreatePickup(sf::Vector2f position, PickupType type)
-//{
-//	std::unique_ptr<Pickup> pickup(new Pickup(type, m_textures));
-//	pickup->setPosition(position);
-//	pickup->SetVelocity(0.f, 1.f);
-//	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(pickup));
-//}
-
 bool World::PollGameAction(GameActions::Action& out)
 {
 	return m_network_node->PollGameAction(out);
@@ -648,51 +640,6 @@ void World::AddPickups()
 	AddPickup(PickupType::kPancake, 30, 0.f, yPosition);
 }
 
-/*void World::GuideMissiles()
-{
-	// Setup command that stores all enemies in mActiveEnemies
-	Command enemyCollector;
-	enemyCollector.category = Category::kEnemyAircraft;
-	enemyCollector.action = DerivedAction<Aircraft>([this](Aircraft& enemy, sf::Time)
-	{
-		if (!enemy.IsDestroyed())
-			m_active_enemies.emplace_back(&enemy);
-	});
-
-	// Setup command that guides all missiles to the enemy which is currently closest to the player
-	Command missileGuider;
-	missileGuider.category = Category::kAlliedProjectile;
-	missileGuider.action = DerivedAction<Projectile>([this](Projectile& missile, sf::Time)
-	{
-		// Ignore unguided bullets
-		if (!missile.IsGuided())
-			return;
-
-		float minDistance = std::numeric_limits<float>::max();
-		Character* closestEnemy = nullptr;
-
-		// Find closest enemy
-		for(Character * enemy :  m_active_enemies)
-		{
-			float enemyDistance = Distance(missile, *enemy);
-
-			if (enemyDistance < minDistance)
-			{
-				closestEnemy = enemy;
-				minDistance = enemyDistance;
-			}
-		}
-
-		if (closestEnemy)
-			missile.GuideTowards(closestEnemy->GetWorldPosition());
-	});
-
-	// Push commands, reset active enemies
-	m_command_queue.Push(enemyCollector);
-	m_command_queue.Push(missileGuider);
-	m_active_enemies.clear();
-}*/
-
 bool MatchesCategories(SceneNode::Pair& colliders, Category::Type type1, Category::Type type2)
 {
 	unsigned int category1 = colliders.first->GetCategory();
@@ -772,36 +719,9 @@ void World::HandleCollisions()
 			//Add the pickup's value to the player's score
 			player.AddScore(pickup.GetValue());
 			pickup.Destroy();
+
+			//m_network_node->NotifyGameAction(GameActions::CollectPickup, pickup.GetValue());
 		}
-		//else if(MatchesCategories(pair, Category::Type::kPlayerAircraft, Category::Type::kEnemyAircraft))
-		//{
-		//	auto& player = static_cast<Aircraft&>(*pair.first);
-		//	auto& enemy = static_cast<Aircraft&>(*pair.second);
-		//	//Collision
-		//	player.Damage(enemy.GetHitPoints());
-		//	enemy.Destroy();
-		//}
-
-		//else if (MatchesCategories(pair, Category::Type::kPlayerAircraft, Category::Type::kPickup))
-		//{
-		//	auto& player = static_cast<Character&>(*pair.first);
-		//	auto& pickup = static_cast<Pickup&>(*pair.second);
-		//	//Apply the pickup effect
-		//	pickup.Apply(player);
-		//	pickup.Destroy();
-		//	player.PlayLocalSound(m_command_queue, SoundEffect::kCollectPickup);
-		//}
-
-		//else if (MatchesCategories(pair, Category::Type::kPlayerAircraft, Category::Type::kEnemyProjectile) || MatchesCategories(pair, Category::Type::kEnemyAircraft, Category::Type::kAlliedProjectile))
-		//{
-		//	auto& aircraft = static_cast<Aircraft&>(*pair.first);
-		//	auto& projectile = static_cast<Projectile&>(*pair.second);
-		//	//Apply the projectile damage to the plane
-		//	aircraft.Damage(projectile.GetDamage());
-		//	projectile.Destroy();
-		//}
-
-
 	}
 }
 
