@@ -634,7 +634,7 @@ void World::AddEnemies()
 void World::AddPickups()
 {
 	//400
-	float yPosition = 400.f;
+	float yPosition = 380.f;
 
 	//Add all types of pickups and set their score values
 	AddPickup(PickupType::kApple, 10, 0.f, yPosition);
@@ -808,7 +808,7 @@ void World::HandleCollisions()
 void World::DestroyEntitiesOutsideView()
 {
 	Command command;
-	command.category = Category::Type::kEnemyAircraft | Category::Type::kProjectile;
+	command.category = Category::Type::kEnemyCharacter | Category::Type::kProjectile | Category::Type::kPickup;
 	command.action = DerivedAction<Entity>([this](Entity& e, sf::Time)
 	{
 		//Does the object intersect with the battlefield
@@ -878,11 +878,11 @@ void World::UpdateSounds()
 /// </summary>
 void World::UpdateCameraPosition()
 {
-	if(!m_player_characters.empty())
+	/*if(!m_player_characters.empty())
 	{
 		if(GetCharacter(m_local_player_identifier) != nullptr)
 		{
 			m_camera.setCenter(m_player_characters[m_local_player_identifier-1]->GetWorldPosition().x, m_camera.getCenter().y);
 		}
-	}
+	}*/
 }
