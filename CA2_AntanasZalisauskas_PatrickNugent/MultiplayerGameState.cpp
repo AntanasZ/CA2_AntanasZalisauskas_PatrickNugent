@@ -625,7 +625,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			bool is_local_character = std::find(m_local_player_identifiers.begin(), m_local_player_identifiers.end(), character_identifier) != m_local_player_identifiers.end();
 			if(character && !is_local_character)
 			{
-				sf::Vector2f interpolated_position = character->getPosition() + (character_position - character->getPosition()) * 0.1f;
+				sf::Vector2f interpolated_position = character->getPosition() + (character_position - character->getPosition()) * 0.25f;
 				character->setPosition(interpolated_position);
 				character->SetHitpoints(hitpoints);
 				//character->SetMissileAmmo(ammo);
