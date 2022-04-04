@@ -320,7 +320,7 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 	{
 		receiving_peer.m_character_identifiers.emplace_back(m_character_identifier_counter);
 		m_character_info[m_character_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.width / 2, m_battlefield_rect.top + m_battlefield_rect.height / 2);
-		m_character_info[m_character_identifier_counter].m_hitpoints = 100;
+		m_character_info[m_character_identifier_counter].m_score = 0;
 		//m_character_info[m_character_identifier_counter].m_missile_ammo = 2;
 
 		sf::Packet request_packet;
@@ -360,13 +360,11 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		for (sf::Int32 i = 0; i < num_characters; ++i)
 		{
 			sf::Int32 character_identifier;
-			sf::Int32 character_hitpoints;
-			//sf::Int32 missile_ammo;
+			sf::Int16 character_score;
 			sf::Vector2f character_position;
-			packet >> character_identifier >> character_position.x >> character_position.y >> character_hitpoints;// >> missile_ammo;
+			packet >> character_identifier >> character_position.x >> character_position.y;
 			m_character_info[character_identifier].m_position = character_position;
-			m_character_info[character_identifier].m_hitpoints = character_hitpoints;
-			//m_character_info[character_identifier].m_missile_ammo = missile_ammo;
+			//m_character_info[character_identifier].m_score = character_score;
 		}
 	}
 	break;
@@ -409,7 +407,7 @@ void GameServer::HandleIncomingConnections()
 	{
 		//Order the new client to spawn its player 1
 		m_character_info[m_character_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.width / 2, m_battlefield_rect.top + m_battlefield_rect.height / 2);
-		m_character_info[m_character_identifier_counter].m_hitpoints = 100;
+		m_character_info[m_character_identifier_counter].m_score = 0;
 		m_character_info[m_character_identifier_counter].m_type = 1;
 
 		sf::Packet packet;
@@ -417,6 +415,7 @@ void GameServer::HandleIncomingConnections()
 		packet << m_character_identifier_counter;
 		packet << m_character_info[m_character_identifier_counter].m_position.x;
 		packet << m_character_info[m_character_identifier_counter].m_position.y;
+		packet << m_character_info[m_character_identifier_counter].m_score;
 
 		m_peers[m_connected_players]->m_character_identifiers.emplace_back(m_character_identifier_counter);
 
@@ -492,7 +491,7 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 		{
 			for(sf::Int32 identifier : m_peers[i]->m_character_identifiers)
 			{
-				packet << identifier << m_character_info[identifier].m_position.x << m_character_info[identifier].m_position.y << m_character_info[identifier].m_hitpoints << m_character_info[identifier].m_type;
+				packet << identifier << m_character_info[identifier].m_position.x << m_character_info[identifier].m_position.y << m_character_info[identifier].m_score << m_character_info[identifier].m_type;
 				std::cout << "InformWorldState: player with id " << static_cast<int>(identifier) << " and character number " << (int)m_character_info[identifier].m_type << "\n";
 			}
 		}
@@ -535,7 +534,7 @@ void GameServer::UpdateClientState()
 
 	for(const auto& character : m_character_info)
 	{
-		update_client_state_packet << character.first << character.second.m_position.x << character.second.m_position.y << character.second.m_hitpoints;// << character.second.m_missile_ammo;
+		update_client_state_packet << character.first << character.second.m_position.x << character.second.m_position.y;
 	}
 
 	SendToAll(update_client_state_packet);
