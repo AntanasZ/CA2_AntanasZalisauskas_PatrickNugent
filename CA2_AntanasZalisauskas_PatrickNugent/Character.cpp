@@ -134,6 +134,8 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 			m_stunned.SetTexture(textures.Get(Textures::kVelmaStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(38, 59));
 
+			m_stunned.SetNumFrames(3);
+
 			m_running.SetNumFrames(12);
 			m_running.SetTexture(textures.Get(Textures::kVelmaRunning));
 			m_running.SetFrameSize(sf::Vector2i(36, 59));
@@ -147,6 +149,8 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 			scoreDisplay->SetColor(sf::Color::Green);
 			m_stunned.SetTexture(textures.Get(Textures::kDaphneStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(25, 59));
+
+			m_stunned.SetNumFrames(3);
 
 			m_running.SetNumFrames(12);
 			m_running.SetTexture(textures.Get(Textures::kDaphneRunning));

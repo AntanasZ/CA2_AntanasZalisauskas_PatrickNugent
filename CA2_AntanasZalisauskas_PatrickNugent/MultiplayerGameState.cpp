@@ -474,11 +474,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		sf::Int16 character_score;
-		packet >> character_identifier >> character_position.x >> character_position.y;
+		sf::Int8 character_type;
+		packet >> character_identifier >> character_position.x >> character_position.y >> character_type;
 
-		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, false);
+		Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 		character->setPosition(character_position);
-		character->SetScore(0);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 	}
 	break;

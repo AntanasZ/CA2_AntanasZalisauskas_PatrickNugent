@@ -56,7 +56,7 @@ void GameServer::NotifyPlayerSpawn(sf::Int32 character_identifier)
 	sf::Packet packet;
 	//First thing for every packet is what type of packet it is
 	packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
-	packet << character_identifier << m_character_info[character_identifier].m_position.x << m_character_info[character_identifier].m_position.y;
+	packet << character_identifier << m_character_info[character_identifier].m_position.x << m_character_info[character_identifier].m_position.y << m_character_info[character_identifier].m_type;
 	for(std::size_t i=0; i < m_connected_players; ++i)
 	{
 		if(m_peers[i]->m_ready)
@@ -332,12 +332,13 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		receiving_peer.m_socket.send(request_packet);
 		m_character_count++;
 
-		// Tell everyone else about the new plane
+		// Tell everyone else about the new character
 		sf::Packet notify_packet;
 		notify_packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
 		notify_packet << m_character_identifier_counter;
 		notify_packet << m_character_info[m_character_identifier_counter].m_position.x;
 		notify_packet << m_character_info[m_character_identifier_counter].m_position.y;
+		notify_packet << m_character_info[m_character_identifier_counter].m_type;
 
 		for (PeerPtr& peer : m_peers)
 		{
@@ -408,7 +409,7 @@ void GameServer::HandleIncomingConnections()
 		//Order the new client to spawn its player 1
 		m_character_info[m_character_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.width / 2, m_battlefield_rect.top + m_battlefield_rect.height / 2);
 		m_character_info[m_character_identifier_counter].m_score = 0;
-		m_character_info[m_character_identifier_counter].m_type = 1;
+		//m_character_info[m_character_identifier_counter].m_type = 1;
 
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Server::PacketType::SpawnSelf);
