@@ -82,40 +82,6 @@ struct AircraftMover
 	int aircraft_id;
 };
 
-struct AircraftFireTrigger
-{
-	AircraftFireTrigger(int identifier)
-		: aircraft_id(identifier)
-	{
-	}
-
-	void operator() (Aircraft& aircraft, sf::Time) const
-	{
-		if (aircraft.GetIdentifier() == aircraft_id)
-			aircraft.Fire();
-	}
-
-	int aircraft_id;
-};
-
-struct AircraftMissileTrigger
-{
-	AircraftMissileTrigger(int identifier)
-		: aircraft_id(identifier)
-	{
-	}
-
-	void operator() (Aircraft& aircraft, sf::Time) const
-	{
-		if (aircraft.GetIdentifier() == aircraft_id)
-			aircraft.LaunchMissile();
-	}
-
-	int aircraft_id;
-};
-
-
-
 Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
 	, m_current_mission_status(MissionStatus::kMissionRunning)
@@ -240,6 +206,11 @@ void Player::SetMissionStatus(MissionStatus status)
 MissionStatus Player::GetMissionStatus() const
 {
 	return m_current_mission_status;
+}
+
+int Player::GetIdentifier() const
+{
+	return m_identifier;
 }
 
 void Player::InitialiseActions()

@@ -232,7 +232,7 @@ bool MultiplayerGameState::Update(sf::Time dt)
 			{
 				if(Character* character = m_world.GetCharacter(identifier))
 				{
-					position_update_packet << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int32>(character->GetHitPoints());// << static_cast<sf::Int32>(character->GetMissileAmmo());
+					position_update_packet << identifier << character->getPosition().x << character->getPosition().y << static_cast<sf::Int16>(character->GetScore());
 				}
 			}
 			m_socket.send(position_update_packet);
@@ -356,6 +356,12 @@ void MultiplayerGameState::UpdateBroadcastMessage(sf::Time elapsed_time)
 	}
 }
 
+/// <summary>
+/// Written By: Patrick Nugent
+///
+/// -Determines which character is associated with a number
+/// </summary>
+/// <returns>The CharacterType associated with the number passed in</returns>
 CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNumber)
 {
 	if (characterNumber == 1)
@@ -384,6 +390,12 @@ CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNu
 	}
 }
 
+/// <summary>
+/// Written By: Patrick Nugent
+///
+/// -Determines which number is associated with a character
+/// </summary>
+/// <returns>The number associated with the CharacterType passed in</returns>
 int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterType)
 {
 	if (characterType == CharacterType::kScooby)
@@ -445,9 +457,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	{
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
-		packet >> character_identifier >> character_position.x >> character_position.y;
-		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, true); //CharacterType::kShaggy);
+		sf::Int16 character_score;
+		packet >> character_identifier >> character_position.x >> character_position.y >> character_score;
+		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, true);
 		character->setPosition(character_position);
+		character->SetScore(0);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
 		SendCharacterSelection();
@@ -459,9 +473,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	{
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
-		packet >> character_identifier >> character_position.x >> character_position.y;
+		sf::Int16 character_score;
+		sf::Int8 character_type;
+		packet >> character_identifier >> character_position.x >> character_position.y >> character_type;
 
-		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, false);
+		Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 	}
@@ -489,15 +505,14 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		for (sf::Int32 i = 0; i < character_count; ++i)
 		{
 			sf::Int32 character_identifier;
-			sf::Int32 hitpoints;
+			sf::Int16 character_score;
 			sf::Int8 character_type;
 			sf::Vector2f character_position;
-			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints >> character_type;
+			packet >> character_identifier >> character_position.x >> character_position.y >> character_score >> character_type;
 
 			Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 			character->setPosition(character_position);
-			character->SetHitpoints(hitpoints);
-			//aircraft->SetMissileAmmo(missile_ammo);
+			character->SetScore((int)character_score);
 
 			m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 		}
@@ -518,11 +533,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	//Player event, like missile fired occurs
 	case Server::PacketType::PlayerEvent:
 	{
-		sf::Int32 aircraft_identifier;
+		sf::Int32 character_identifier;
 		sf::Int32 action;
-		packet >> aircraft_identifier >> action;
+		packet >> character_identifier >> action;
 
-		auto itr = m_players.find(aircraft_identifier);
+		auto itr = m_players.find(character_identifier);
 		if (itr != m_players.end())
 		{
 			itr->second->HandleNetworkEvent(static_cast<PlayerAction>(action), m_world.GetCommandQueue());
@@ -552,13 +567,6 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int8 enemyType;
 		packet >> enemyType;
 		m_world.SpawnEnemies(enemyType);
-		/*float height;
-		sf::Int32 type;
-		float relative_x;
-		packet >> type >> height >> relative_x;*/
-
-		//m_world.AddEnemy(static_cast<CharacterType>(type), false, relative_x, height);
-		//m_world.SortEnemies();
 	}
 	break;
 
@@ -617,9 +625,8 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		{
 			sf::Vector2f character_position;
 			sf::Int32 character_identifier;
-			sf::Int32 hitpoints;
-			//sf::Int32 ammo;
-			packet >> character_identifier >> character_position.x >> character_position.y >> hitpoints;// >> ammo;
+			sf::Int16 character_score;
+			packet >> character_identifier >> character_position.x >> character_position.y >> character_score;
 
 			Character* character = m_world.GetCharacter(character_identifier);
 			bool is_local_character = std::find(m_local_player_identifiers.begin(), m_local_player_identifiers.end(), character_identifier) != m_local_player_identifiers.end();
@@ -627,8 +634,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			{
 				sf::Vector2f interpolated_position = character->getPosition() + (character_position - character->getPosition()) * 0.25f;
 				character->setPosition(interpolated_position);
-				character->SetHitpoints(hitpoints);
-				//character->SetMissileAmmo(ammo);
+				character->SetScore((int)character_score);
 			}
 		}
 	}
