@@ -365,7 +365,7 @@ void World::BuildScene()
 
 	//Prepare platforms
 	std::unique_ptr<Platform> ground_platform(new Platform(PlatformType::kGroundPlatform, m_textures));
-	ground_platform->setPosition(m_world_bounds.width / 2, 755.f);
+	ground_platform->setPosition(m_world_bounds.width / 2, 745.f);
 	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(ground_platform));
 
 	std::unique_ptr<Platform> platform1(new Platform(PlatformType::kAirPlatform, m_textures));

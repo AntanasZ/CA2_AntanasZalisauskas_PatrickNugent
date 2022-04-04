@@ -35,7 +35,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
-	, m_game_countdown(sf::seconds(30))
+	, m_game_countdown(sf::seconds(1800))
 	, m_game_over(false)
 {
 	m_listener_socket.setBlocking(false);
