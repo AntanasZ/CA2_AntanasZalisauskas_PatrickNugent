@@ -486,73 +486,91 @@ sf::Color Character::DetermineDisplayColor()
 {
 	sf::Color color;
 
-	if (m_identifier == 1)
+	switch (m_identifier)
 	{
-		return sf::Color::Green;
-	}
-	else if (m_identifier == 2)
-	{
-		return sf::Color::Red;
-	}
-	else if (m_identifier == 3)
-	{
-		return sf::Color::Blue;
-	}
-	else if (m_identifier == 4)
-	{
-		return sf::Color::Yellow;
-	}
-	else if (m_identifier == 5)
-	{
-		//orange
-		return sf::Color::Color(255, 165, 0, 255);
-	}
-	else if (m_identifier == 6)
-	{
-		//purple
-		return sf::Color::Color(128, 0, 128, 255);
-	}
-	else if (m_identifier == 7)
-	{
-		//pink
-		return sf::Color::Color(255, 192, 203, 255);
-	}
-	else if (m_identifier == 8)
-	{
-		//grey
-		return sf::Color::Color(192, 192, 192, 255);
-	}
-	else if (m_identifier == 9)
-	{
-		return sf::Color::Cyan;
-	}
-	else if (m_identifier == 10)
-	{
-		return sf::Color::Color::Magenta;
-	}
-	else if (m_identifier == 11)
-	{
-		//brown
-		return sf::Color::Color(153, 76, 0, 255);
-	}
-	else if (m_identifier == 12)
-	{
-		//brown
-		return sf::Color::Color(153, 76, 0, 255);
-	}
-	else if (m_identifier == 13)
-	{
-		//brown
-		return sf::Color::White;
-	}
-	else if (m_identifier == 14)
-	{
-		//dark green
-		return sf::Color::Color(8, 59, 21, 255);
-	}
-	else
-	{
-		//beige
-		return sf::Color::Color(245, 245, 220, 255);
+		case 1:
+		{
+			return sf::Color::Green;
+		}
+		break;
+		case 2:
+		{
+			return sf::Color::Red;
+		}
+		break;
+		case 3:
+		{
+			return sf::Color::Blue;
+		}
+		break;
+		case 4:
+		{
+			return sf::Color::Yellow;
+		}
+		break;
+		case 5:
+		{
+			//orange
+			return sf::Color::Color(255, 165, 0, 255);
+		}
+		break;
+		case 6:
+		{
+			//purple
+			return sf::Color::Color(128, 0, 128, 255);
+		}
+		break;
+		case 7:
+		{
+			//pink
+			return sf::Color::Color(255, 192, 203, 255);
+		}
+		break;
+		case 8:
+		{
+			//grey
+			return sf::Color::Color(192, 192, 192, 255);
+		}
+		break;
+		case 9:
+		{
+			return sf::Color::Cyan;
+		}
+		break;
+		case 10:
+		{
+			return sf::Color::Color::Magenta;
+		}
+		break;
+		case 11:
+		{
+			//brown
+			return sf::Color::Color(153, 76, 0, 255);
+		}
+		break;
+		case 12:
+		{
+			//fuchsia
+			return sf::Color::Color(255, 0, 255, 255);
+		}
+		break;
+		case 13:
+		{
+			return sf::Color::White;
+		}
+		break;
+		case 14:
+		{
+			//dark green
+			return sf::Color::Color(8, 59, 21, 255);
+		}
+		break;
+		case 15:
+		{
+			//beige
+			return sf::Color::Color(245, 245, 220, 255);
+		}
+		break;
+		default: return sf::Color::Color(245, 245, 220, 255);
 	}
 }
