@@ -49,12 +49,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	m_broadcast_text.setFont(context.fonts->Get(Fonts::Main));
 	m_broadcast_text.setPosition(1024.f / 2, 100.f);
 
-	m_player_invitation_text.setFont(context.fonts->Get(Fonts::Main));
-	m_player_invitation_text.setCharacterSize(20);
-	m_player_invitation_text.setFillColor(sf::Color::White);
-	m_player_invitation_text.setString("Press Enter to spawn player 2");
-	m_player_invitation_text.setPosition(1000 - m_player_invitation_text.getLocalBounds().width, 760 - m_player_invitation_text.getLocalBounds().height);
-
 	//We reuse this text for "Attempt to connect" and "Failed to connect" messages
 	m_failed_connection_text.setFont(context.fonts->Get(Fonts::Main));
 	m_failed_connection_text.setString("Attempting to connect...");
@@ -109,11 +103,6 @@ void MultiplayerGameState::Draw()
 		if(!m_broadcasts.empty())
 		{
 			m_window.draw(m_broadcast_text);
-		}
-
-		if(m_local_player_identifiers.size() < 2 && m_player_invitation_time < sf::seconds(0.5f))
-		{
-			m_window.draw(m_player_invitation_text);
 		}
 	}
 	else
@@ -201,13 +190,6 @@ bool MultiplayerGameState::Update(sf::Time dt)
 
 		UpdateBroadcastMessage(dt);
 
-		//Time counter fro blinking second player text
-		m_player_invitation_time += dt;
-		if(m_player_invitation_time > sf::seconds(1.f))
-		{
-			m_player_invitation_time = sf::Time::Zero;
-		}
-
 		//Events occurring in the game
 		GameActions::Action game_action;
 		while(m_world.PollGameAction(game_action))
@@ -262,16 +244,9 @@ bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 	}
 
 	if(event.type == sf::Event::KeyPressed)
-	{
-		//If enter pressed, add second player co-op only if there is only 1 player
-		if(event.key.code == sf::Keyboard::Return && m_local_player_identifiers.size()==1)
-		{
-			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::PacketType::RequestCoopPartner);
-			m_socket.send(packet);
-		}
+	{	
 		//If escape is pressed, show the pause screen
-		else if(event.key.code == sf::Keyboard::Escape)
+	    if(event.key.code == sf::Keyboard::Escape)
 		{
 			DisableAllRealtimeActions();
 			RequestStackPush(StateID::kNetworkPause);
@@ -516,17 +491,6 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 
 			m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 		}
-	}
-	break;
-
-	case Server::PacketType::AcceptCoopPartner:
-	{
-		sf::Int32 character_identifier;
-		packet >> character_identifier;
-
-		m_world.AddCharacter(character_identifier, CharacterType::kScooby, false);
-		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys2));
-		m_local_player_identifiers.emplace_back(character_identifier);
 	}
 	break;
 

@@ -330,9 +330,9 @@ int	Character::GetIdentifier()
 	return m_identifier;
 }
 
-bool Character::GetIsFacingRight()
+void Character::SetIdentifier(int identifier)
 {
-	return m_is_facing_right;
+	m_identifier = identifier;
 }
 
 void Character::ToggleCanJump(bool value)

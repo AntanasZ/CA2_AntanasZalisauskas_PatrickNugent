@@ -48,8 +48,6 @@ public:
 	void SetStunned(bool value);
 	bool GetInvulnerable();
 	void SetInvulnerable(bool value);
-	bool GetIsFacingRight();
-	void SetIsFacingRight(bool facingRight);
 	CharacterType GetType();
 	void SetType(CharacterType type);
 	sf::Time GetStunTimer();
