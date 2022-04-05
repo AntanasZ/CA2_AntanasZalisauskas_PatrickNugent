@@ -3,9 +3,7 @@
 #include "ResourceIdentifiers.hpp"
 #include "SceneNode.hpp"
 #include "SpriteNode.hpp"
-#include "Aircraft.hpp"
 #include "Layers.hpp"
-#include "AircraftType.hpp"
 #include "NetworkNode.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
@@ -89,16 +87,6 @@ private:
 	void UpdateCameraPosition();
 
 private:
-	struct SpawnPoint
-	{
-		SpawnPoint(AircraftType type, float x, float y) : m_type(type), m_x(x), m_y(y)
-		{
-			
-		}
-		AircraftType m_type;
-		float m_x;
-		float m_y;
-	};
 
 	struct CharacterSpawnPoint
 	{

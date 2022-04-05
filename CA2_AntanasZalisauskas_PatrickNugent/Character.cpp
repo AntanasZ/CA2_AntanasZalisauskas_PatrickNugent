@@ -177,10 +177,7 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 unsigned Character::GetCategory() const
 {
 	if (isPlayer())
-		//if(m_type == CharacterType::kShaggy)
-		return static_cast<int>(Category::kPlayerCharacter1);
-		//else
-			//return static_cast<int>(Category::kPlayerCharacter2);
+		return static_cast<int>(Category::kPlayerCharacter);
 	else
 		return static_cast<int>(Category::kEnemyCharacter);
 }
@@ -358,14 +355,7 @@ void Character::FlipSprite()
 /// </summary>
 void Character::UpdateScore() const
 {
-	if(m_type == CharacterType::kShaggy)
-	{
-		m_score_display->SetString("Player 1\n\t " + std::to_string(m_score));
-	}
-	else
-	{
-		m_score_display->SetString("Player 2\n\t " + std::to_string(m_score));
-	}
+	m_score_display->SetString("Player " + std::to_string(m_identifier) + "\n\t " + std::to_string(m_score));
 }
 
 /// <summary>

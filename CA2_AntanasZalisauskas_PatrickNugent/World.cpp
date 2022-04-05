@@ -664,7 +664,7 @@ void World::HandleCollisions()
 	m_scenegraph.CheckSceneCollision(m_scenegraph, collision_pairs);
 	for(SceneNode::Pair pair : collision_pairs)
 	{
-		if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter1))
+		if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter))
 		{
 			auto& platform = static_cast<Platform&>(*pair.first);
 			auto& player = static_cast<Character&>(*pair.second);
@@ -681,24 +681,7 @@ void World::HandleCollisions()
 				player.SetVelocity(player.GetVelocity().x, 0);
 			}
 		}
-		else if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter2))
-		{
-			auto& platform = static_cast<Platform&>(*pair.first);
-			auto& player = static_cast<Character&>(*pair.second);
-
-			if (player.GetWorldPosition().y < platform.GetWorldPosition().y)
-			{
-				player.ToggleCanJump(true);
-				player.move(0.f, -1.f);
-				player.SetVelocity(player.GetVelocity().x, 0);
-			}
-			else if (player.GetWorldPosition().y > platform.GetWorldPosition().y)
-			{
-				player.move(0.f, 1.f);
-				player.SetVelocity(player.GetVelocity().x, 0);
-			}
-		}
-		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kEnemyCharacter) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kEnemyCharacter))
+		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter, Category::Type::kEnemyCharacter))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
 			if (!player.GetInvulnerable())
@@ -708,7 +691,7 @@ void World::HandleCollisions()
 				player.SetInvulnerable(true);
 			}
 		}
-		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kPickup) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kPickup))
+		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter, Category::Type::kPickup))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
 			auto& pickup = static_cast<Pickup&>(*pair.second);

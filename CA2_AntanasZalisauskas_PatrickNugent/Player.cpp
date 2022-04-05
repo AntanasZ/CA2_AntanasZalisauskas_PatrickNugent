@@ -1,5 +1,4 @@
 #include "Player.hpp"
-#include "Aircraft.hpp"
 #include "NetworkProtocol.hpp"
 #include <SFML/Network/Packet.hpp>
 #include <algorithm>
@@ -61,27 +60,6 @@ struct CharacterJump
 	int character_id;
 };
 
-struct AircraftMover
-{
-	AircraftMover(float vx, float vy, int identifier)
-	: velocity(vx, vy)
-	, aircraft_id(identifier)
-	{
-		
-	}
-
-	void operator()(Aircraft& aircraft, sf::Time) const
-	{
-		if (aircraft.GetIdentifier() == aircraft_id)
-		{
-			aircraft.Accelerate(velocity * aircraft.GetMaxSpeed());
-		}
-	}
-
-	sf::Vector2f velocity;
-	int aircraft_id;
-};
-
 Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
 	, m_current_mission_status(MissionStatus::kMissionRunning)
@@ -94,7 +72,7 @@ Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* bi
 	// Assign all categories to player's character
 	for(auto & pair : m_action_binding)
 	{
-		pair.second.category = Category::kPlayerCharacter1;
+		pair.second.category = Category::kPlayerCharacter;
 	}
 		
 }
