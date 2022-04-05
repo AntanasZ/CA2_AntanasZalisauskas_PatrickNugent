@@ -72,6 +72,7 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 	m_can_jump(true),
 	m_jump_height(Table[static_cast<int>(type)].m_jump_height),
 	m_is_invulnerable(false),
+	m_is_facing_right(true),
 	m_stun_timer(),
 	m_is_marked_for_removal(false),
 	m_identifier(0)
@@ -205,7 +206,6 @@ void Character::UpdateMovementPattern(sf::Time dt)
 
 		SetVelocity(vx, vy);
 		m_travelled_distance += GetMaxSpeed() * dt.asSeconds();
-
 	}
 }
 //********* Implement Later for Enemies ****************//
@@ -241,6 +241,12 @@ void Character::DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) c
 	}
 }
 
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+/// Added checks for flipping player sprites based on velocity and 
+/// the direction that they're currently facing
+/// </summary>
 void Character::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 {
 	if (IsDestroyed())
@@ -256,12 +262,32 @@ void Character::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 			m_stunned.Update(dt);
 		}
 	}
-	else if(Table[static_cast<int>(m_type)].m_has_run_animation)
+	else if (Table[static_cast<int>(m_type)].m_has_run_animation)
 	{
 		m_running.Update(dt);
 	}
+
 	UpdateMovementPattern(dt);
 	Entity::UpdateCurrent(dt, commands);
+
+	if (isPlayer())
+	{
+		const sf::Vector2f velocity = GetVelocity();
+		if (velocity.x > 0 && !m_is_facing_right)
+		{
+			m_is_facing_right = true;
+			FlipSprite();
+			m_running.scale(-1, 1);
+			m_stunned.scale(-1, 1);
+		}
+		else if (velocity.x < 0 && m_is_facing_right)
+		{
+			m_is_facing_right = false;
+			FlipSprite();
+			m_running.scale(-1, 1);
+			m_stunned.scale(-1, 1);
+		}
+	}
 }
 
 bool Character::isPlayer() const
@@ -304,11 +330,10 @@ int	Character::GetIdentifier()
 	return m_identifier;
 }
 
-void Character::SetIdentifier(int identifier)
+bool Character::GetIsFacingRight()
 {
-	m_identifier = identifier;
+	return m_is_facing_right;
 }
-
 
 void Character::ToggleCanJump(bool value)
 {

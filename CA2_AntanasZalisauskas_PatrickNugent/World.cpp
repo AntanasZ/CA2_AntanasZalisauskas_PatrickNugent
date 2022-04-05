@@ -67,7 +67,6 @@ void World::Update(sf::Time dt)
 		}
 
 		DestroyEntitiesOutsideView();
-		//GuideMissiles();
 
 		//Forward commands to the scenegraph until the command queue is empty
 		while (!m_command_queue.IsEmpty())
