@@ -572,46 +572,7 @@ void World::AddEnemies()
 	AddEnemy(CharacterType::kSkullRight, true, 500.f, -150.f);
 	AddEnemy(CharacterType::kDutchmanLeft, true, -500.f, 200.f);
 	AddEnemy(CharacterType::kDutchmanRight, true, 500.f, 200.f);
-
-	//Add all enemies
-	/*AddEnemy(::kRaptor, 0.f, 500.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 1000.f);
-	AddEnemy(AircraftType::kRaptor, +100.f, 1150.f);
-	AddEnemy(AircraftType::kRaptor, -100.f, 1150.f);
-	AddEnemy(AircraftType::kAvenger, 70.f, 1500.f);
-	AddEnemy(AircraftType::kAvenger, -70.f, 1500.f);
-	AddEnemy(AircraftType::kAvenger, -70.f, 1710.f);
-	AddEnemy(AircraftType::kAvenger, 70.f, 1700.f);
-	AddEnemy(AircraftType::kAvenger, 30.f, 1850.f);
-	AddEnemy(AircraftType::kRaptor, 300.f, 2200.f);
-	AddEnemy(AircraftType::kRaptor, -300.f, 2200.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 2200.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 2500.f);
-	AddEnemy(AircraftType::kAvenger, -300.f, 2700.f);
-	AddEnemy(AircraftType::kAvenger, -300.f, 2700.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 3000.f);
-	AddEnemy(AircraftType::kRaptor, 250.f, 3250.f);
-	AddEnemy(AircraftType::kRaptor, -250.f, 3250.f);
-	AddEnemy(AircraftType::kAvenger, 0.f, 3500.f);
-	AddEnemy(AircraftType::kAvenger, 0.f, 3700.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 3800.f);
-	AddEnemy(AircraftType::kAvenger, 0.f, 4000.f);
-	AddEnemy(AircraftType::kAvenger, -200.f, 4200.f);
-	AddEnemy(AircraftType::kRaptor, 200.f, 4200.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 4400.f);*/
-
-	//Sort according to y value so that lower enemies are checked first
-	//SortEnemies();
 }
-
-//void World::SortEnemies()
-//{
-//	//Sort all enemies according to their y-value, such that lower enemies are checked first for spawning
-//	std::sort(m_enemy_spawn_points.begin(), m_enemy_spawn_points.end(), [](SpawnPoint lhs, SpawnPoint rhs)
-//	{
-//		return lhs.m_y < rhs.m_y;
-//	});
-//}
 
 /// <summary>
 /// Created By: Patrick Nugent

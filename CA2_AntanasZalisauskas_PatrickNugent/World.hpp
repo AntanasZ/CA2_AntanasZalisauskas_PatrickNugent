@@ -41,9 +41,7 @@ public:
 	sf::FloatRect GetViewBounds() const;
 	CommandQueue& GetCommandQueue();
 
-	//Aircraft* AddAircraft(int identifier);
 	Character* AddCharacter(int identifier, CharacterType type, bool local_player);
-	//void RemoveAircraft(int identifier);
 	void RemoveCharacter(int identifier);
 	void SetCurrentBattleFieldPosition(float line_y);
 	void SetWorldHeight(float height);
@@ -58,7 +56,6 @@ public:
 	bool HasPlayerReachedEnd() const;
 
 	void SetWorldScrollCompensation(float compensation);
-	//Aircraft* GetAircraft(int identifier) const;
 	Character* GetCharacter(int identifier) const;
 	sf::FloatRect GetBattlefieldBounds() const;
 	//void CreatePickup(sf::Vector2f position, PickupType type);
