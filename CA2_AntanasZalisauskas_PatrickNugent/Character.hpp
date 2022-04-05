@@ -78,6 +78,7 @@ private:
 	bool m_show_stun;
 	bool m_is_invulnerable;
 	sf::Time m_stun_timer;
+	bool m_is_facing_right;
 
 	bool m_is_marked_for_removal;
 	float m_travelled_distance;

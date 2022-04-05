@@ -316,43 +316,6 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 	}
 	break;
 
-	case Client::PacketType::RequestCoopPartner:
-	{
-		receiving_peer.m_character_identifiers.emplace_back(m_character_identifier_counter);
-		m_character_info[m_character_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.width / 2, m_battlefield_rect.top + m_battlefield_rect.height / 2);
-		m_character_info[m_character_identifier_counter].m_score = 0;
-		//m_character_info[m_character_identifier_counter].m_missile_ammo = 2;
-
-		sf::Packet request_packet;
-		request_packet << static_cast<sf::Int32>(Server::PacketType::AcceptCoopPartner);
-		request_packet << m_character_identifier_counter;
-		request_packet << m_character_info[m_character_identifier_counter].m_position.x;
-		request_packet << m_character_info[m_character_identifier_counter].m_position.y;
-
-		receiving_peer.m_socket.send(request_packet);
-		m_character_count++;
-
-		// Tell everyone else about the new character
-		sf::Packet notify_packet;
-		notify_packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
-		notify_packet << m_character_identifier_counter;
-		notify_packet << m_character_info[m_character_identifier_counter].m_position.x;
-		notify_packet << m_character_info[m_character_identifier_counter].m_position.y;
-		notify_packet << m_character_info[m_character_identifier_counter].m_type;
-
-		for (PeerPtr& peer : m_peers)
-		{
-			if (peer.get() != &receiving_peer && peer->m_ready)
-			{
-
-				peer->m_socket.send(notify_packet);
-			}
-		}
-
-		m_character_identifier_counter++;
-	}
-	break;
-
 	case Client::PacketType::PositionUpdate:
 	{
 		sf::Int32 num_characters;

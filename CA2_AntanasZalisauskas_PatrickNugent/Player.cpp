@@ -218,9 +218,6 @@ void Player::InitialiseActions()
 	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Character>(CharacterMover(-1, 0, m_identifier));
 	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Character>(CharacterMover(+1, 0, m_identifier));
 	m_action_binding[PlayerAction::kMoveUp].action = DerivedAction<Character>(CharacterJump(m_identifier));
-	//m_action_binding[PlayerAction::kMoveDown].action = DerivedAction<Aircraft>(AircraftMover(0, +1, m_identifier));
-	//m_action_binding[PlayerAction::kFire].action = DerivedAction<Aircraft>(AircraftFireTrigger(m_identifier));
-	//m_action_binding[PlayerAction::kLaunchMissile].action = DerivedAction<Aircraft>(AircraftMissileTrigger(m_identifier));
 }
 
 
