@@ -408,6 +408,7 @@ void World::AdaptPlayerPosition()
 
 	for (Character* character : m_player_characters)
 	{
+		
 		sf::Vector2f position = character->getPosition();
 		position.x = std::max(position.x, view_bounds.left + border_distance);
 		position.x = std::min(position.x, view_bounds.left + view_bounds.width - border_distance);
@@ -434,13 +435,16 @@ void World::AdaptPlayerVelocity(sf::Time dt)
 
 sf::FloatRect World::GetViewBounds() const
 {
-	return sf::FloatRect(m_camera.getCenter() - m_camera.getSize() / 2.f, m_camera.getSize());
+	sf::Vector2f position((m_world_bounds.width / 2) - m_world_bounds.width / 2.f, (m_world_bounds.height / 2) - m_world_bounds.height / 2.f);
+	sf::Vector2f size = m_camera.getSize();
+	
+	return sf::FloatRect(position, size);
 }
 
 sf::FloatRect World::GetBattlefieldBounds() const
 {
-	//Return camera bounds + a small area at the top where enemies spawn offscreen
-	sf::FloatRect bounds = GetViewBounds();
+	//Return world bounds + a small area at the top where enemies spawn offscreen
+	sf::FloatRect bounds = m_world_bounds;//GetViewBounds();
 	bounds.left -= 100.f;
 	bounds.width += 100.f;
 
@@ -797,11 +801,12 @@ void World::UpdateSounds()
 /// </summary>
 void World::UpdateCameraPosition()
 {
-	/*if(!m_player_characters.empty())
+	if(!m_player_characters.empty())
 	{
 		if(GetCharacter(m_local_player_identifier) != nullptr)
 		{
 			m_camera.setCenter(m_player_characters[m_local_player_identifier-1]->GetWorldPosition().x, m_camera.getCenter().y);
+			m_game_timer_display->setPosition(m_player_characters[m_local_player_identifier - 1]->GetWorldPosition().x, m_game_timer_display->GetWorldPosition().y);
 		}
-	}*/
+	}
 }
