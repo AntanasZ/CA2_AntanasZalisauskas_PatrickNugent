@@ -28,7 +28,8 @@
 class Character : public Entity
 {
 public:
-	Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts);
+	Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts, int identifier);
+	Character(CharacterType type, const TextureHolder& textures);
 	unsigned int GetCategory() const override;
 
 	int GetIdentifier();
@@ -64,6 +65,7 @@ private:
 	virtual void UpdateCurrent(sf::Time dt, CommandQueue& commands) override;
 	bool isPlayer() const;
 	void UpdateScore() const;
+	sf::Color DetermineDisplayColor();
 
 private:
 	CharacterType m_type;

@@ -62,7 +62,7 @@ Textures ToTextureID(CharacterType type)
 ///	-Added field for showing stun animation
 ///	-Added field for running animation
 /// </summary>
-Character::Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts)
+Character::Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts, int identifier)
 	: Entity(Table[static_cast<int>(type)].m_hitpoints),
 	m_type(type),
 	m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture)),
@@ -78,6 +78,7 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 	m_identifier(0)
 {
 	Utility::CentreOrigin(m_sprite);
+	m_identifier = identifier;
 
 	if(type == CharacterType::kShaggy || type == CharacterType::kScooby || type == CharacterType::kFred
 		|| type == CharacterType::kVelma || type == CharacterType::kDaphne)
@@ -92,7 +93,6 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 
 		if (type == CharacterType::kShaggy)
 		{
-			scoreDisplay->SetColor(sf::Color::Red);
 			m_stunned.SetTexture(textures.Get(Textures::kShaggyStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(30, 69));
 
@@ -105,7 +105,6 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 		}
 		else if(type == CharacterType::kScooby)
 		{
-			scoreDisplay->SetColor(sf::Color::Green);
 			m_stunned.SetTexture(textures.Get(Textures::kScoobyStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(49, 46));
 
@@ -118,7 +117,6 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 		}
 		else if (type == CharacterType::kFred)
 		{
-			scoreDisplay->SetColor(sf::Color::Green);
 			m_stunned.SetTexture(textures.Get(Textures::kFredStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(27, 67));
 
@@ -131,7 +129,6 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 		}
 		else if (type == CharacterType::kVelma)
 		{
-			scoreDisplay->SetColor(sf::Color::Green);
 			m_stunned.SetTexture(textures.Get(Textures::kVelmaStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(38, 59));
 
@@ -147,7 +144,6 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 
 		else if (type == CharacterType::kDaphne)
 		{
-			scoreDisplay->SetColor(sf::Color::Green);
 			m_stunned.SetTexture(textures.Get(Textures::kDaphneStunned));
 			m_stunned.SetFrameSize(sf::Vector2i(25, 59));
 
@@ -161,11 +157,27 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 			Utility::CentreOrigin(m_running);
 		}
 
+		scoreDisplay->SetColor(DetermineDisplayColor());
 		scoreDisplay->setPosition(0, -55);
 		m_score_display = scoreDisplay.get();
 		AttachChild(std::move(scoreDisplay));
 		UpdateScore();
 	}
+}
+
+/// <summary>
+/// Created by: Patrick Nugent
+///
+/// Overloaded constructor for characters that don't belong to players
+/// </summary>
+Character::Character(CharacterType type, const TextureHolder& textures)
+	: Entity(Table[static_cast<int>(type)].m_hitpoints),
+	m_type(type),
+	m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture)),
+	m_is_marked_for_removal(false),
+	m_identifier(0)
+{
+	Utility::CentreOrigin(m_sprite);
 }
 
 /// <summary>
@@ -462,4 +474,85 @@ void Character::AddToStunTimer(sf::Time seconds)
 void Character::ResetStunTimer()
 {
 	m_stun_timer = sf::Time::Zero;
+}
+
+/// <summary>
+/// Edited by: Patrick Nugent
+///
+/// Returns a color to use for text based on the player's id
+/// </summary>
+/// <returns>The color associated with the player's identifier</returns>
+sf::Color Character::DetermineDisplayColor()
+{
+	sf::Color color;
+
+	if (m_identifier == 1)
+	{
+		return sf::Color::Green;
+	}
+	else if (m_identifier == 2)
+	{
+		return sf::Color::Red;
+	}
+	else if (m_identifier == 3)
+	{
+		return sf::Color::Blue;
+	}
+	else if (m_identifier == 4)
+	{
+		return sf::Color::Yellow;
+	}
+	else if (m_identifier == 5)
+	{
+		//orange
+		return sf::Color::Color(255, 165, 0, 255);
+	}
+	else if (m_identifier == 6)
+	{
+		//purple
+		return sf::Color::Color(128, 0, 128, 255);
+	}
+	else if (m_identifier == 7)
+	{
+		//pink
+		return sf::Color::Color(255, 192, 203, 255);
+	}
+	else if (m_identifier == 8)
+	{
+		//grey
+		return sf::Color::Color(192, 192, 192, 255);
+	}
+	else if (m_identifier == 9)
+	{
+		return sf::Color::Cyan;
+	}
+	else if (m_identifier == 10)
+	{
+		return sf::Color::Color::Magenta;
+	}
+	else if (m_identifier == 11)
+	{
+		//brown
+		return sf::Color::Color(153, 76, 0, 255);
+	}
+	else if (m_identifier == 12)
+	{
+		//brown
+		return sf::Color::Color(153, 76, 0, 255);
+	}
+	else if (m_identifier == 13)
+	{
+		//brown
+		return sf::Color::White;
+	}
+	else if (m_identifier == 14)
+	{
+		//dark green
+		return sf::Color::Color(8, 59, 21, 255);
+	}
+	else
+	{
+		//beige
+		return sf::Color::Color(245, 245, 220, 255);
+	}
 }

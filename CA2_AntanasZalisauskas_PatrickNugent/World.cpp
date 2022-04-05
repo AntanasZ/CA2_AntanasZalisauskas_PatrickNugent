@@ -222,9 +222,9 @@ Character* World::AddCharacter(int identifier, CharacterType type, bool local_pl
 		m_local_player_identifier = identifier;
 	}
 
-	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts));
+	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts, identifier));
 	player->setPosition(m_camera.getCenter());
-	player->SetIdentifier(identifier);
+	//player->SetIdentifier(identifier);
 	m_player_characters.emplace_back(player.get());
 	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(player));
 
@@ -451,7 +451,7 @@ void World::SpawnEnemies(sf::Int8 enemyType)
 {
 	//Spawn a random enemy from the vector of enemy spawn points
 	CharacterSpawnPoint spawn = m_enemy_spawn_points[enemyType];
-	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures, m_fonts));
+	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures));
 	enemy->setPosition(spawn.m_x, spawn.m_y);
 
 	//If an enemy is spawning on the right side then flip the sprite
@@ -472,7 +472,7 @@ void World::SpawnFlyingEnemies(sf::Int8 enemyType)
 {
 	//Spawn a random flying enemy from the vector of flying enemy spawn points
 	CharacterSpawnPoint spawn = m_flying_enemy_spawn_points[enemyType];
-	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures, m_fonts));
+	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures));
 	enemy->setPosition(spawn.m_x, spawn.m_y);
 
 	//If an enemy is spawning on the right side then flip the sprite
