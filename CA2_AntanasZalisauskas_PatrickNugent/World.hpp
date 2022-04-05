@@ -3,9 +3,7 @@
 #include "ResourceIdentifiers.hpp"
 #include "SceneNode.hpp"
 #include "SpriteNode.hpp"
-#include "Aircraft.hpp"
 #include "Layers.hpp"
-#include "AircraftType.hpp"
 #include "NetworkNode.hpp"
 
 #include <SFML/System/NonCopyable.hpp>
@@ -43,9 +41,7 @@ public:
 	sf::FloatRect GetViewBounds() const;
 	CommandQueue& GetCommandQueue();
 
-	//Aircraft* AddAircraft(int identifier);
 	Character* AddCharacter(int identifier, CharacterType type, bool local_player);
-	//void RemoveAircraft(int identifier);
 	void RemoveCharacter(int identifier);
 	void SetCurrentBattleFieldPosition(float line_y);
 	void SetWorldHeight(float height);
@@ -60,7 +56,6 @@ public:
 	bool HasPlayerReachedEnd() const;
 
 	void SetWorldScrollCompensation(float compensation);
-	//Aircraft* GetAircraft(int identifier) const;
 	Character* GetCharacter(int identifier) const;
 	sf::FloatRect GetBattlefieldBounds() const;
 	//void CreatePickup(sf::Vector2f position, PickupType type);
@@ -89,16 +84,6 @@ private:
 	void UpdateCameraPosition();
 
 private:
-	struct SpawnPoint
-	{
-		SpawnPoint(AircraftType type, float x, float y) : m_type(type), m_x(x), m_y(y)
-		{
-			
-		}
-		AircraftType m_type;
-		float m_x;
-		float m_y;
-	};
 
 	struct CharacterSpawnPoint
 	{

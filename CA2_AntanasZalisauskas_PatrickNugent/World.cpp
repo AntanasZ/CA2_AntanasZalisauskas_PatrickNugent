@@ -222,9 +222,9 @@ Character* World::AddCharacter(int identifier, CharacterType type, bool local_pl
 		m_local_player_identifier = identifier;
 	}
 
-	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts));
+	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts, identifier));
 	player->setPosition(m_camera.getCenter());
-	player->SetIdentifier(identifier);
+	//player->SetIdentifier(identifier);
 	m_player_characters.emplace_back(player.get());
 	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(player));
 
@@ -451,7 +451,7 @@ void World::SpawnEnemies(sf::Int8 enemyType)
 {
 	//Spawn a random enemy from the vector of enemy spawn points
 	CharacterSpawnPoint spawn = m_enemy_spawn_points[enemyType];
-	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures, m_fonts));
+	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures));
 	enemy->setPosition(spawn.m_x, spawn.m_y);
 
 	//If an enemy is spawning on the right side then flip the sprite
@@ -472,7 +472,7 @@ void World::SpawnFlyingEnemies(sf::Int8 enemyType)
 {
 	//Spawn a random flying enemy from the vector of flying enemy spawn points
 	CharacterSpawnPoint spawn = m_flying_enemy_spawn_points[enemyType];
-	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures, m_fonts));
+	std::unique_ptr<Character> enemy(new Character(spawn.m_type, m_textures));
 	enemy->setPosition(spawn.m_x, spawn.m_y);
 
 	//If an enemy is spawning on the right side then flip the sprite
@@ -572,46 +572,7 @@ void World::AddEnemies()
 	AddEnemy(CharacterType::kSkullRight, true, 500.f, -150.f);
 	AddEnemy(CharacterType::kDutchmanLeft, true, -500.f, 200.f);
 	AddEnemy(CharacterType::kDutchmanRight, true, 500.f, 200.f);
-
-	//Add all enemies
-	/*AddEnemy(::kRaptor, 0.f, 500.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 1000.f);
-	AddEnemy(AircraftType::kRaptor, +100.f, 1150.f);
-	AddEnemy(AircraftType::kRaptor, -100.f, 1150.f);
-	AddEnemy(AircraftType::kAvenger, 70.f, 1500.f);
-	AddEnemy(AircraftType::kAvenger, -70.f, 1500.f);
-	AddEnemy(AircraftType::kAvenger, -70.f, 1710.f);
-	AddEnemy(AircraftType::kAvenger, 70.f, 1700.f);
-	AddEnemy(AircraftType::kAvenger, 30.f, 1850.f);
-	AddEnemy(AircraftType::kRaptor, 300.f, 2200.f);
-	AddEnemy(AircraftType::kRaptor, -300.f, 2200.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 2200.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 2500.f);
-	AddEnemy(AircraftType::kAvenger, -300.f, 2700.f);
-	AddEnemy(AircraftType::kAvenger, -300.f, 2700.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 3000.f);
-	AddEnemy(AircraftType::kRaptor, 250.f, 3250.f);
-	AddEnemy(AircraftType::kRaptor, -250.f, 3250.f);
-	AddEnemy(AircraftType::kAvenger, 0.f, 3500.f);
-	AddEnemy(AircraftType::kAvenger, 0.f, 3700.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 3800.f);
-	AddEnemy(AircraftType::kAvenger, 0.f, 4000.f);
-	AddEnemy(AircraftType::kAvenger, -200.f, 4200.f);
-	AddEnemy(AircraftType::kRaptor, 200.f, 4200.f);
-	AddEnemy(AircraftType::kRaptor, 0.f, 4400.f);*/
-
-	//Sort according to y value so that lower enemies are checked first
-	//SortEnemies();
 }
-
-//void World::SortEnemies()
-//{
-//	//Sort all enemies according to their y-value, such that lower enemies are checked first for spawning
-//	std::sort(m_enemy_spawn_points.begin(), m_enemy_spawn_points.end(), [](SpawnPoint lhs, SpawnPoint rhs)
-//	{
-//		return lhs.m_y < rhs.m_y;
-//	});
-//}
 
 /// <summary>
 /// Created By: Patrick Nugent
@@ -664,7 +625,7 @@ void World::HandleCollisions()
 	m_scenegraph.CheckSceneCollision(m_scenegraph, collision_pairs);
 	for(SceneNode::Pair pair : collision_pairs)
 	{
-		if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter1))
+		if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter))
 		{
 			auto& platform = static_cast<Platform&>(*pair.first);
 			auto& player = static_cast<Character&>(*pair.second);
@@ -681,24 +642,7 @@ void World::HandleCollisions()
 				player.SetVelocity(player.GetVelocity().x, 0);
 			}
 		}
-		else if (MatchesCategories(pair, Category::Type::kPlatform, Category::Type::kPlayerCharacter2))
-		{
-			auto& platform = static_cast<Platform&>(*pair.first);
-			auto& player = static_cast<Character&>(*pair.second);
-
-			if (player.GetWorldPosition().y < platform.GetWorldPosition().y)
-			{
-				player.ToggleCanJump(true);
-				player.move(0.f, -1.f);
-				player.SetVelocity(player.GetVelocity().x, 0);
-			}
-			else if (player.GetWorldPosition().y > platform.GetWorldPosition().y)
-			{
-				player.move(0.f, 1.f);
-				player.SetVelocity(player.GetVelocity().x, 0);
-			}
-		}
-		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kEnemyCharacter) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kEnemyCharacter))
+		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter, Category::Type::kEnemyCharacter))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
 			if (!player.GetInvulnerable())
@@ -708,7 +652,7 @@ void World::HandleCollisions()
 				player.SetInvulnerable(true);
 			}
 		}
-		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter1, Category::Type::kPickup) || MatchesCategories(pair, Category::Type::kPlayerCharacter2, Category::Type::kPickup))
+		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter, Category::Type::kPickup))
 		{
 			auto& player = static_cast<Character&>(*pair.first);
 			auto& pickup = static_cast<Pickup&>(*pair.second);

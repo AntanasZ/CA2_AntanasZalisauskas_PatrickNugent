@@ -339,29 +339,39 @@ void MultiplayerGameState::UpdateBroadcastMessage(sf::Time elapsed_time)
 /// <returns>The CharacterType associated with the number passed in</returns>
 CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNumber)
 {
-	if (characterNumber == 1)
+	switch (characterNumber)
 	{
-		return CharacterType::kScooby;
-	}
-	else if (characterNumber == 2)
-	{
-		return CharacterType::kShaggy;
-	}
-	else if (characterNumber == 3)
-	{
-		return CharacterType::kFred;
-	}
-	else if (characterNumber == 4)
-	{
-		return CharacterType::kVelma;
-	}
-	else if (characterNumber == 2)
-	{
-		return CharacterType::kDaphne;
-	}
-	else
-	{
-		return CharacterType::kShaggy;
+		case 1:
+		{
+			return CharacterType::kScooby;
+		}
+		break;
+		
+		case 2:
+		{
+			return CharacterType::kShaggy;
+		}
+		break;
+
+		case 3:
+		{
+			return CharacterType::kFred;
+		}
+		break;
+
+		case 4:
+		{
+			return CharacterType::kVelma;
+		}
+		break;
+
+		case 5:
+		{
+			return CharacterType::kDaphne;
+		}
+		break;
+
+		default: return CharacterType::kShaggy;
 	}
 }
 
@@ -373,29 +383,39 @@ CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNu
 /// <returns>The number associated with the CharacterType passed in</returns>
 int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterType)
 {
-	if (characterType == CharacterType::kScooby)
+	switch (characterType)
 	{
-		return 1;
-	}
-	else if (characterType == CharacterType::kShaggy)
-	{
-		return 2;
-	}
-	else if (characterType == CharacterType::kFred)
-	{
-		return 3;
-	}
-	else if (characterType == CharacterType::kVelma)
-	{
-		return 4;
-	}
-	else if (characterType == CharacterType::kDaphne)
-	{
-		return 5;
-	}
-	else
-	{
-		return 2;
+		case CharacterType::kScooby:
+		{
+			return 1;
+		}
+		break;
+
+		case CharacterType::kShaggy:
+		{
+			return 2;
+		}
+		break;
+
+		case CharacterType::kFred:
+		{
+			return 3;
+		}
+		break;
+
+		case CharacterType::kVelma:
+		{
+			return 4;
+		}
+		break;
+
+		case CharacterType::kDaphne:
+		{
+			return 5;
+		}
+		break;
+
+	    default: return 2;
 	}
 }
 

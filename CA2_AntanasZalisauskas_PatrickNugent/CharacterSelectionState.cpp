@@ -20,6 +20,12 @@ CharacterSelectionState::CharacterSelectionState(StateStack& stack, Context cont
 
 	m_background_sprite.setTexture(texture);
 
+	m_select_character_text.setFont(context.fonts->Get(Fonts::Main));
+	m_select_character_text.setString("Select your character");
+	m_select_character_text.setPosition(315.f, 160.f);
+	m_select_character_text.setCharacterSize(40u);
+	m_select_character_text.setFillColor(sf::Color::Color(237, 137, 96, 255));
+
 	auto scooby_button = std::make_shared<GUI::Button>(context);
 	scooby_button->setPosition(400, 225);
 	scooby_button->SetText("Scooby");
@@ -93,6 +99,7 @@ void CharacterSelectionState::Draw()
 	window.setView(window.getDefaultView());
 	window.draw(m_background_sprite);
 	window.draw(m_gui_container);
+	window.draw(m_select_character_text);
 }
 
 bool CharacterSelectionState::Update(sf::Time dt)

@@ -4,7 +4,6 @@
 
 #include <SFML/Network/Packet.hpp>
 
-#include "Aircraft.hpp"
 #include "PickupType.hpp"
 #include "Utility.hpp"
 #include <iostream>
