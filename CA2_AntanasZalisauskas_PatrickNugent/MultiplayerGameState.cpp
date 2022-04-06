@@ -297,7 +297,6 @@ void MultiplayerGameState::SendCharacterSelection()
 		{
 			packet << identifier;
 			packet << static_cast<sf::Int8>(DetermineNumberFromCharacter(character->GetType()));
-			std::cout << "character number before sending packet: " << DetermineNumberFromCharacter(character->GetType()) << "\n";
 		}
 	}
 
@@ -514,6 +513,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 			character->setPosition(character_position);
 			character->SetScore((int)character_score);
+			character->SetSprites(true);
 
 			m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
 		}
@@ -617,7 +617,8 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 			sf::Vector2f character_position;
 			sf::Int32 character_identifier;
 			sf::Int16 character_score;
-			packet >> character_identifier >> character_position.x >> character_position.y >> character_score;
+			sf::Int8 character_type;
+			packet >> character_identifier >> character_position.x >> character_position.y >> character_score >> character_type;
 
 			Character* character = m_world.GetCharacter(character_identifier);
 			bool is_local_character = std::find(m_local_player_identifiers.begin(), m_local_player_identifiers.end(), character_identifier) != m_local_player_identifiers.end();
@@ -626,6 +627,7 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 				sf::Vector2f interpolated_position = character->getPosition() + (character_position - character->getPosition()) * 0.25f;
 				character->setPosition(interpolated_position);
 				character->SetScore((int)character_score);
+				character->SetType(DetermineCharacterFromNumber(character_type));
 			}
 		}
 	}

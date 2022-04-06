@@ -62,10 +62,11 @@ Textures ToTextureID(CharacterType type)
 ///	-Added field for showing stun animation
 ///	-Added field for running animation
 /// </summary>
-Character::Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts, int identifier)
+Character::Character(CharacterType type, TextureHolder& textures, const FontHolder& fonts, int identifier, bool isLocalCharacter)
 	: Entity(Table[static_cast<int>(type)].m_hitpoints),
+	m_texture_holder(textures),
 	m_type(type),
-	m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture)),
+	m_sprite(),
 	m_stunned(),
 	m_running(),
 	m_show_stun(true),
@@ -75,9 +76,14 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 	m_is_facing_right(true),
 	m_stun_timer(),
 	m_is_marked_for_removal(false),
-	m_identifier(0)
+	m_identifier(0),
+	m_is_local_character(isLocalCharacter)
 {
-	Utility::CentreOrigin(m_sprite);
+	if (m_is_local_character)
+	{
+		m_sprite = sf::Sprite(textures.Get(Table[static_cast<int>(type)].m_texture));
+		Utility::CentreOrigin(m_sprite);
+	}
 	m_identifier = identifier;
 
 	if(type == CharacterType::kShaggy || type == CharacterType::kScooby || type == CharacterType::kFred
@@ -91,71 +97,7 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 		m_running.SetDuration(sf::seconds(1));
 	    m_running.SetRepeating(true);
 
-		if (type == CharacterType::kShaggy)
-		{
-			m_stunned.SetTexture(textures.Get(Textures::kShaggyStunned));
-			m_stunned.SetFrameSize(sf::Vector2i(30, 69));
-
-			m_running.SetNumFrames(10);
-			m_running.SetTexture(textures.Get(Textures::kShaggyRunning));
-		    m_running.SetFrameSize(sf::Vector2i(59, 68));
-
-			Utility::CentreOrigin(m_stunned);
-			Utility::CentreOrigin(m_running);
-		}
-		else if(type == CharacterType::kScooby)
-		{
-			m_stunned.SetTexture(textures.Get(Textures::kScoobyStunned));
-			m_stunned.SetFrameSize(sf::Vector2i(49, 46));
-
-			m_running.SetNumFrames(7);
-			m_running.SetTexture(textures.Get(Textures::kScoobyRunning));
-			m_running.SetFrameSize(sf::Vector2i(67, 46));
-
-			Utility::CentreOrigin(m_stunned);
-			Utility::CentreOrigin(m_running);
-		}
-		else if (type == CharacterType::kFred)
-		{
-			m_stunned.SetTexture(textures.Get(Textures::kFredStunned));
-			m_stunned.SetFrameSize(sf::Vector2i(27, 67));
-
-			m_running.SetNumFrames(12);
-			m_running.SetTexture(textures.Get(Textures::kFredRunning));
-			m_running.SetFrameSize(sf::Vector2i(49, 67));
-
-			Utility::CentreOrigin(m_stunned);
-			Utility::CentreOrigin(m_running);
-		}
-		else if (type == CharacterType::kVelma)
-		{
-			m_stunned.SetTexture(textures.Get(Textures::kVelmaStunned));
-			m_stunned.SetFrameSize(sf::Vector2i(38, 59));
-
-			m_stunned.SetNumFrames(3);
-
-			m_running.SetNumFrames(12);
-			m_running.SetTexture(textures.Get(Textures::kVelmaRunning));
-			m_running.SetFrameSize(sf::Vector2i(36, 59));
-
-			Utility::CentreOrigin(m_stunned);
-			Utility::CentreOrigin(m_running);
-		}
-
-		else if (type == CharacterType::kDaphne)
-		{
-			m_stunned.SetTexture(textures.Get(Textures::kDaphneStunned));
-			m_stunned.SetFrameSize(sf::Vector2i(25, 59));
-
-			m_stunned.SetNumFrames(3);
-
-			m_running.SetNumFrames(12);
-			m_running.SetTexture(textures.Get(Textures::kDaphneRunning));
-			m_running.SetFrameSize(sf::Vector2i(45, 59));
-
-			Utility::CentreOrigin(m_stunned);
-			Utility::CentreOrigin(m_running);
-		}
+		SetSprites(false);
 
 		scoreDisplay->SetColor(DetermineDisplayColor());
 		scoreDisplay->setPosition(0, -55);
@@ -170,8 +112,9 @@ Character::Character(CharacterType type, const TextureHolder& textures, const Fo
 ///
 /// Overloaded constructor for characters that don't belong to players
 /// </summary>
-Character::Character(CharacterType type, const TextureHolder& textures)
+Character::Character(CharacterType type, TextureHolder& textures)
 	: Entity(Table[static_cast<int>(type)].m_hitpoints),
+	m_texture_holder(textures),
 	m_type(type),
 	m_sprite(textures.Get(Table[static_cast<int>(type)].m_texture)),
 	m_is_marked_for_removal(false),
@@ -361,6 +304,79 @@ void Character::FlipSprite()
 }
 
 /// <summary>
+/// Written by: Patrick Nugent
+///
+///	Sets sprites of a character and changes it to match the
+/// current character type
+/// </summary>
+void Character::SetSprites(bool isResetting)
+{
+	if (m_type == CharacterType::kShaggy)
+	{
+		m_stunned.SetTexture(m_texture_holder.Get(Textures::kShaggyStunned));
+		m_stunned.SetFrameSize(sf::Vector2i(30, 69));
+
+		m_running.SetNumFrames(10);
+		m_running.SetTexture(m_texture_holder.Get(Textures::kShaggyRunning));
+		m_running.SetFrameSize(sf::Vector2i(59, 68));
+	}
+	else if (m_type == CharacterType::kScooby)
+	{
+		m_stunned.SetTexture(m_texture_holder.Get(Textures::kScoobyStunned));
+		m_stunned.SetFrameSize(sf::Vector2i(49, 46));
+
+		m_running.SetNumFrames(7);
+		m_running.SetTexture(m_texture_holder.Get(Textures::kScoobyRunning));
+		m_running.SetFrameSize(sf::Vector2i(67, 46));
+	}
+	else if (m_type == CharacterType::kFred)
+	{
+		m_stunned.SetTexture(m_texture_holder.Get(Textures::kFredStunned));
+		m_stunned.SetFrameSize(sf::Vector2i(27, 67));
+
+		m_running.SetNumFrames(12);
+		m_running.SetTexture(m_texture_holder.Get(Textures::kFredRunning));
+		m_running.SetFrameSize(sf::Vector2i(49, 67));
+	}
+	else if (m_type == CharacterType::kVelma)
+	{
+		m_stunned.SetTexture(m_texture_holder.Get(Textures::kVelmaStunned));
+		m_stunned.SetFrameSize(sf::Vector2i(38, 59));
+
+		m_stunned.SetNumFrames(3);
+
+		m_running.SetNumFrames(12);
+		m_running.SetTexture(m_texture_holder.Get(Textures::kVelmaRunning));
+		m_running.SetFrameSize(sf::Vector2i(36, 59));
+	}
+	else if (m_type == CharacterType::kDaphne)
+	{
+		m_stunned.SetTexture(m_texture_holder.Get(Textures::kDaphneStunned));
+		m_stunned.SetFrameSize(sf::Vector2i(25, 59));
+
+		m_stunned.SetNumFrames(3);
+
+		m_running.SetNumFrames(12);
+		m_running.SetTexture(m_texture_holder.Get(Textures::kDaphneRunning));
+		m_running.SetFrameSize(sf::Vector2i(45, 59));
+	}
+		
+	if (!m_is_local_character && isResetting)
+	{
+		m_sprite = sf::Sprite(m_texture_holder.Get(Table[static_cast<int>(m_type)].m_texture));
+		Utility::CentreOrigin(m_sprite);
+		Utility::CentreOrigin(m_running);
+		Utility::CentreOrigin(m_stunned);
+	}
+	else if(m_is_local_character)
+	{
+		Utility::CentreOrigin(m_running);
+		Utility::CentreOrigin(m_stunned);
+	}
+
+}
+
+/// <summary>
 /// Written By: Antanas Zalisauskas
 ///
 ///	Updates player score
@@ -438,7 +454,11 @@ CharacterType Character::GetType()
 
 void Character::SetType(CharacterType type)
 {
-	m_type = type;
+	if (m_type != type)
+	{
+		m_type = type;
+		SetSprites(true);
+	}
 }
 
 void Character::Remove()
