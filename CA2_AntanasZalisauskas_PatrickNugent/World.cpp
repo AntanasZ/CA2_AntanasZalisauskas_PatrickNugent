@@ -22,7 +22,7 @@ World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sou
 	, m_sounds(sounds)
 	, m_scenegraph()
 	, m_scene_layers()
-	, m_world_bounds(0.f, 0.f, m_camera.getSize().x, m_camera.getSize().y)//5000.f)
+	, m_world_bounds(0.f, 0.f, 5000.f/*m_camera.getSize().x*/, m_camera.getSize().y)//5000.f)
 	, m_spawn_position(m_camera.getSize().x / 2.f, m_world_bounds.height - m_camera.getSize().y / 2.f)
 	, m_scrollspeed(-50.f)
 	, m_scrollspeed_compensation(1.f)
@@ -224,6 +224,7 @@ void World::LoadTextures()
 	m_textures.Load(Textures::kExplosion, "Media/Textures/Explosion.png");
 	m_textures.Load(Textures::kParticle, "Media/Textures/Particle.png");
 	m_textures.Load(Textures::kFinishLine, "Media/Textures/FinishLine.png");
+	m_textures.Load(Textures::kBackground, "Media/Textures/Background.png");
 
 	m_textures.Load(Textures::kShaggy, "Media/Textures/ShaggyIdle.png");
 	m_textures.Load(Textures::kShaggyStunned, "Media/Textures/ShaggyStunned.png");
@@ -279,7 +280,7 @@ void World::BuildScene()
 	}
 
 	//Prepare the background
-	sf::Texture& texture = m_textures.Get(Textures::kMansion);
+	sf::Texture& texture = m_textures.Get(Textures::kBackground);
 	//sf::IntRect textureRect(m_world_bounds);
 	//Tile the texture to cover our world
 	texture.setRepeated(true);
@@ -390,7 +391,7 @@ void World::AdaptPlayerVelocity(sf::Time dt)
 sf::FloatRect World::GetViewBounds() const
 {
 	sf::Vector2f position((m_world_bounds.width / 2) - m_world_bounds.width / 2.f, (m_world_bounds.height / 2) - m_world_bounds.height / 2.f);
-	sf::Vector2f size = m_camera.getSize();
+	sf::Vector2f size(m_world_bounds.width, m_camera.getSize().y);
 	
 	return sf::FloatRect(position, size);
 }
