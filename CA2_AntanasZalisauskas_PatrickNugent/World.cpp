@@ -53,14 +53,8 @@ void World::SetWorldScrollCompensation(float compensation)
 
 void World::Update(sf::Time dt)
 {
-	//Scroll the world
-	//m_camera.move(0, m_scrollspeed * dt.asSeconds()*m_scrollspeed_compensation);
-	//if (m_game_countdown > sf::Time::Zero)
-	//{
-		//Decrease and Display remaining game time
-		//m_game_countdown -= dt;
-		//DisplayRemainingGameTime();
-
+	if (!m_game_ending)
+	{
 		for (Character* a : m_player_characters)
 		{
 			a->SetVelocity(0.f, a->GetVelocity().y);
@@ -76,38 +70,14 @@ void World::Update(sf::Time dt)
 		AdaptPlayerVelocity(dt);
 
 		HandleCollisions();
-		//Remove all destroyed entities
-		//RemoveWrecks() only destroys the entities, not the pointers in m_player_aircraft
+
 		auto first_to_remove = std::remove_if(m_player_characters.begin(), m_player_characters.end(), std::mem_fn(&Character::IsMarkedForRemoval));
 		m_player_characters.erase(first_to_remove, m_player_characters.end());
 		m_scenegraph.RemoveWrecks();
 
-		//m_enemy_spawn_countdown += dt;
-		//if (m_enemy_spawn_countdown >= sf::seconds(5.0f))
-		//{
-		//	SpawnEnemies();
-		//	m_enemy_spawn_countdown = sf::seconds(0.f);
-		//}
-
-		////Spawn a flying enemy every 3 seconds and reset the spawn timer
-		//m_flying_enemy_spawn_countdown += dt;
-		//if (m_flying_enemy_spawn_countdown >= sf::seconds(3.0f))
-		//{
-		//	SpawnFlyingEnemies();
-		//	m_flying_enemy_spawn_countdown = sf::seconds(0.f);
-		//}
-
-		////Spawn a pickup every 1.5 seconds and reset the spawn timer
-		//m_pickup_spawn_countdown += dt;
-		//if (m_pickup_spawn_countdown >= sf::seconds(1.5f))
-		//{
-		//	SpawnPickups();
-		//	m_pickup_spawn_countdown = sf::seconds(0.f);
-		//}
-
 		for (Character* a : m_player_characters)
 		{
-			if(a->GetInvulnerable())
+			if (a->GetInvulnerable())
 			{
 				a->AddToStunTimer(dt);
 				if (a->GetStunTimer() >= sf::seconds(3.0f))
@@ -130,34 +100,18 @@ void World::Update(sf::Time dt)
 
 		UpdateSounds();
 		UpdateCameraPosition();
-	//}
-	//else
-	//{
-	//	//End the game and wait 5 seconds while displaying the winning score
-	//	m_game_countdown = sf::Time::Zero;
-	//	m_gameover_countdown += dt;
+	}
+	else
+	{
+		//End the game and wait 5 seconds while displaying the winning score
+		m_game_countdown = sf::Time::Zero;
+		m_gameover_countdown += dt;
 
-	//	if (m_gameover_countdown >= sf::seconds(5.0f))
-	//	{
-	//		m_game_over = true;
-	//	}
-	//	else
-	//	{
-	//		//TODO - Rework because this causes game crash with how 2 players work now
-	//		/*if (m_player_characters[0]->GetScore() > m_player_characters[1]->GetScore())
-	//		{
-	//			m_game_timer_display->SetString("Player 1 wins with " + std::to_string(m_player_characters[0]->GetScore()) + " points!");
-	//		}
-	//		else if (m_player_characters[1]->GetScore() > m_player_characters[0]->GetScore())
-	//		{
-	//			m_game_timer_display->SetString("Player 2 wins with " + std::to_string(m_player_characters[1]->GetScore()) + " points!");
-	//		}
-	//		else
-	//		{
-	//			m_game_timer_display->SetString("It's a draw, both players have " + std::to_string(m_player_characters[1]->GetScore()) + " points");
-	//		}*/
-	//	}
-	//}
+		if (m_gameover_countdown >= sf::seconds(5.0f))
+		{
+			m_game_over = true;
+		}
+	}
 }
 
 void World::Draw()
@@ -752,5 +706,36 @@ void World::UpdateCameraPosition()
 			m_camera.setCenter(m_player_characters[m_local_player_identifier-1]->GetWorldPosition().x, m_camera.getCenter().y);
 			m_game_timer_display->setPosition(m_player_characters[m_local_player_identifier - 1]->GetWorldPosition().x, m_game_timer_display->GetWorldPosition().y);
 		}
+	}
+}
+
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	Draws text on the screen displaying the winner
+/// </summary>
+void World::DisplayWinner()
+{
+	m_game_ending = true;
+
+	int highestScore = 0;
+	int winningPlayer = 0;
+
+	for (Character* character : m_player_characters)
+	{
+		if (character->GetScore() > highestScore)
+		{
+			highestScore = character->GetScore();
+			winningPlayer = character->GetIdentifier();
+		}
+	}
+
+	if (highestScore != 0)
+	{
+		m_game_timer_display->SetString("Player " + std::to_string(winningPlayer) + " wins with " + std::to_string(highestScore) + " points!");
+	}
+	else
+	{
+		m_game_timer_display->SetString("Zoinks! Looks like nobody wins!");
 	}
 }

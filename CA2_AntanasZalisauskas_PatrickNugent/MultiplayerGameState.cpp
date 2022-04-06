@@ -146,6 +146,7 @@ bool MultiplayerGameState::Update(sf::Time dt)
 
 		if(!found_local_character && m_game_started)
 		{
+			m_world.DisplayWinner();
 			RequestStackPush(StateID::kGameOver);
 		}
 
@@ -201,6 +202,11 @@ bool MultiplayerGameState::Update(sf::Time dt)
 			packet << game_action.position.y;
 
 			m_socket.send(packet);
+		}
+
+		if (m_world.IsGameOver())
+		{
+			RequestStackPush(StateID::kGameOver);
 		}
 
 		//Regular position updates
@@ -580,7 +586,8 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 
 	case Server::PacketType::FinishGame:
 	{
-		RequestStackPush(StateID::kGameOver);
+		m_world.DisplayWinner();
+		//RequestStackPush(StateID::kGameOver);
 	}
 
 	//Pickup created

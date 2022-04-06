@@ -64,6 +64,7 @@ public:
 	bool IsGameOver() const;
 
 	void DisplayRemainingGameTime(float remaining_time);
+	void DisplayWinner();
 
 private:
 	void LoadTextures();
@@ -145,6 +146,7 @@ private:
 	sf::Time m_gameover_countdown;
 	TextNode* m_game_timer_display;
 	bool m_game_over;
+	bool m_game_ending;
 
 	int m_local_player_identifier;
 };

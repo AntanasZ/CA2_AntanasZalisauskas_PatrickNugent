@@ -34,6 +34,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
+	//, m_game_countdown(sf::seconds(30))
 	, m_game_countdown(sf::seconds(1800))
 	, m_game_over(false)
 {
@@ -194,42 +195,45 @@ void GameServer::Tick(sf::Time tick_time)
 		SendToAll(packet);
 	}
 
-	if(m_enemy_spawn_countdown >= sf::seconds(10.f))
+	if (!m_game_over)
 	{
-		sf::Packet packet;
-		sf::Int8 randomEnemy;
-		randomEnemy = rand() % 12;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
+		if (m_enemy_spawn_countdown >= sf::seconds(10.f))
+		{
+			sf::Packet packet;
+			sf::Int8 randomEnemy;
+			randomEnemy = rand() % 12;
+			packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
 
-		SendToAll(packet);
+			SendToAll(packet);
 
-		m_enemy_spawn_countdown = sf::Time::Zero;
-	}
+			m_enemy_spawn_countdown = sf::Time::Zero;
+		}
 
-	if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
-	{
-		sf::Packet packet;
-		sf::Int8 randomEnemy;
-		randomEnemy = rand() % 12;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
+		if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
+		{
+			sf::Packet packet;
+			sf::Int8 randomEnemy;
+			randomEnemy = rand() % 12;
+			packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
 
-		SendToAll(packet);
+			SendToAll(packet);
 
-		m_flying_enemy_spawn_countdown = sf::Time::Zero;
-	}
+			m_flying_enemy_spawn_countdown = sf::Time::Zero;
+		}
 
-	if (m_pickup_spawn_countdown >= sf::seconds(5.f))
-	{
-		sf::Packet packet;
-		sf::Int8 randomPickup;
-		sf::Int16 randomPosition;
-		randomPickup = rand() % 9;
-		randomPosition = (rand() % 934) + 90;
-		packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
+		if (m_pickup_spawn_countdown >= sf::seconds(5.f))
+		{
+			sf::Packet packet;
+			sf::Int8 randomPickup;
+			sf::Int16 randomPosition;
+			randomPickup = rand() % 9;
+			randomPosition = (rand() % 934) + 90;
+			packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
 
-		SendToAll(packet);
+			SendToAll(packet);
 
-		m_pickup_spawn_countdown = sf::Time::Zero;
+			m_pickup_spawn_countdown = sf::Time::Zero;
+		}
 	}
 }
 
