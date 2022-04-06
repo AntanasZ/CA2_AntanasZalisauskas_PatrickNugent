@@ -176,13 +176,11 @@ Character* World::AddCharacter(int identifier, CharacterType type, bool local_pl
 		m_local_player_identifier = identifier;
 	}
 
-	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts, identifier));
+	std::unique_ptr<Character> player(new Character(type, m_textures, m_fonts, identifier, local_player));
 	player->setPosition(m_camera.getCenter());
 	//player->SetIdentifier(identifier);
 	m_player_characters.emplace_back(player.get());
 	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(player));
-
-	
 
 	return m_player_characters.back();
 }

@@ -28,8 +28,8 @@
 class Character : public Entity
 {
 public:
-	Character(CharacterType type, const TextureHolder& textures, const FontHolder& fonts, int identifier);
-	Character(CharacterType type, const TextureHolder& textures);
+	Character(CharacterType type, TextureHolder& textures, const FontHolder& fonts, int identifier, bool isLocalCharacter);
+	Character(CharacterType type, TextureHolder& textures);
 	unsigned int GetCategory() const override;
 
 	int GetIdentifier();
@@ -42,6 +42,7 @@ public:
 	int GetScore() const;
 	void ToggleCanJump(bool value);
 	void FlipSprite();
+	void SetSprites(bool isResetting);
 	void AddScore(int points);
 	int GetScore();
 	void SetScore(int score);
@@ -68,6 +69,7 @@ private:
 	sf::Color DetermineDisplayColor();
 
 private:
+	TextureHolder& m_texture_holder;
 	CharacterType m_type;
 	sf::Sprite m_sprite;
 	Animation m_stunned;
@@ -81,6 +83,7 @@ private:
 	bool m_is_invulnerable;
 	sf::Time m_stun_timer;
 	bool m_is_facing_right;
+	bool m_is_local_character;
 
 	bool m_is_marked_for_removal;
 	float m_travelled_distance;

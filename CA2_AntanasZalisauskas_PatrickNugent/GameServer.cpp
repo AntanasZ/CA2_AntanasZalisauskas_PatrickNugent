@@ -315,7 +315,6 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		sf::Int8 character_type;
 		packet >> character_identifier >> character_type;
 		m_character_info[character_identifier].m_type = character_type;
-		std::cout << "Player " << character_identifier << " character selection received: number " << static_cast<int>(character_type) << "\n\n";
 	}
 	break;
 
@@ -440,8 +439,6 @@ void GameServer::HandleDisconnections()
 			++itr;
 		}
 	}
-
-	
 }
 
 void GameServer::InformWorldState(sf::TcpSocket& socket)
@@ -458,7 +455,6 @@ void GameServer::InformWorldState(sf::TcpSocket& socket)
 			for(sf::Int32 identifier : m_peers[i]->m_character_identifiers)
 			{
 				packet << identifier << m_character_info[identifier].m_position.x << m_character_info[identifier].m_position.y << m_character_info[identifier].m_score << m_character_info[identifier].m_type;
-				std::cout << "InformWorldState: player with id " << static_cast<int>(identifier) << " and character number " << (int)m_character_info[identifier].m_type << "\n";
 			}
 		}
 	}
@@ -500,7 +496,7 @@ void GameServer::UpdateClientState()
 
 	for(const auto& character : m_character_info)
 	{
-		update_client_state_packet << character.first << character.second.m_position.x << character.second.m_position.y << character.second.m_score;
+		update_client_state_packet << character.first << character.second.m_position.x << character.second.m_position.y << character.second.m_score << character.second.m_type;
 	}
 
 	SendToAll(update_client_state_packet);

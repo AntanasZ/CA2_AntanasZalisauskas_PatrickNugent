@@ -28,7 +28,7 @@ namespace Server
 		UpdateClientState,
 		MissionSuccess,
 		UpdateGameTimeLeft,
-		FinishGame
+		FinishGame,
 	};
 }
 
