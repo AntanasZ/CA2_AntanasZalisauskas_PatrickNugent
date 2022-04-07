@@ -221,13 +221,13 @@ void GameServer::Tick(sf::Time tick_time)
 			m_flying_enemy_spawn_countdown = sf::Time::Zero;
 		}
 
-		if (m_pickup_spawn_countdown >= sf::seconds(5.f))
+		if (m_pickup_spawn_countdown >= sf::seconds(2.f))
 		{
 			sf::Packet packet;
 			sf::Int8 randomPickup;
 			sf::Int16 randomPosition;
 			randomPickup = rand() % 9;
-			randomPosition = (rand() % 934) + 90;
+			randomPosition = (rand() % 2950) + 90;
 			packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
 
 			SendToAll(packet);
