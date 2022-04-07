@@ -77,7 +77,8 @@ Character::Character(CharacterType type, TextureHolder& textures, const FontHold
 	m_stun_timer(),
 	m_is_marked_for_removal(false),
 	m_identifier(0),
-	m_is_local_character(isLocalCharacter)
+	m_is_local_character(isLocalCharacter),
+	m_has_reset(false)
 {
 	if (m_is_local_character)
 	{
@@ -454,11 +455,24 @@ CharacterType Character::GetType()
 
 void Character::SetType(CharacterType type)
 {
+	/*if (m_type == CharacterType::kShaggy && type == CharacterType::kShaggy && !m_has_reset)
+	{
+		m_has_reset = true;
+		m_type = type;
+		SetSprites(true);
+	}*/
 	if (m_type != type)
 	{
 		m_type = type;
 		SetSprites(true);
 	}
+	
+	/*if (!m_has_reset)
+	{
+		m_has_reset = true;
+		m_type = type;
+		SetSprites(true);
+	}*/
 }
 
 void Character::Remove()

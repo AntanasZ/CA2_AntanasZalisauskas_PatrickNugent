@@ -90,5 +90,6 @@ private:
 	int m_directions_index;
 
 	int m_identifier;
+	bool m_has_reset;
 };
 
