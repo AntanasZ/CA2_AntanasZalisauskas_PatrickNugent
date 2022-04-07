@@ -524,30 +524,30 @@ void World::AddEnemies()
 
 	//Add all enemies - both the left and right side versions
 	AddEnemy(CharacterType::kCreeperLeft, false, -500.f, -329.5f);
-	AddEnemy(CharacterType::kCreeperRight, false, 500.f, -329.5f);
+	AddEnemy(CharacterType::kCreeperRight, false, 2500.f, -329.5f);
 	AddEnemy(CharacterType::kMichaelLeft, false, -500.f, -325.f);
-	AddEnemy(CharacterType::kMichaelRight, false, 500.f, -325.f);
+	AddEnemy(CharacterType::kMichaelRight, false, 2500.f, -325.f);
 	AddEnemy(CharacterType::kFreddyLeft, false, -500.f, -323.f);
-	AddEnemy(CharacterType::kFreddyRight, false, 500.f, -323.f);
+	AddEnemy(CharacterType::kFreddyRight, false, 2500.f, -323.f);
 	AddEnemy(CharacterType::kJasonLeft, false, -500.f, -321.f);
-	AddEnemy(CharacterType::kJasonRight, false, 500.f, -321.f);
+	AddEnemy(CharacterType::kJasonRight, false, 2500.f, -321.f);
 	AddEnemy(CharacterType::kStripeLeft, false, -500.f, -335.f);
-	AddEnemy(CharacterType::kStripeRight, false, 500.f, -335.f);
+	AddEnemy(CharacterType::kStripeRight, false, 2500.f, -335.f);
 	AddEnemy(CharacterType::kGarfieldLeft, false, -500.f, -331.f);
-	AddEnemy(CharacterType::kGarfieldRight, false, 500.f, -331.f);
+	AddEnemy(CharacterType::kGarfieldRight, false, 2500.f, -331.f);
 
 	AddEnemy(CharacterType::kGhidorahLeft, true, -500.f, -2.f);
-	AddEnemy(CharacterType::kGhidorahRight, true, 500.f, -2.f);
+	AddEnemy(CharacterType::kGhidorahRight, true, 2500.f, -2.f);
 	AddEnemy(CharacterType::kPterodactylLeft, true, -500.f, -2.f);
-	AddEnemy(CharacterType::kPterodactylRight, true, 500.f, -2.f);
+	AddEnemy(CharacterType::kPterodactylRight, true, 2500.f, -2.f);
 	AddEnemy(CharacterType::kTurtleLeft, true, -500.f, -150.f);
-	AddEnemy(CharacterType::kTurtleRight, true, 500.f, -150.f);
+	AddEnemy(CharacterType::kTurtleRight, true, 2500.f, -150.f);
 	AddEnemy(CharacterType::kGhostLeft, true, -500.f, -150.f);
-	AddEnemy(CharacterType::kGhostRight, true, 500.f, -150.f);
+	AddEnemy(CharacterType::kGhostRight, true, 2500.f, -150.f);
 	AddEnemy(CharacterType::kSkullLeft, true, -500.f, -150.f);
-	AddEnemy(CharacterType::kSkullRight, true, 500.f, -150.f);
+	AddEnemy(CharacterType::kSkullRight, true, 2500.f, -150.f);
 	AddEnemy(CharacterType::kDutchmanLeft, true, -500.f, 200.f);
-	AddEnemy(CharacterType::kDutchmanRight, true, 500.f, 200.f);
+	AddEnemy(CharacterType::kDutchmanRight, true, 2500.f, 200.f);
 }
 
 /// <summary>
