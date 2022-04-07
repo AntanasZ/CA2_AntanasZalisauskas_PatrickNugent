@@ -232,6 +232,8 @@ std::vector<PlatformData> InitializePlatformData()
 
 	//Air Platforms
 	data[static_cast<int>(PlatformType::kAirPlatform)].m_texture = Textures::kPlatform;
+	data[static_cast<int>(PlatformType::kAirPlatformForest)].m_texture = Textures::kPlatformForest;
+	data[static_cast<int>(PlatformType::kAirPlatformCastle)].m_texture = Textures::kPlatformCastle;
 
 	return data;
 }
