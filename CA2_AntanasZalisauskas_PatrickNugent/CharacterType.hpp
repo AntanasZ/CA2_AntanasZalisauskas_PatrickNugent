@@ -49,5 +49,6 @@ enum class CharacterType
 	kGhostRight,
 	kDutchmanLeft,
 	kDutchmanRight,
+	kPlaceholder,
 	kCharacterCount
 };

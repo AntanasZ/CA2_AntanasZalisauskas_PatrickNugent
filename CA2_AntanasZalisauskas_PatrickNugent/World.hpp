@@ -71,7 +71,7 @@ private:
 	void BuildScene();
 	void AdaptPlayerPosition();
 	void AdaptPlayerVelocity(sf::Time dt);
-
+	int GetPlayerIndex(int identifier);
 	
 	
 	

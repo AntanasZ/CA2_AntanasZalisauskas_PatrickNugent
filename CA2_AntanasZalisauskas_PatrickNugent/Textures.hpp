@@ -59,5 +59,6 @@ enum class Textures
 	kDutchman,
 	kBackground,
 	kPlatformForest,
-	kPlatformCastle
+	kPlatformCastle,
+	kPlaceholderCharacter
 };

@@ -20,6 +20,13 @@ std::vector<CharacterData> InitializeCharacterData()
 {
 	std::vector<CharacterData> data(static_cast<int>(CharacterType::kCharacterCount));
 
+	//Placeholder - playable character
+	data[static_cast<int>(CharacterType::kPlaceholder)].m_hitpoints = 100;
+	data[static_cast<int>(CharacterType::kPlaceholder)].m_speed = 200.f;
+	data[static_cast<int>(CharacterType::kPlaceholder)].m_texture = Textures::kPlaceholderCharacter;
+	data[static_cast<int>(CharacterType::kPlaceholder)].m_jump_height = 200.f;
+	data[static_cast<int>(CharacterType::kPlaceholder)].m_has_run_animation = true;
+
 	//Shaggy - playable character
 	data[static_cast<int>(CharacterType::kShaggy)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kShaggy)].m_speed = 200.f;
