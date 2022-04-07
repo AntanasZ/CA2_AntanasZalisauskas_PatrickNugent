@@ -226,6 +226,7 @@ void World::LoadTextures()
 	m_textures.Load(Textures::kPlatformForest, "Media/Textures/PlatformForest.png");
 	m_textures.Load(Textures::kPlatformCastle, "Media/Textures/PlatformCastle.png");
 
+	m_textures.Load(Textures::kPlaceholderCharacter, "Media/Textures/PlaceholderCharacter.png");
 	m_textures.Load(Textures::kShaggy, "Media/Textures/ShaggyIdle.png");
 	m_textures.Load(Textures::kShaggyStunned, "Media/Textures/ShaggyStunned.png");
 	m_textures.Load(Textures::kShaggyRunning, "Media/Textures/ShaggyRunning.png");
@@ -721,8 +722,8 @@ void World::UpdateCameraPosition()
 	{
 		if(GetCharacter(m_local_player_identifier) != nullptr)
 		{
-			m_camera.setCenter(m_player_characters[m_local_player_identifier-1]->GetWorldPosition().x, m_camera.getCenter().y);
-			m_game_timer_display->setPosition(m_player_characters[m_local_player_identifier - 1]->GetWorldPosition().x, m_game_timer_display->GetWorldPosition().y);
+			m_camera.setCenter(m_player_characters[GetPlayerIndex(m_local_player_identifier)]->GetWorldPosition().x, m_camera.getCenter().y);
+			m_game_timer_display->setPosition(m_player_characters[GetPlayerIndex(m_local_player_identifier)]->GetWorldPosition().x, m_game_timer_display->GetWorldPosition().y);
 		}
 	}
 }
@@ -756,4 +757,16 @@ void World::DisplayWinner()
 	{
 		m_game_timer_display->SetString("Zoinks! Looks like nobody wins!");
 	}
+}
+
+int World::GetPlayerIndex(int identifier)
+{
+	for (int i = 0; i < m_player_characters.size(); i++)
+	{
+		if (m_player_characters[i]->GetIdentifier() == identifier)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
