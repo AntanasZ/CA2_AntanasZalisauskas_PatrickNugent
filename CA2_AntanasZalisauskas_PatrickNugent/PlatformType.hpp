@@ -11,5 +11,7 @@ enum class PlatformType
 {
 	kGroundPlatform,
 	kAirPlatform,
+	kAirPlatformForest,
+	kAirPlatformCastle,
 	kPlatformCount
 };

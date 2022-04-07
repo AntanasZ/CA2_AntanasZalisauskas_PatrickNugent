@@ -22,7 +22,7 @@ World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sou
 	, m_sounds(sounds)
 	, m_scenegraph()
 	, m_scene_layers()
-	, m_world_bounds(0.f, 0.f, 5000.f/*m_camera.getSize().x*/, m_camera.getSize().y)//5000.f)
+	, m_world_bounds(0.f, 0.f, 3072.f/*m_camera.getSize().x*/, m_camera.getSize().y)//5000.f)
 	, m_spawn_position(m_camera.getSize().x / 2.f, m_world_bounds.height - m_camera.getSize().y / 2.f)
 	, m_scrollspeed(-50.f)
 	, m_scrollspeed_compensation(1.f)
@@ -223,6 +223,8 @@ void World::LoadTextures()
 	m_textures.Load(Textures::kParticle, "Media/Textures/Particle.png");
 	m_textures.Load(Textures::kFinishLine, "Media/Textures/FinishLine.png");
 	m_textures.Load(Textures::kBackground, "Media/Textures/Background.png");
+	m_textures.Load(Textures::kPlatformForest, "Media/Textures/PlatformForest.png");
+	m_textures.Load(Textures::kPlatformCastle, "Media/Textures/PlatformCastle.png");
 
 	m_textures.Load(Textures::kShaggy, "Media/Textures/ShaggyIdle.png");
 	m_textures.Load(Textures::kShaggyStunned, "Media/Textures/ShaggyStunned.png");
@@ -292,37 +294,54 @@ void World::BuildScene()
 	background_sprite->setPosition(m_world_bounds.left, m_world_bounds.top);
 	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(background_sprite));
 
-	// Add the finish line to the scene
-	/*sf::Texture& finish_texture = m_textures.Get(Textures::kFinishLine);
-	std::unique_ptr<SpriteNode> finish_sprite(new SpriteNode(finish_texture));
-	finish_sprite->setPosition(0.f, -76.f);
-	m_finish_sprite = finish_sprite.get();
-	m_scene_layers[static_cast<int>(Layers::kBackground)]->AttachChild(std::move(finish_sprite));*/
-
-	// Add particle node to the scene
-	//std::unique_ptr<ParticleNode> smokeNode(new ParticleNode(ParticleType::kSmoke, m_textures));
-	//m_scene_layers[static_cast<int>(Layers::kLowerAir)]->AttachChild(std::move(smokeNode));
-
-	//// Add propellant particle node to the scene
-	//std::unique_ptr<ParticleNode> propellantNode(new ParticleNode(ParticleType::kPropellant, m_textures));
-	//m_scene_layers[static_cast<int>(Layers::kLowerAir)]->AttachChild(std::move(propellantNode));
-
 	//Prepare platforms
 	std::unique_ptr<Platform> ground_platform(new Platform(PlatformType::kGroundPlatform, m_textures));
-	ground_platform->setPosition(m_world_bounds.width / 2, 745.f);
+	ground_platform->setPosition(m_world_bounds.width/2, 755.f);
 	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(ground_platform));
 
-	std::unique_ptr<Platform> platform1(new Platform(PlatformType::kAirPlatform, m_textures));
-	platform1->setPosition(525.f, 450.f);
-	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platform1));
+	std::unique_ptr<Platform> platformForest(new Platform(PlatformType::kAirPlatformForest, m_textures));
+	platformForest->setPosition(250.f, 450.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformForest));
 
-	std::unique_ptr<Platform> platform2(new Platform(PlatformType::kAirPlatform, m_textures));
-	platform2->setPosition(800.f, 600.f);
-	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platform2));
+	std::unique_ptr<Platform> platformForest2(new Platform(PlatformType::kAirPlatformForest, m_textures));
+	platformForest2->setPosition(750.f, 450.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformForest2));
 
-	std::unique_ptr<Platform> platform3(new Platform(PlatformType::kAirPlatform, m_textures));
-	platform3->setPosition(250.f, 600.f);
-	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platform3));
+	std::unique_ptr<Platform> platformForest3(new Platform(PlatformType::kAirPlatformForest, m_textures));
+	platformForest3->setPosition(500.f, 600.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformForest3));
+
+	std::unique_ptr<Platform> platformMansion(new Platform(PlatformType::kAirPlatform, m_textures));
+	platformMansion->setPosition(m_world_bounds.width / 2, 450.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformMansion));
+
+	std::unique_ptr<Platform> platformMansion2(new Platform(PlatformType::kAirPlatform, m_textures));
+	platformMansion2->setPosition((m_world_bounds.width / 2) + 250.f, 600.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformMansion2));
+
+	std::unique_ptr<Platform> platformMansion3(new Platform(PlatformType::kAirPlatform, m_textures));
+	platformMansion3->setPosition((m_world_bounds.width / 2) - 250.f, 600.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformMansion3));
+
+	std::unique_ptr<Platform> platformMansion4(new Platform(PlatformType::kAirPlatform, m_textures));
+	platformMansion4->setPosition((m_world_bounds.width / 2) + 250.f, 300.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformMansion4));
+
+	std::unique_ptr<Platform> platformMansion5(new Platform(PlatformType::kAirPlatform, m_textures));
+	platformMansion5->setPosition((m_world_bounds.width / 2) - 250.f, 300.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformMansion5));
+
+	std::unique_ptr<Platform> platformCastle(new Platform(PlatformType::kAirPlatformCastle, m_textures));
+	platformCastle->setPosition(2550.f, 450.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformCastle));
+
+	std::unique_ptr<Platform> platformCastle2(new Platform(PlatformType::kAirPlatformCastle, m_textures));
+	platformCastle2->setPosition(2300.f, 600.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformCastle2));
+
+	std::unique_ptr<Platform> platformCastle3(new Platform(PlatformType::kAirPlatformCastle, m_textures));
+	platformCastle3->setPosition(2800.f, 600.f);
+	m_scene_layers[static_cast<int>(Layers::kUpperAir)]->AttachChild(std::move(platformCastle3));
 
 	// Add sound effect node
 	std::unique_ptr<SoundNode> soundNode(new SoundNode(m_sounds));
@@ -357,7 +376,7 @@ void World::AdaptPlayerPosition()
 {
 	//Keep all players on the screen, at least border_distance from the border
 	sf::FloatRect view_bounds = GetViewBounds();
-	const float border_distance = 48.f;
+	const float border_distance = 35.f;
 
 	for (Character* character : m_player_characters)
 	{
