@@ -376,7 +376,7 @@ CharacterType MultiplayerGameState::DetermineCharacterFromNumber(int characterNu
 		}
 		break;
 
-		default: return CharacterType::kShaggy;
+		default: return CharacterType::kPlaceholder;
 	}
 }
 
@@ -420,7 +420,7 @@ int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterTy
 		}
 		break;
 
-	    default: return 2;
+	    default: return 6;
 	}
 }
 

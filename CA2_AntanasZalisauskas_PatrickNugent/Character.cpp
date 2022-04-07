@@ -88,7 +88,7 @@ Character::Character(CharacterType type, TextureHolder& textures, const FontHold
 	m_identifier = identifier;
 
 	if(type == CharacterType::kShaggy || type == CharacterType::kScooby || type == CharacterType::kFred
-		|| type == CharacterType::kVelma || type == CharacterType::kDaphne)
+		|| type == CharacterType::kVelma || type == CharacterType::kDaphne || type == CharacterType::kPlaceholder)
 	{
 		std::unique_ptr<TextNode> scoreDisplay(new TextNode(fonts, ""));
 
@@ -246,7 +246,8 @@ void Character::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 bool Character::isPlayer() const
 {
 	if (m_type == CharacterType::kShaggy || m_type == CharacterType::kScooby || 
-		m_type == CharacterType::kFred || m_type == CharacterType::kVelma || m_type == CharacterType::kDaphne)
+		m_type == CharacterType::kFred || m_type == CharacterType::kVelma || m_type == CharacterType::kDaphne ||
+		m_type == CharacterType::kPlaceholder)
 		return true;
 	else
 		return false;
@@ -361,6 +362,15 @@ void Character::SetSprites(bool isResetting)
 		m_running.SetTexture(m_texture_holder.Get(Textures::kDaphneRunning));
 		m_running.SetFrameSize(sf::Vector2i(45, 59));
 	}
+	else if (m_type == CharacterType::kPlaceholder)
+	{
+		m_stunned.SetTexture(m_texture_holder.Get(Textures::kPlaceholderCharacterStunned));
+		m_stunned.SetFrameSize(sf::Vector2i(49, 46));
+
+		m_running.SetNumFrames(7);
+		m_running.SetTexture(m_texture_holder.Get(Textures::kPlaceholderCharacterRunning));
+		m_running.SetFrameSize(sf::Vector2i(67, 46));
+	}
 		
 	if (!m_is_local_character && isResetting)
 	{
@@ -455,12 +465,12 @@ CharacterType Character::GetType()
 
 void Character::SetType(CharacterType type)
 {
-	/*if (m_type == CharacterType::kShaggy && type == CharacterType::kShaggy && !m_has_reset)
-	{
-		m_has_reset = true;
-		m_type = type;
-		SetSprites(true);
-	}*/
+	//if (m_type == CharacterType::kShaggy && type == CharacterType::kShaggy && !m_has_reset)
+	//{
+	//	m_has_reset = true;
+	//	//m_type = type;
+	//	SetSprites(true);
+	//}
 	if (m_type != type)
 	{
 		m_type = type;

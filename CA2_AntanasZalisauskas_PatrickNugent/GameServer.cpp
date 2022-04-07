@@ -374,7 +374,7 @@ void GameServer::HandleIncomingConnections()
 		//Order the new client to spawn its player 1
 		m_character_info[m_character_identifier_counter].m_position = sf::Vector2f(m_battlefield_rect.width / 2, m_battlefield_rect.top + m_battlefield_rect.height / 2);
 		m_character_info[m_character_identifier_counter].m_score = 0;
-		//m_character_info[m_character_identifier_counter].m_type = 1;
+		m_character_info[m_character_identifier_counter].m_type = 6;
 
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Server::PacketType::SpawnSelf);

@@ -60,5 +60,7 @@ enum class Textures
 	kBackground,
 	kPlatformForest,
 	kPlatformCastle,
-	kPlaceholderCharacter
+	kPlaceholderCharacter,
+	kPlaceholderCharacterStunned,
+	kPlaceholderCharacterRunning
 };
