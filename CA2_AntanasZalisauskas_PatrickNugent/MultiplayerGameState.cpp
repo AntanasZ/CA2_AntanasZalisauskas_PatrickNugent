@@ -85,6 +85,13 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	Utility::CentreOrigin(m_time_selection_text);
 	m_time_selection_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f - 150);
 
+	m_players_connected_text.setFont(context.fonts->Get(Fonts::Main));
+	m_players_connected_text.setString("Players connected: 1");
+	m_players_connected_text.setCharacterSize(30);
+	m_players_connected_text.setFillColor(sf::Color::White);
+	Utility::CentreOrigin(m_players_connected_text);
+	m_players_connected_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f + 225);
+
 	auto two_minutes_button = std::make_shared<GUI::Button>(context);
 	two_minutes_button->setPosition(400, 300);
 	two_minutes_button->SetText("2 minutes");
@@ -179,6 +186,7 @@ void MultiplayerGameState::Draw()
 		{
 			m_window.draw(m_waiting_text);
 		}
+		m_window.draw(m_players_connected_text);
 	}
 	else
 	{
@@ -409,6 +417,20 @@ void MultiplayerGameState::OnDestroy()
 	}
 }
 
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	Takes in the amount of connected players and updates the players connected
+/// text if the lobby screen is still being displayed.
+/// </summary>
+void MultiplayerGameState::DisplayPlayers(sf::Int8 connectedPlayers)
+{
+	if (!m_game_started)
+	{
+		m_players_connected_text.setString("Players connected: " + std::to_string(connectedPlayers+1));
+	}
+}
+
 void MultiplayerGameState::SendCharacterSelection()
 {
 	//Inform server of this client's character choice
@@ -605,33 +627,42 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Vector2f character_position;
 		sf::Int16 character_score;
 		sf::Int8 character_type;
-		packet >> character_identifier >> character_position.x >> character_position.y >> character_type;
+		sf::Int8 connected_players;
+		packet >> character_identifier >> character_position.x >> character_position.y >> character_type >> connected_players;
 
 		Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
+		
+		DisplayPlayers(connected_players);
 	}
 	break;
 
 	case Server::PacketType::PlayerDisconnect:
 	{
 		sf::Int32 character_identifier;
-		packet >> character_identifier;
+		sf::Int8 connected_players;
+		packet >> character_identifier >> connected_players;
 		m_world.RemoveCharacter(character_identifier);
 		m_players.erase(character_identifier);
+
+		DisplayPlayers(connected_players);
 	}
 	break;
 
 	case Server::PacketType::InitialState:
 	{
 		sf::Int32 character_count;
+		sf::Int8 connected_players;
 		float world_height, current_scroll;
 		packet >> world_height >> current_scroll;
 
 		m_world.SetWorldHeight(world_height);
-		//m_world.SetCurrentBattleFieldPosition(current_scroll);
 
 		packet >> character_count;
+
+		DisplayPlayers(character_count);
+
 		for (sf::Int32 i = 0; i < character_count; ++i)
 		{
 			sf::Int32 character_identifier;

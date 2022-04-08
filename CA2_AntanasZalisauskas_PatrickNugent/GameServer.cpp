@@ -49,14 +49,13 @@ GameServer::~GameServer()
 	m_thread.wait();
 }
 
-//This is the same as SpawnSelf but indicate that an aircraft from a different client is entering the world
-
+//This is the same as SpawnSelf but indicate that a character from a different client is entering the world
 void GameServer::NotifyPlayerSpawn(sf::Int32 character_identifier)
 {
 	sf::Packet packet;
 	//First thing for every packet is what type of packet it is
 	packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
-	packet << character_identifier << m_character_info[character_identifier].m_position.x << m_character_info[character_identifier].m_position.y << m_character_info[character_identifier].m_type;
+	packet << character_identifier << m_character_info[character_identifier].m_position.x << m_character_info[character_identifier].m_position.y << m_character_info[character_identifier].m_type << static_cast<sf::Int8>(m_connected_players);
 	for(std::size_t i=0; i < m_connected_players; ++i)
 	{
 		if(m_peers[i]->m_ready)
@@ -456,7 +455,7 @@ void GameServer::HandleDisconnections()
 			//Inform everyone of a disconnection, erase
 			for(sf::Int32 identifer : (*itr)->m_character_identifiers)
 			{
-				SendToAll((sf::Packet() << static_cast<sf::Int32>(Server::PacketType::PlayerDisconnect) << identifer));
+				SendToAll((sf::Packet() << static_cast<sf::Int32>(Server::PacketType::PlayerDisconnect) << identifer << static_cast<sf::Int8>(m_connected_players)));
 				m_character_info.erase(identifer);
 			}
 

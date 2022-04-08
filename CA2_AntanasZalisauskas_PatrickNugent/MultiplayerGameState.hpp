@@ -17,6 +17,7 @@ public:
 	virtual CharacterType DetermineCharacterFromNumber(int characterNumber);
 	virtual int DetermineNumberFromCharacter(CharacterType characterType);
 	void OnDestroy();
+	void DisplayPlayers(sf::Int8 connectedPlayers);
 	void SendCharacterSelection();
 	void DisableAllRealtimeActions();
 
@@ -48,6 +49,7 @@ private:
 
 	sf::Text m_waiting_text;
 	sf::Text m_time_selection_text;
+	sf::Text m_players_connected_text;
 
 	bool m_active_state;
 	bool m_has_focus;
