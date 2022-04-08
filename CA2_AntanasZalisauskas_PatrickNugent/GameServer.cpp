@@ -34,7 +34,6 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
-	//, m_game_countdown(sf::seconds(30))
 	, m_game_countdown(sf::seconds(120))
 	, m_game_over(false)
 	, m_game_started(false)
@@ -407,12 +406,22 @@ void GameServer::HandleIncomingConnections()
 		m_character_info[m_character_identifier_counter].m_type = 6;
 
 		sf::Packet packet;
+		sf::Int8 has_game_started;
+
+		if (m_game_started)
+		{
+			has_game_started = 1;
+		}
+		else
+		{
+			has_game_started = 2;
+		}
+
 		packet << static_cast<sf::Int32>(Server::PacketType::SpawnSelf);
 		packet << m_character_identifier_counter;
 		packet << m_character_info[m_character_identifier_counter].m_position.x;
 		packet << m_character_info[m_character_identifier_counter].m_position.y;
-		packet << m_game_started;
-
+		packet << has_game_started;
 
 		m_peers[m_connected_players]->m_character_identifiers.emplace_back(m_character_identifier_counter);
 

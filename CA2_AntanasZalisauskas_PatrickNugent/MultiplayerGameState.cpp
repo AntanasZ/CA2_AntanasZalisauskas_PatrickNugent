@@ -168,7 +168,7 @@ void MultiplayerGameState::Draw()
 			m_window.draw(m_broadcast_text);
 		}
 	}
-	else if (m_connected)
+	else if (m_connected && !m_game_started)
 	{
 		if (m_host)
 		{
@@ -359,7 +359,10 @@ bool MultiplayerGameState::Update(sf::Time dt)
 bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 {
 	//Host start button handling	
-	m_gui_container.HandleEvent(event);
+	if (!m_game_started)
+	{
+		m_gui_container.HandleEvent(event);
+	}
 
 	//Game input handling
 	CommandQueue& commands = m_world.GetCommandQueue();
@@ -573,24 +576,24 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	}
 	break;
 
-	//Sent by the server to spawn player 1 airplane on connect
+	//Sent by the server to spawn player 1 character on connect
 	case Server::PacketType::SpawnSelf:
 	{
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		sf::Int16 character_score;
-		bool has_game_started;
-		packet >> character_identifier >> character_position.x >> character_position.y >> character_score >> has_game_started;
+		sf::Int8 has_game_started;
+		packet >> character_identifier >> character_position.x >> character_position.y >> has_game_started;
 		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, true);
 		character->setPosition(character_position);
 		character->SetScore(0);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
 		
-		/*if (has_game_started)
+		if (has_game_started == static_cast<int>(1))
 		{
 			m_game_started = true;
-		}*/
+		}
 
 		SendCharacterSelection();
 	}
