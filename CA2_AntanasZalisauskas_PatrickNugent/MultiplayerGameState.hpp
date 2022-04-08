@@ -53,10 +53,8 @@ private:
 	bool m_has_focus;
 	bool m_host;
 	bool m_game_started;
-	bool m_choosing_time;
 	sf::Time m_client_timeout;
 	sf::Time m_time_since_last_packet;
 	GUI::Container m_gui_container;
-	GUI::Container m_gui_container_time;
 };
 

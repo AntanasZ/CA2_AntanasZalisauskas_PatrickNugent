@@ -52,7 +52,6 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 , m_game_started(false)
 , m_client_timeout(sf::seconds(2.f))
 , m_time_since_last_packet(sf::seconds(0.f))
-, m_choosing_time(true)
 {
 	m_broadcast_text.setFont(context.fonts->Get(Fonts::Main));
 	m_broadcast_text.setPosition(1024.f / 2, 100.f);
@@ -80,31 +79,20 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	m_waiting_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
 
 	m_time_selection_text.setFont(context.fonts->Get(Fonts::Main));
-	m_time_selection_text.setString("Select the time limit for this game");
+	m_time_selection_text.setString("Select the time limit to start the game now");
 	m_time_selection_text.setCharacterSize(30);
 	m_time_selection_text.setFillColor(sf::Color::White);
 	Utility::CentreOrigin(m_time_selection_text);
 	m_time_selection_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f - 150);
-
-	auto start_button = std::make_shared<GUI::Button>(context);
-	start_button->setPosition(400, 375);
-	start_button->SetText("Start game");
-	start_button->SetCallback([this, context]()
-		{
-			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
-			m_socket.send(packet);
-		});
 
 	auto two_minutes_button = std::make_shared<GUI::Button>(context);
 	two_minutes_button->setPosition(400, 300);
 	two_minutes_button->SetText("2 minutes");
 	two_minutes_button->SetCallback([this, context]()
 		{
-			m_choosing_time = false;
 			sf::Packet packet;
 			sf::Int8 timeSelection = 2;
-			packet << static_cast<sf::Int32>(Client::PacketType::TimeSelection);
+			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
 			packet << timeSelection;
 			m_socket.send(packet);
 		});
@@ -114,10 +102,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	five_minutes_button->SetText("5 minutes");
 	five_minutes_button->SetCallback([this, context]()
 		{
-			m_choosing_time = false;
 			sf::Packet packet;
 			sf::Int8 timeSelection = 5;
-			packet << static_cast<sf::Int32>(Client::PacketType::TimeSelection);
+			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
 			packet << timeSelection;
 			m_socket.send(packet);
 		});
@@ -127,18 +114,19 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	fifteen_minutes_button->SetText("15 minutes");
 	fifteen_minutes_button->SetCallback([this, context]()
 		{
-			m_choosing_time = false;
 			sf::Packet packet;
 			sf::Int8 timeSelection = 15;
-			packet << static_cast<sf::Int32>(Client::PacketType::TimeSelection);
+			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
 			packet << timeSelection;
 			m_socket.send(packet);
 		});
 
-	m_gui_container.Pack(start_button);
-	m_gui_container_time.Pack(two_minutes_button);
-	m_gui_container_time.Pack(five_minutes_button);
-	m_gui_container_time.Pack(fifteen_minutes_button);
+	if (m_host)
+	{
+		m_gui_container.Pack(two_minutes_button);
+		m_gui_container.Pack(five_minutes_button);
+		m_gui_container.Pack(fifteen_minutes_button);
+	}
 
 	sf::IpAddress ip;
 	if(m_host)
@@ -180,16 +168,12 @@ void MultiplayerGameState::Draw()
 			m_window.draw(m_broadcast_text);
 		}
 	}
-	else if (m_connected && m_choosing_time && m_host)
-	{
-		m_window.draw(m_time_selection_text);
-		m_window.draw(m_gui_container_time);
-	}
 	else if (m_connected)
 	{
 		if (m_host)
 		{
 			m_window.draw(m_gui_container);
+			m_window.draw(m_time_selection_text);
 		}
 		else
 		{
@@ -374,9 +358,8 @@ bool MultiplayerGameState::Update(sf::Time dt)
 
 bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 {
-	//Host start button handling
+	//Host start button handling	
 	m_gui_container.HandleEvent(event);
-	m_gui_container_time.HandleEvent(event);
 
 	//Game input handling
 	CommandQueue& commands = m_world.GetCommandQueue();
@@ -596,13 +579,19 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		sf::Int16 character_score;
-		packet >> character_identifier >> character_position.x >> character_position.y >> character_score;
+		bool has_game_started;
+		packet >> character_identifier >> character_position.x >> character_position.y >> character_score >> has_game_started;
 		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, true);
 		character->setPosition(character_position);
 		character->SetScore(0);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
-		//m_game_started = true;
+		
+		/*if (has_game_started)
+		{
+			m_game_started = true;
+		}*/
+
 		SendCharacterSelection();
 	}
 	break;

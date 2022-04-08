@@ -366,15 +366,8 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 	case Client::PacketType::HostStartGame:
 	{
 		m_game_started = true;
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::StartGame);
 
-		SendToAll(packet);
-	}
-	break;
-
-	case Client::PacketType::TimeSelection:
-	{
+		sf::Packet response_packet;
 		sf::Int8 time_limit;
 		packet >> time_limit;
 
@@ -390,6 +383,9 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		{
 			m_game_countdown = sf::seconds(900);
 		}
+		response_packet << static_cast<sf::Int32>(Server::PacketType::StartGame);
+
+		SendToAll(response_packet);
 	}
 	break;
 	}
@@ -415,6 +411,8 @@ void GameServer::HandleIncomingConnections()
 		packet << m_character_identifier_counter;
 		packet << m_character_info[m_character_identifier_counter].m_position.x;
 		packet << m_character_info[m_character_identifier_counter].m_position.y;
+		packet << m_game_started;
+
 
 		m_peers[m_connected_players]->m_character_identifiers.emplace_back(m_character_identifier_counter);
 
