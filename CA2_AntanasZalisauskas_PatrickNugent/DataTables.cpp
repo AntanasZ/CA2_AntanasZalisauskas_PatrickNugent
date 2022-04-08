@@ -24,6 +24,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kPlaceholder)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kPlaceholder)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kPlaceholder)].m_texture = Textures::kPlaceholderCharacter;
+	data[static_cast<int>(CharacterType::kPlaceholder)].m_fire_interval = sf::seconds(5);
 	data[static_cast<int>(CharacterType::kPlaceholder)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kPlaceholder)].m_has_run_animation = true;
 
@@ -31,6 +32,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kShaggy)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kShaggy)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kShaggy)].m_texture = Textures::kShaggy;
+	data[static_cast<int>(CharacterType::kShaggy)].m_fire_interval = sf::seconds(5);
 	data[static_cast<int>(CharacterType::kShaggy)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kShaggy)].m_has_run_animation = true;
 
@@ -38,6 +40,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kScooby)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kScooby)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kScooby)].m_texture = Textures::kScooby;
+	data[static_cast<int>(CharacterType::kScooby)].m_fire_interval = sf::seconds(5);
 	data[static_cast<int>(CharacterType::kScooby)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kScooby)].m_has_run_animation = true;
 
@@ -45,6 +48,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kFred)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kFred)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kFred)].m_texture = Textures::kFred;
+	data[static_cast<int>(CharacterType::kFred)].m_fire_interval = sf::seconds(1);
 	data[static_cast<int>(CharacterType::kFred)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kFred)].m_has_run_animation = true;
 
@@ -52,6 +56,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kVelma)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kVelma)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kVelma)].m_texture = Textures::kVelma;
+	data[static_cast<int>(CharacterType::kVelma)].m_fire_interval = sf::seconds(5);
 	data[static_cast<int>(CharacterType::kVelma)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kVelma)].m_has_run_animation = true;
 
@@ -59,6 +64,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kDaphne)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kDaphne)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kDaphne)].m_texture = Textures::kDaphne;
+	data[static_cast<int>(CharacterType::kDaphne)].m_fire_interval = sf::seconds(5);
 	data[static_cast<int>(CharacterType::kDaphne)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kDaphne)].m_has_run_animation = true;
 
@@ -66,6 +72,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kCreeperLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kCreeperLeft)].m_speed = 80.f;
 	data[static_cast<int>(CharacterType::kCreeperLeft)].m_texture = Textures::kCreeper;
+	data[static_cast<int>(CharacterType::kCreeperLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kCreeperLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kCreeperLeft)].m_has_run_animation = false;
 
@@ -78,6 +85,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kMichaelLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kMichaelLeft)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kMichaelLeft)].m_texture = Textures::kMichael;
+	data[static_cast<int>(CharacterType::kMichaelLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kMichaelLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kMichaelLeft)].m_has_run_animation = false;
 
@@ -89,6 +97,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kFreddyLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kFreddyLeft)].m_speed = 160.f;
 	data[static_cast<int>(CharacterType::kFreddyLeft)].m_texture = Textures::kFreddy;
+	data[static_cast<int>(CharacterType::kFreddyLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kFreddyLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kFreddyLeft)].m_has_run_animation = false;
 
@@ -100,6 +109,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kJasonLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kJasonLeft)].m_speed = 100.f;
 	data[static_cast<int>(CharacterType::kJasonLeft)].m_texture = Textures::kJason;
+	data[static_cast<int>(CharacterType::kJasonLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kJasonLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kJasonLeft)].m_has_run_animation = false;
 
@@ -111,6 +121,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kStripeLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kStripeLeft)].m_speed = 270.f;
 	data[static_cast<int>(CharacterType::kStripeLeft)].m_texture = Textures::kStripe;
+	data[static_cast<int>(CharacterType::kStripeLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kStripeLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kStripeLeft)].m_has_run_animation = false;
 
@@ -122,6 +133,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kGarfieldLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kGarfieldLeft)].m_speed = 230.f;
 	data[static_cast<int>(CharacterType::kGarfieldLeft)].m_texture = Textures::kGarfield;
+	data[static_cast<int>(CharacterType::kGarfieldLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kGarfieldLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kGarfieldLeft)].m_has_run_animation = false;
 
@@ -133,6 +145,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kGhidorahLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kGhidorahLeft)].m_speed = 160.f;
 	data[static_cast<int>(CharacterType::kGhidorahLeft)].m_texture = Textures::kGhidorah;
+	data[static_cast<int>(CharacterType::kGhidorahLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kGhidorahLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kGhidorahLeft)].m_has_run_animation = false;
 
@@ -158,6 +171,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kPterodactylLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kPterodactylLeft)].m_speed = 300.f;
 	data[static_cast<int>(CharacterType::kPterodactylLeft)].m_texture = Textures::kPterodactyl;
+	data[static_cast<int>(CharacterType::kPterodactylLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kPterodactylLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kPterodactylLeft)].m_has_run_animation = false;
 
@@ -176,6 +190,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kTurtleLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kTurtleLeft)].m_speed = 80.f;
 	data[static_cast<int>(CharacterType::kTurtleLeft)].m_texture = Textures::kTurtle;
+	data[static_cast<int>(CharacterType::kTurtleLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kTurtleLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kTurtleLeft)].m_has_run_animation = false;
 
@@ -187,6 +202,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kGhostLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kGhostLeft)].m_speed = 130.f;
 	data[static_cast<int>(CharacterType::kGhostLeft)].m_texture = Textures::kGhost;
+	data[static_cast<int>(CharacterType::kGhostLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kGhostLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kGhostLeft)].m_has_run_animation = false;
 
@@ -198,6 +214,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kSkullLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kSkullLeft)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kSkullLeft)].m_texture = Textures::kSkull;
+	data[static_cast<int>(CharacterType::kSkullLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kSkullLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kSkullLeft)].m_has_run_animation = false;
 
@@ -209,6 +226,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kDutchmanLeft)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kDutchmanLeft)].m_speed = 250.f;
 	data[static_cast<int>(CharacterType::kDutchmanLeft)].m_texture = Textures::kDutchman;
+	data[static_cast<int>(CharacterType::kDutchmanLeft)].m_fire_interval = sf::Time::Zero;
 	data[static_cast<int>(CharacterType::kDutchmanLeft)].m_jump_height = 0.f;
 	data[static_cast<int>(CharacterType::kDutchmanLeft)].m_has_run_animation = false;
 
@@ -221,7 +239,24 @@ std::vector<CharacterData> InitializeCharacterData()
 
 std::vector<ProjectileData> InitializeProjectileData()
 {
-	return std::vector<ProjectileData>();
+	std::vector<ProjectileData> data(static_cast<int>(ProjectileType::kProjectileCount));
+
+	data[static_cast<int>(ProjectileType::kAlliedBullet)].m_damage = 10;
+	data[static_cast<int>(ProjectileType::kAlliedBullet)].m_speed = 300;
+	data[static_cast<int>(ProjectileType::kAlliedBullet)].m_texture = Textures::kEntities;
+	data[static_cast<int>(ProjectileType::kAlliedBullet)].m_texture_rect = sf::IntRect(175, 64, 3, 14);
+
+	data[static_cast<int>(ProjectileType::kEnemyBullet)].m_damage = 10;
+	data[static_cast<int>(ProjectileType::kEnemyBullet)].m_speed = 300;
+	data[static_cast<int>(ProjectileType::kEnemyBullet)].m_texture = Textures::kEntities;
+	data[static_cast<int>(ProjectileType::kEnemyBullet)].m_texture_rect = sf::IntRect(178, 64, 3, 14);
+
+	data[static_cast<int>(ProjectileType::kMissile)].m_damage = 200;
+	data[static_cast<int>(ProjectileType::kMissile)].m_speed = 150.f;
+	data[static_cast<int>(ProjectileType::kMissile)].m_texture = Textures::kEntities;
+	data[static_cast<int>(ProjectileType::kMissile)].m_texture_rect = sf::IntRect(160, 64, 15, 32);
+
+	return data;
 }
 
 /// <summary>
