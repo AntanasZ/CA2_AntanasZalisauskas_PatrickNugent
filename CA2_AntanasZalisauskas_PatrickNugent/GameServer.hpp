@@ -95,7 +95,8 @@ private:
 	sf::Time m_pickup_spawn_countdown;
 	sf::Time m_game_countdown;
 	sf::Time m_gameover_countdown;
-
+	
+	bool m_game_started;
 	bool m_game_over;
 };
 

@@ -37,6 +37,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	//, m_game_countdown(sf::seconds(30))
 	, m_game_countdown(sf::seconds(1800))
 	, m_game_over(false)
+	, m_game_started(false)
 {
 	m_listener_socket.setBlocking(false);
 	m_peers[0].reset(new RemotePeer());
@@ -172,67 +173,70 @@ void GameServer::Tick(sf::Time tick_time)
 {
 	UpdateClientState();
 
-	m_enemy_spawn_countdown += tick_time;
-	m_flying_enemy_spawn_countdown += tick_time;
-	m_pickup_spawn_countdown += tick_time;
-
-	if(m_game_countdown >= sf::Time::Zero && !m_game_over)
+	if (m_game_started)
 	{
-		m_game_countdown -= tick_time;
+		m_enemy_spawn_countdown += tick_time;
+		m_flying_enemy_spawn_countdown += tick_time;
+		m_pickup_spawn_countdown += tick_time;
 
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::UpdateGameTimeLeft) << m_game_countdown.asSeconds();
-
-		SendToAll(packet);
-	}
-	else
-	{
-		m_game_over = true;
-
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::FinishGame);
-
-		SendToAll(packet);
-	}
-
-	if (!m_game_over)
-	{
-		if (m_enemy_spawn_countdown >= sf::seconds(10.f))
+		if (m_game_countdown >= sf::Time::Zero && !m_game_over)
 		{
+			m_game_countdown -= tick_time;
+
 			sf::Packet packet;
-			sf::Int8 randomEnemy;
-			randomEnemy = rand() % 12;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
+			packet << static_cast<sf::Int32>(Server::PacketType::UpdateGameTimeLeft) << m_game_countdown.asSeconds();
 
 			SendToAll(packet);
+		}
+		else
+		{
+			m_game_over = true;
 
-			m_enemy_spawn_countdown = sf::Time::Zero;
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::PacketType::FinishGame);
+
+			SendToAll(packet);
 		}
 
-		if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
+		if (!m_game_over)
 		{
-			sf::Packet packet;
-			sf::Int8 randomEnemy;
-			randomEnemy = rand() % 12;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
+			if (m_enemy_spawn_countdown >= sf::seconds(10.f))
+			{
+				sf::Packet packet;
+				sf::Int8 randomEnemy;
+				randomEnemy = rand() % 12;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
 
-			SendToAll(packet);
+				SendToAll(packet);
 
-			m_flying_enemy_spawn_countdown = sf::Time::Zero;
-		}
+				m_enemy_spawn_countdown = sf::Time::Zero;
+			}
 
-		if (m_pickup_spawn_countdown >= sf::seconds(2.f))
-		{
-			sf::Packet packet;
-			sf::Int8 randomPickup;
-			sf::Int16 randomPosition;
-			randomPickup = rand() % 9;
-			randomPosition = (rand() % 2950) + 90;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
+			if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
+			{
+				sf::Packet packet;
+				sf::Int8 randomEnemy;
+				randomEnemy = rand() % 12;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
 
-			SendToAll(packet);
+				SendToAll(packet);
 
-			m_pickup_spawn_countdown = sf::Time::Zero;
+				m_flying_enemy_spawn_countdown = sf::Time::Zero;
+			}
+
+			if (m_pickup_spawn_countdown >= sf::seconds(2.f))
+			{
+				sf::Packet packet;
+				sf::Int8 randomPickup;
+				sf::Int16 randomPosition;
+				randomPickup = rand() % 9;
+				randomPosition = (rand() % 2950) + 90;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
+
+				SendToAll(packet);
+
+				m_pickup_spawn_countdown = sf::Time::Zero;
+			}
 		}
 	}
 }
@@ -358,6 +362,16 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 			SendToAll(packet);
 		}
 	}
+
+	case Client::PacketType::HostStartGame:
+	{
+		m_game_started = true;
+		sf::Packet packet;
+		packet << static_cast<sf::Int32>(Server::PacketType::StartGame);
+
+		SendToAll(packet);
+	}
+	break;
 	}
 
 }
