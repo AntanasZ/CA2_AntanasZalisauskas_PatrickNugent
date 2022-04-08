@@ -639,7 +639,16 @@ void Character::Fire()
 void Character::CreateBullets(SceneNode& node, const TextureHolder& textures) const
 {
 	ProjectileType type = ProjectileType::kAlliedBullet;
-	CreateProjectile(node, type, 0.0f, 0.5f, textures);
+	float x_offset;
+	if(m_is_facing_right > 0)
+	{
+		x_offset = 0.5f;
+	}
+	else
+	{
+		x_offset = -0.5f;
+	}
+	CreateProjectile(node, type, x_offset, 0.0f, textures);
 }
 
 void Character::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset,
@@ -647,11 +656,20 @@ void Character::CreateProjectile(SceneNode& node, ProjectileType type, float x_o
 {
 	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
 	sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().width, y_offset * m_sprite.getGlobalBounds().height);
-	sf::Vector2f velocity(0, projectile->GetMaxSpeed());
 
-	float sign = -1.f;
-	projectile->setPosition(GetWorldPosition() + offset * sign);
-	projectile->SetVelocity(velocity * sign);
+	sf::Vector2f velocity;
+
+	if(m_is_facing_right)
+	{
+		velocity.x = projectile->GetMaxSpeed();
+	}
+	else
+	{
+		velocity.x = -projectile->GetMaxSpeed();
+	}
+
+	projectile->setPosition(GetWorldPosition() + offset);
+	projectile->SetVelocity(velocity);
 	node.AttachChild(std::move(projectile));
 }
 
