@@ -287,23 +287,6 @@ std::vector<PickupData> InitializePickupData()
 	data[static_cast<int>(PickupType::kPancake)].m_speed = pickupSpeed;
 	data[static_cast<int>(PickupType::kPancake)].m_directions.emplace_back(Direction(0.f, 1000.f));
 	return data;
-
-	/*data[static_cast<int>(PickupType::kHealthRefill)].m_texture = Textures::kEntities;
-	data[static_cast<int>(PickupType::kHealthRefill)].m_texture_rect = sf::IntRect(0, 64, 40, 40);
-	data[static_cast<int>(PickupType::kHealthRefill)].m_action = [](Aircraft& a) {a.Repair(25); };
-
-	data[static_cast<int>(PickupType::kMissileRefill)].m_texture = Textures::kEntities;
-	data[static_cast<int>(PickupType::kMissileRefill)].m_texture_rect = sf::IntRect(40, 64, 40, 40);
-	data[static_cast<int>(PickupType::kMissileRefill)].m_action = std::bind(&Aircraft::CollectMissiles, std::placeholders::_1, 3);
-
-	data[static_cast<int>(PickupType::kFireSpread)].m_texture = Textures::kEntities;
-	data[static_cast<int>(PickupType::kFireSpread)].m_texture_rect = sf::IntRect(80, 64, 40, 40);
-	data[static_cast<int>(PickupType::kFireSpread)].m_action = std::bind(&Aircraft::IncreaseSpread, std::placeholders::_1);
-
-	data[static_cast<int>(PickupType::kFireRate)].m_texture = Textures::kEntities;
-	data[static_cast<int>(PickupType::kFireRate)].m_texture_rect = sf::IntRect(120, 64, 40, 40);
-	data[static_cast<int>(PickupType::kFireRate)].m_action = std::bind(&Aircraft::IncreaseFireRate, std::placeholders::_1);
-	return data;*/
 }
 
 std::vector<ParticleData> InitializeParticleData()

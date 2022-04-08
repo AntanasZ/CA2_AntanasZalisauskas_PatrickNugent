@@ -29,6 +29,7 @@ namespace Server
 		MissionSuccess,
 		UpdateGameTimeLeft,
 		FinishGame,
+		StartGame
 	};
 }
 
@@ -43,7 +44,10 @@ namespace Client
 		PositionUpdate,
 		GameEvent,
 		Quit,
-		PlayerCharacterSelect
+		PlayerCharacterSelect,
+		HostStartGame,
+		Waiting,
+		TimeSelection
 	};
 }
 

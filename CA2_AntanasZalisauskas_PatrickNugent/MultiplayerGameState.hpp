@@ -4,6 +4,7 @@
 #include "Player.hpp"
 #include "GameServer.hpp"
 #include "NetworkProtocol.hpp"
+#include "Container.hpp"
 
 class MultiplayerGameState : public State
 {
@@ -16,6 +17,7 @@ public:
 	virtual CharacterType DetermineCharacterFromNumber(int characterNumber);
 	virtual int DetermineNumberFromCharacter(CharacterType characterType);
 	void OnDestroy();
+	void DisplayPlayers(sf::Int8 connectedPlayers);
 	void SendCharacterSelection();
 	void DisableAllRealtimeActions();
 
@@ -45,11 +47,16 @@ private:
 	sf::Text m_failed_connection_text;
 	sf::Clock m_failed_connection_clock;
 
+	sf::Text m_waiting_text;
+	sf::Text m_time_selection_text;
+	sf::Text m_players_connected_text;
+
 	bool m_active_state;
 	bool m_has_focus;
 	bool m_host;
 	bool m_game_started;
 	sf::Time m_client_timeout;
 	sf::Time m_time_since_last_packet;
+	GUI::Container m_gui_container;
 };
 

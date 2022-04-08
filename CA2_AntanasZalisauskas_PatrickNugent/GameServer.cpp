@@ -34,9 +34,9 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_enemy_spawn_countdown()
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
-	//, m_game_countdown(sf::seconds(30))
-	, m_game_countdown(sf::seconds(1800))
+	, m_game_countdown(sf::seconds(120))
 	, m_game_over(false)
+	, m_game_started(false)
 {
 	m_listener_socket.setBlocking(false);
 	m_peers[0].reset(new RemotePeer());
@@ -49,14 +49,13 @@ GameServer::~GameServer()
 	m_thread.wait();
 }
 
-//This is the same as SpawnSelf but indicate that an aircraft from a different client is entering the world
-
+//This is the same as SpawnSelf but indicate that a character from a different client is entering the world
 void GameServer::NotifyPlayerSpawn(sf::Int32 character_identifier)
 {
 	sf::Packet packet;
 	//First thing for every packet is what type of packet it is
 	packet << static_cast<sf::Int32>(Server::PacketType::PlayerConnect);
-	packet << character_identifier << m_character_info[character_identifier].m_position.x << m_character_info[character_identifier].m_position.y << m_character_info[character_identifier].m_type;
+	packet << character_identifier << m_character_info[character_identifier].m_position.x << m_character_info[character_identifier].m_position.y << m_character_info[character_identifier].m_type << static_cast<sf::Int8>(m_connected_players);
 	for(std::size_t i=0; i < m_connected_players; ++i)
 	{
 		if(m_peers[i]->m_ready)
@@ -158,7 +157,7 @@ void GameServer::ExecutionThread()
 		//Fixed tick step
 		while(tick_time >= tick_rate)
 		{
-			Tick(tick_time);
+			Tick(tick_time/2.f);
 			tick_time -= tick_rate;
 		}
 
@@ -172,67 +171,70 @@ void GameServer::Tick(sf::Time tick_time)
 {
 	UpdateClientState();
 
-	m_enemy_spawn_countdown += tick_time;
-	m_flying_enemy_spawn_countdown += tick_time;
-	m_pickup_spawn_countdown += tick_time;
-
-	if(m_game_countdown >= sf::Time::Zero && !m_game_over)
+	if (m_game_started)
 	{
-		m_game_countdown -= tick_time;
+		m_enemy_spawn_countdown += tick_time;
+		m_flying_enemy_spawn_countdown += tick_time;
+		m_pickup_spawn_countdown += tick_time;
 
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::UpdateGameTimeLeft) << m_game_countdown.asSeconds();
-
-		SendToAll(packet);
-	}
-	else
-	{
-		m_game_over = true;
-
-		sf::Packet packet;
-		packet << static_cast<sf::Int32>(Server::PacketType::FinishGame);
-
-		SendToAll(packet);
-	}
-
-	if (!m_game_over)
-	{
-		if (m_enemy_spawn_countdown >= sf::seconds(10.f))
+		if (m_game_countdown >= sf::Time::Zero && !m_game_over)
 		{
+			m_game_countdown -= tick_time;
+
 			sf::Packet packet;
-			sf::Int8 randomEnemy;
-			randomEnemy = rand() % 12;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
+			packet << static_cast<sf::Int32>(Server::PacketType::UpdateGameTimeLeft) << m_game_countdown.asSeconds();
 
 			SendToAll(packet);
+		}
+		else
+		{
+			m_game_over = true;
 
-			m_enemy_spawn_countdown = sf::Time::Zero;
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::PacketType::FinishGame);
+
+			SendToAll(packet);
 		}
 
-		if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
+		if (!m_game_over)
 		{
-			sf::Packet packet;
-			sf::Int8 randomEnemy;
-			randomEnemy = rand() % 12;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
+			if (m_enemy_spawn_countdown >= sf::seconds(5.f))
+			{
+				sf::Packet packet;
+				sf::Int8 randomEnemy;
+				randomEnemy = rand() % 12;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnEnemy) << randomEnemy;
 
-			SendToAll(packet);
+				SendToAll(packet);
 
-			m_flying_enemy_spawn_countdown = sf::Time::Zero;
-		}
+				m_enemy_spawn_countdown = sf::Time::Zero;
+			}
 
-		if (m_pickup_spawn_countdown >= sf::seconds(2.f))
-		{
-			sf::Packet packet;
-			sf::Int8 randomPickup;
-			sf::Int16 randomPosition;
-			randomPickup = rand() % 9;
-			randomPosition = (rand() % 2950) + 90;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
+			if (m_flying_enemy_spawn_countdown >= sf::seconds(7.5f))
+			{
+				sf::Packet packet;
+				sf::Int8 randomEnemy;
+				randomEnemy = rand() % 12;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnFlyingEnemy) << randomEnemy;
 
-			SendToAll(packet);
+				SendToAll(packet);
 
-			m_pickup_spawn_countdown = sf::Time::Zero;
+				m_flying_enemy_spawn_countdown = sf::Time::Zero;
+			}
+
+			if (m_pickup_spawn_countdown >= sf::seconds(1.f))
+			{
+				sf::Packet packet;
+				sf::Int8 randomPickup;
+				sf::Int16 randomPosition;
+				randomPickup = rand() % 9;
+				randomPosition = (rand() % 2950) + 90;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
+
+				SendToAll(packet);
+
+				m_pickup_spawn_countdown = sf::Time::Zero;
+			}
 		}
 	}
 }
@@ -358,6 +360,32 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 			SendToAll(packet);
 		}
 	}
+
+	case Client::PacketType::HostStartGame:
+	{
+		m_game_started = true;
+
+		sf::Packet response_packet;
+		sf::Int8 time_limit;
+		packet >> time_limit;
+
+		if (time_limit == 2)
+		{
+			m_game_countdown = sf::seconds(120);
+		}
+		else if (time_limit == 5)
+		{
+			m_game_countdown = sf::seconds(300);
+		}
+		else
+		{
+			m_game_countdown = sf::seconds(900);
+		}
+		response_packet << static_cast<sf::Int32>(Server::PacketType::StartGame);
+
+		SendToAll(response_packet);
+	}
+	break;
 	}
 
 }
@@ -377,10 +405,22 @@ void GameServer::HandleIncomingConnections()
 		m_character_info[m_character_identifier_counter].m_type = 6;
 
 		sf::Packet packet;
+		sf::Int8 has_game_started;
+
+		if (m_game_started)
+		{
+			has_game_started = 1;
+		}
+		else
+		{
+			has_game_started = 2;
+		}
+
 		packet << static_cast<sf::Int32>(Server::PacketType::SpawnSelf);
 		packet << m_character_identifier_counter;
 		packet << m_character_info[m_character_identifier_counter].m_position.x;
 		packet << m_character_info[m_character_identifier_counter].m_position.y;
+		packet << has_game_started;
 
 		m_peers[m_connected_players]->m_character_identifiers.emplace_back(m_character_identifier_counter);
 
@@ -415,7 +455,7 @@ void GameServer::HandleDisconnections()
 			//Inform everyone of a disconnection, erase
 			for(sf::Int32 identifer : (*itr)->m_character_identifiers)
 			{
-				SendToAll((sf::Packet() << static_cast<sf::Int32>(Server::PacketType::PlayerDisconnect) << identifer));
+				SendToAll((sf::Packet() << static_cast<sf::Int32>(Server::PacketType::PlayerDisconnect) << identifer << static_cast<sf::Int8>(m_connected_players)));
 				m_character_info.erase(identifer);
 			}
 
