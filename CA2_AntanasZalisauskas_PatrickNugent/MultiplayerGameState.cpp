@@ -103,7 +103,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 		{
 			m_choosing_time = false;
 			sf::Packet packet;
+			sf::Int8 timeSelection = 2;
 			packet << static_cast<sf::Int32>(Client::PacketType::TimeSelection);
+			packet << timeSelection;
 			m_socket.send(packet);
 		});
 
@@ -114,7 +116,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 		{
 			m_choosing_time = false;
 			sf::Packet packet;
+			sf::Int8 timeSelection = 5;
 			packet << static_cast<sf::Int32>(Client::PacketType::TimeSelection);
+			packet << timeSelection;
 			m_socket.send(packet);
 		});
 
@@ -125,7 +129,9 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 		{
 			m_choosing_time = false;
 			sf::Packet packet;
+			sf::Int8 timeSelection = 15;
 			packet << static_cast<sf::Int32>(Client::PacketType::TimeSelection);
+			packet << timeSelection;
 			m_socket.send(packet);
 		});
 

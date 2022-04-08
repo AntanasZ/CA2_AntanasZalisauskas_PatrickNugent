@@ -35,7 +35,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_flying_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
 	//, m_game_countdown(sf::seconds(30))
-	, m_game_countdown(sf::seconds(1800))
+	, m_game_countdown(sf::seconds(120))
 	, m_game_over(false)
 	, m_game_started(false)
 {
@@ -159,7 +159,7 @@ void GameServer::ExecutionThread()
 		//Fixed tick step
 		while(tick_time >= tick_rate)
 		{
-			Tick(tick_time);
+			Tick(tick_time/2.f);
 			tick_time -= tick_rate;
 		}
 
@@ -200,7 +200,7 @@ void GameServer::Tick(sf::Time tick_time)
 
 		if (!m_game_over)
 		{
-			if (m_enemy_spawn_countdown >= sf::seconds(10.f))
+			if (m_enemy_spawn_countdown >= sf::seconds(5.f))
 			{
 				sf::Packet packet;
 				sf::Int8 randomEnemy;
@@ -212,7 +212,7 @@ void GameServer::Tick(sf::Time tick_time)
 				m_enemy_spawn_countdown = sf::Time::Zero;
 			}
 
-			if (m_flying_enemy_spawn_countdown >= sf::seconds(15.f))
+			if (m_flying_enemy_spawn_countdown >= sf::seconds(7.5f))
 			{
 				sf::Packet packet;
 				sf::Int8 randomEnemy;
@@ -224,7 +224,7 @@ void GameServer::Tick(sf::Time tick_time)
 				m_flying_enemy_spawn_countdown = sf::Time::Zero;
 			}
 
-			if (m_pickup_spawn_countdown >= sf::seconds(2.f))
+			if (m_pickup_spawn_countdown >= sf::seconds(1.f))
 			{
 				sf::Packet packet;
 				sf::Int8 randomPickup;
@@ -370,6 +370,26 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 		packet << static_cast<sf::Int32>(Server::PacketType::StartGame);
 
 		SendToAll(packet);
+	}
+	break;
+
+	case Client::PacketType::TimeSelection:
+	{
+		sf::Int8 time_limit;
+		packet >> time_limit;
+
+		if (time_limit == 2)
+		{
+			m_game_countdown = sf::seconds(120);
+		}
+		else if (time_limit == 5)
+		{
+			m_game_countdown = sf::seconds(300);
+		}
+		else
+		{
+			m_game_countdown = sf::seconds(900);
+		}
 	}
 	break;
 	}

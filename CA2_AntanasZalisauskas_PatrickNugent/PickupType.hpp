@@ -7,10 +7,6 @@
 /// </summary>
 enum class PickupType
 {
-	kHealthRefill,
-	kMissileRefill,
-	kFireSpread,
-	kFireRate,
 	kApple,
 	kOrange,
 	kCake,
