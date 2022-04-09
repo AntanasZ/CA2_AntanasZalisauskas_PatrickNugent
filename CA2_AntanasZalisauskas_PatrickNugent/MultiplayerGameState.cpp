@@ -211,7 +211,7 @@ bool MultiplayerGameState::Update(sf::Time dt)
 		bool found_local_character = false;
 		for(auto itr = m_players.begin(); itr != m_players.end();)
 		{
-			//Check if there are no more local planes for remote clients
+			//Check if there are no more local characters for remote clients
 			if(std::find(m_local_player_identifiers.begin(), m_local_player_identifiers.end(), itr->first) != m_local_player_identifiers.end())
 			{
 				found_local_character = true;
@@ -287,8 +287,7 @@ bool MultiplayerGameState::Update(sf::Time dt)
 			sf::Packet packet;
 			packet << static_cast<sf::Int32>(Client::PacketType::GameEvent);
 			packet << static_cast<sf::Int32>(game_action.type);
-			packet << game_action.position.x;
-			packet << game_action.position.y;
+			packet << game_action.pickupIdentifier;
 
 			m_socket.send(packet);
 		}
@@ -574,6 +573,14 @@ int MultiplayerGameState::DetermineNumberFromCharacter(CharacterType characterTy
 /// Edited by: Antanas Zalisauskas
 ///
 ///	Updated code which calls AddCharacter method to pass in a bool for local player parameter
+///
+/// Edited by: Patrick Nugent
+///
+/// -Updated spawn self packet to send character selection
+/// -Updated how connection packets are handled to show the number
+///  of players in the lobby
+/// -Updated enemy spawn and pickup spawn packets
+/// -Added code to handle DestroyPickup packets
 /// </summary>
 /// <param name="packet_type"></param>
 /// <param name="packet"></param>
@@ -729,13 +736,6 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	}
 	break;
 
-	//Mission Successfully completed
-	case Server::PacketType::MissionSuccess:
-	{
-		RequestStackPush(StateID::kMissionSuccess);
-	}
-	break;
-
 	case Server::PacketType::UpdateGameTimeLeft:
 	{
 		float remaining_time;
@@ -748,7 +748,6 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	case Server::PacketType::FinishGame:
 	{
 		m_world.DisplayWinner();
-		//RequestStackPush(StateID::kGameOver);
 	}
 
 	//Pickup created
@@ -756,9 +755,11 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	{
 		sf::Int8 pickupType;
 		sf::Int16 pickupPosition;
+		sf::Int16 pickupIdentifier;
 		packet >> pickupType;
 		packet >> pickupPosition;
-		m_world.SpawnPickups(pickupType, pickupPosition);
+		packet >> pickupIdentifier;
+		m_world.SpawnPickups(pickupType, pickupPosition, pickupIdentifier);
 	}
 	break;
 
@@ -797,6 +798,14 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	case Server::PacketType::StartGame:
 	{
 		m_game_started = true;
+	}
+	break;
+
+	case Server::PacketType::DestroyPickup:
+	{
+		sf::Int16 pickup_identifier;
+		packet >> pickup_identifier;
+		m_world.RemovePickup(pickup_identifier);
 	}
 	break;
 	}

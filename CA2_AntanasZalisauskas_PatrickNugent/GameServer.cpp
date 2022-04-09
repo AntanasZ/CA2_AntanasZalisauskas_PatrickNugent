@@ -37,6 +37,7 @@ GameServer::GameServer(sf::Vector2f battlefield_size)
 	, m_game_countdown(sf::seconds(120))
 	, m_game_over(false)
 	, m_game_started(false)
+	, m_pickup_identifier_counter(1)
 {
 	m_listener_socket.setBlocking(false);
 	m_peers[0].reset(new RemotePeer());
@@ -85,10 +86,9 @@ void GameServer::NotifyPlayerRealtimeChange(sf::Int32 character_identifier, sf::
 	}
 }
 
-//This takes two sf::Int32 variables, the aircraft identifier and the action identifier
+//This takes two sf::Int32 variables, the character identifier and the action identifier
 //as declared in the Player class. This is used to inform all peers that plane X has
 //triggered an action
-
 void GameServer::NotifyPlayerEvent(sf::Int32 character_identifier, sf::Int32 action)
 {
 	sf::Packet packet;
@@ -229,11 +229,12 @@ void GameServer::Tick(sf::Time tick_time)
 				sf::Int16 randomPosition;
 				randomPickup = rand() % 9;
 				randomPosition = (rand() % 2950) + 90;
-				packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition;
+				packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup) << randomPickup << randomPosition << m_pickup_identifier_counter;
 
 				SendToAll(packet);
 
 				m_pickup_spawn_countdown = sf::Time::Zero;
+				m_pickup_identifier_counter++;
 			}
 		}
 	}
@@ -340,22 +341,17 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 	case Client::PacketType::GameEvent:
 	{
 		sf::Int32 action;
-		float x;
-		float y;
+		sf::Int16 pickup_identifer;
 
 		packet >> action;
-		packet >> x;
-		packet >> y;
+		packet >> pickup_identifer;
 
-		//Enemy explodes, with a certain probability, drop a pickup
-		//To avoid multiple messages only listen to the first peer (host)
-		if (action == GameActions::EnemyExplode && Utility::RandomInt(3) == 0 && &receiving_peer == m_peers[0].get())
+		//Tell all clients to destroy the pickup with the received id
+		if (action == GameActions::CollectPickup)
 		{
 			sf::Packet packet;
-			packet << static_cast<sf::Int32>(Server::PacketType::SpawnPickup);
-			packet << static_cast<sf::Int32>(Utility::RandomInt(static_cast<int>(PickupType::kPickupCount)));
-			packet << x;
-			packet << y;
+			packet << static_cast<sf::Int32>(Server::PacketType::DestroyPickup);
+			packet << pickup_identifer;
 
 			SendToAll(packet);
 		}

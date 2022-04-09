@@ -3,6 +3,7 @@
 #include <SFML/Graphics/RenderWindow.hpp>
 #include <iostream>
 #include <limits>
+#include <algorithm>
 
 #include "ParticleNode.hpp"
 #include "ParticleType.hpp"
@@ -27,8 +28,8 @@ World::World(sf::RenderTarget& output_target, FontHolder& font, SoundPlayer& sou
 	, m_scrollspeed(-50.f)
 	, m_scrollspeed_compensation(1.f)
 	, m_player_characters()
-	//	, m_enemy_spawn_points()
 	, m_active_enemies()
+	, m_active_pickups()
 	, m_enemy_spawn_countdown()
 	, m_pickup_spawn_countdown()
 	, m_player_1_stun_countdown()
@@ -134,6 +135,23 @@ void World::Draw()
 Character* World::GetCharacter(int identifier) const
 {
 	for(Character * a : m_player_characters)
+	{
+		if (a->GetIdentifier() == identifier)
+		{
+			return a;
+		}
+	}
+	return nullptr;
+}
+
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	Similar to GetCharacter except for pickups
+/// </summary>
+Pickup* World::GetPickup(int identifier) const
+{
+	for (Pickup* a : m_active_pickups)
 	{
 		if (a->GetIdentifier() == identifier)
 		{
@@ -383,13 +401,6 @@ void World::AdaptPlayerVelocity(sf::Time dt)
 {
 	for (Character* character : m_player_characters)
 	{
-		//sf::Vector2f velocity = aircraft->GetVelocity();
-		////if moving diagonally then reduce velocity
-		//if (velocity.x != 0.f && velocity.y != 0.f)
-		//{
-		//	aircraft->SetVelocity(velocity / std::sqrt(2.f));
-		//}
-		//Add gravity velocity
 		character->Accelerate(0.f, m_gravity * dt.asSeconds());
 	}
 }
@@ -458,17 +469,18 @@ void World::SpawnFlyingEnemies(sf::Int8 enemyType)
 /// -Added pickup values
 /// -Made changes so that the random values are passed in
 /// </summary>
-void World::SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition)
+void World::SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition, sf::Int16 pickupIdentifier)
 {
 	if(pickupType >= 0 && pickupType < m_pickup_spawn_points.size())
 	{
 		//Spawn a random pickup from the vector of pickup spawn points
 		PickupSpawnPoint spawn = m_pickup_spawn_points[pickupType];
-		std::unique_ptr<Pickup> pickup(new Pickup(spawn.m_type, spawn.m_value, m_textures));
+		std::unique_ptr<Pickup> pickup(new Pickup(spawn.m_type, spawn.m_value, m_textures, pickupIdentifier));
 
 		//Use the random x value for the pickup's position (within the bounds)
 		pickup->setPosition((float)pickupPosition, spawn.m_y);
-
+		
+		m_active_pickups.emplace_back(pickup.get());
 		m_scene_layers[static_cast<int>(Layers::kAir)]->AttachChild(std::move(pickup));
 	}
 }
@@ -628,7 +640,13 @@ void World::HandleCollisions()
 			player.AddScore(pickup.GetValue());
 			pickup.Destroy();
 
-			//m_network_node->NotifyGameAction(GameActions::CollectPickup, pickup.GetValue());
+			//If this client collected the pickup, notify everyone else
+			//that this event happened in case the player is out of sync
+			//and hasn't collected it on their screen
+			if (player.IsLocal())
+			{
+				m_network_node->NotifyGameAction(GameActions::CollectPickup, pickup.GetIdentifier(), player.GetIdentifier());
+			}
 		}
 	}
 }
@@ -646,6 +664,21 @@ void World::DestroyEntitiesOutsideView()
 		}
 	});
 	m_command_queue.Push(command);
+}
+
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	Similar to RemoveCharacter except for pickups
+/// </summary>
+void World::RemovePickup(sf::Int16 pickupIdentifier)
+{
+	Pickup* pickup = GetPickup(pickupIdentifier);
+	if (pickup)
+	{
+		pickup->Destroy();
+		m_active_pickups.erase(std::find(m_active_pickups.begin(), m_active_pickups.end(), pickup));
+	}
 }
 
 /// <summary>

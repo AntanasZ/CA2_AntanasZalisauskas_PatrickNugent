@@ -55,6 +55,7 @@ public:
 	sf::Time GetStunTimer();
 	void AddToStunTimer(sf::Time seconds);
 	void ResetStunTimer();
+	bool IsLocal();
 
 	sf::FloatRect GetBoundingRect() const override;
 	bool IsMarkedForRemoval() const override;

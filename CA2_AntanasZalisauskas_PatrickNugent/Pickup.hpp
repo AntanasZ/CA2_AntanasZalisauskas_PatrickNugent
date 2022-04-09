@@ -11,12 +11,13 @@ class Aircraft;
 class Pickup : public Entity
 {
 public:
-	Pickup(PickupType type, int value, const TextureHolder& textures);
+	Pickup(PickupType type, int value, const TextureHolder& textures, int identifier);
 	virtual unsigned int GetCategory() const override;
 	virtual sf::FloatRect GetBoundingRect() const;
 	void Apply(Character& player) const;
 	float GetMaxSpeed() const;
 	int GetValue() const;
+	int GetIdentifier() const;
 	virtual void DrawCurrent(sf::RenderTarget&, sf::RenderStates states) const override;
 	void UpdateMovementPattern(sf::Time dt);
 
@@ -29,5 +30,6 @@ private:
 	float m_travelled_distance;
 	int m_directions_index;
 	int m_value;
+	int m_identifier;
 };
 
