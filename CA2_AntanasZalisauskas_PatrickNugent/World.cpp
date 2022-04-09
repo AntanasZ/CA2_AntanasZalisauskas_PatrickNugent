@@ -255,6 +255,7 @@ void World::LoadTextures()
 	m_textures.Load(Textures::kIceCream, "Media/Textures/IceCream.png");
 	m_textures.Load(Textures::kMelon, "Media/Textures/Melon.png");
 	m_textures.Load(Textures::kPancake, "Media/Textures/Pancake.png");
+	m_textures.Load(Textures::kEntities, "Media/Textures/Entities.png");
 }
 
 void World::BuildScene()
