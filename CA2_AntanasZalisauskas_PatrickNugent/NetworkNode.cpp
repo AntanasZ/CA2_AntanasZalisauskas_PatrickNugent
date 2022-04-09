@@ -23,6 +23,11 @@ void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Int16 pickupIdent
 	m_pending_actions.push(GameActions::Action(type, pickupIdentifier, playerIdentifier));
 }
 
+void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Int8 playerIdentifier)
+{
+	m_pending_actions.push(GameActions::Action(type, playerIdentifier));
+}
+
 bool NetworkNode::PollGameAction(GameActions::Action& out)
 {
 	if (m_pending_actions.empty())

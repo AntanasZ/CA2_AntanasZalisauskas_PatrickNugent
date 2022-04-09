@@ -342,16 +342,28 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 	{
 		sf::Int32 action;
 		sf::Int16 pickup_identifer;
+		sf::Int8 player_identifer;
 
 		packet >> action;
-		packet >> pickup_identifer;
 
 		//Tell all clients to destroy the pickup with the received id
 		if (action == GameActions::CollectPickup)
 		{
+			packet >> pickup_identifer;
 			sf::Packet packet;
 			packet << static_cast<sf::Int32>(Server::PacketType::DestroyPickup);
 			packet << pickup_identifer;
+
+			SendToAll(packet);
+		}
+
+		//Tell all clients to stun the player with the received id
+		else if (action == GameActions::StunPlayer)
+		{
+			packet >> player_identifer;
+			sf::Packet packet;
+			packet << static_cast<sf::Int32>(Server::PacketType::StunPlayer);
+			packet << player_identifer;
 
 			SendToAll(packet);
 		}

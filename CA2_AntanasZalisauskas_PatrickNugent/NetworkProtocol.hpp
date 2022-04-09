@@ -30,7 +30,8 @@ namespace Server
 		UpdateGameTimeLeft,
 		FinishGame,
 		StartGame,
-		DestroyPickup
+		DestroyPickup,
+		StunPlayer
 	};
 }
 
@@ -56,8 +57,8 @@ namespace GameActions
 {
 	enum Type
 	{
-		EnemyExplode,
-		CollectPickup
+		CollectPickup,
+		StunPlayer
 	};
 
 	struct Action
@@ -73,6 +74,11 @@ namespace GameActions
 		}
 
 		Action(Type type, sf::Int16 pickupIdentifier, sf::Int8 playerIdentifier):type(type), pickupIdentifier(pickupIdentifier), playerIdentifier(playerIdentifier)
+		{
+
+		}
+
+		Action(Type type, sf::Int8 playerIdentifier) :type(type), playerIdentifier(playerIdentifier)
 		{
 
 		}

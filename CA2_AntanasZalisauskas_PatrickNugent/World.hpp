@@ -62,6 +62,7 @@ public:
 	void RemovePickup(sf::Int16 pickupIdentifier);
 	bool PollGameAction(GameActions::Action& out);
 	bool IsGameOver() const;
+	void StunPlayer(int identifier);
 
 	void DisplayRemainingGameTime(float remaining_time);
 	void DisplayWinner();

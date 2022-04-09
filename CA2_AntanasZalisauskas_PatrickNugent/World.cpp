@@ -624,9 +624,13 @@ void World::HandleCollisions()
 			auto& player = static_cast<Character&>(*pair.first);
 			if (!player.GetInvulnerable())
 			{
-				m_sounds.Play(SoundEffect::kStun);
-				player.SetStunned(true);
-				player.SetInvulnerable(true);
+				if (player.IsLocal())
+				{
+					player.SetInvulnerable(true);
+					player.SetStunned(true);
+					m_sounds.Play(SoundEffect::kStun);
+					m_network_node->NotifyGameAction(GameActions::StunPlayer, player.GetIdentifier());
+				}
 			}
 		}
 		else if (MatchesCategories(pair, Category::Type::kPlayerCharacter, Category::Type::kPickup))
@@ -790,4 +794,25 @@ int World::GetPlayerIndex(int identifier)
 		}
 	}
 	return -1;
+}
+
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	Stuns the player associated with the identifier passed in
+/// </summary>
+void World::StunPlayer(int identifier)
+{
+	if (identifier != m_local_player_identifier)
+	{
+		for (int i = 0; i < m_player_characters.size(); i++)
+		{
+			if (m_player_characters[i]->GetIdentifier() == identifier)
+			{
+				//m_sounds.Play(SoundEffect::kStun);
+				m_player_characters[i]->SetStunned(true);
+				m_player_characters[i]->SetInvulnerable(true);
+			}
+		}
+	}
 }

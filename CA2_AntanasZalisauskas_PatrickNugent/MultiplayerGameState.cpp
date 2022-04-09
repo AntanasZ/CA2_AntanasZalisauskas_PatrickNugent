@@ -287,7 +287,15 @@ bool MultiplayerGameState::Update(sf::Time dt)
 			sf::Packet packet;
 			packet << static_cast<sf::Int32>(Client::PacketType::GameEvent);
 			packet << static_cast<sf::Int32>(game_action.type);
-			packet << game_action.pickupIdentifier;
+
+			if (game_action.type == GameActions::CollectPickup)
+			{
+				packet << game_action.pickupIdentifier;
+			}
+			else
+			{
+				packet << game_action.playerIdentifier;
+			}
 
 			m_socket.send(packet);
 		}
@@ -806,6 +814,15 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Int16 pickup_identifier;
 		packet >> pickup_identifier;
 		m_world.RemovePickup(pickup_identifier);
+	}
+	break;
+
+	case Server::PacketType::StunPlayer:
+	{
+		sf::Int8 player_identifier;
+		packet >> player_identifier;
+
+		m_world.StunPlayer(player_identifier);
 	}
 	break;
 	}
