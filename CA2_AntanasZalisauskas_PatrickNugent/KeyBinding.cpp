@@ -89,7 +89,6 @@ bool IsRealtimeAction(PlayerAction action)
 	{
 	case PlayerAction::kMoveLeft:
 	case PlayerAction::kMoveRight:
-	//case PlayerAction::kMoveDown:
 	case PlayerAction::kMoveUp:
 	case PlayerAction::kFire:
 		return true;

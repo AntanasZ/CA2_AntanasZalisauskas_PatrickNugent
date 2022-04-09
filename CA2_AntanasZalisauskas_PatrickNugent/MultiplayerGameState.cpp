@@ -12,6 +12,7 @@
 #include "PickupType.hpp"
 
 #include <iostream>
+#include "Button.hpp"
 
 sf::IpAddress GetAddressFromFile()
 {
@@ -32,6 +33,12 @@ sf::IpAddress GetAddressFromFile()
 	return local_address;
 }
 
+/// <summary>
+/// Edited By: Patrick Nugent
+///
+/// Added text for waiting in the lobby and a button for
+/// the host to start the game
+/// </summary>
 MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, bool is_host)
 : State(stack, context)
 , m_world(*context.window, *context.fonts, *context.sounds, true)
@@ -64,6 +71,70 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 	m_failed_connection_text.setString("Could not connect to the remote server");
 	Utility::CentreOrigin(m_failed_connection_text);
 
+	m_waiting_text.setFont(context.fonts->Get(Fonts::Main));
+	m_waiting_text.setString("Waiting for host to start the game...");
+	m_waiting_text.setCharacterSize(35);
+	m_waiting_text.setFillColor(sf::Color::White);
+	Utility::CentreOrigin(m_waiting_text);
+	m_waiting_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f);
+
+	m_time_selection_text.setFont(context.fonts->Get(Fonts::Main));
+	m_time_selection_text.setString("Select the time limit to start the game now");
+	m_time_selection_text.setCharacterSize(30);
+	m_time_selection_text.setFillColor(sf::Color::White);
+	Utility::CentreOrigin(m_time_selection_text);
+	m_time_selection_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f - 150);
+
+	m_players_connected_text.setFont(context.fonts->Get(Fonts::Main));
+	m_players_connected_text.setString("Players connected: 1");
+	m_players_connected_text.setCharacterSize(30);
+	m_players_connected_text.setFillColor(sf::Color::White);
+	Utility::CentreOrigin(m_players_connected_text);
+	m_players_connected_text.setPosition(m_window.getSize().x / 2.f, m_window.getSize().y / 2.f + 225);
+
+	auto two_minutes_button = std::make_shared<GUI::Button>(context);
+	two_minutes_button->setPosition(400, 300);
+	two_minutes_button->SetText("2 minutes");
+	two_minutes_button->SetCallback([this, context]()
+		{
+			sf::Packet packet;
+			sf::Int8 timeSelection = 2;
+			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
+			packet << timeSelection;
+			m_socket.send(packet);
+		});
+
+	auto five_minutes_button = std::make_shared<GUI::Button>(context);
+	five_minutes_button->setPosition(400, 375);
+	five_minutes_button->SetText("5 minutes");
+	five_minutes_button->SetCallback([this, context]()
+		{
+			sf::Packet packet;
+			sf::Int8 timeSelection = 5;
+			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
+			packet << timeSelection;
+			m_socket.send(packet);
+		});
+
+	auto fifteen_minutes_button = std::make_shared<GUI::Button>(context);
+	fifteen_minutes_button->setPosition(400, 450);
+	fifteen_minutes_button->SetText("15 minutes");
+	fifteen_minutes_button->SetCallback([this, context]()
+		{
+			sf::Packet packet;
+			sf::Int8 timeSelection = 15;
+			packet << static_cast<sf::Int32>(Client::PacketType::HostStartGame);
+			packet << timeSelection;
+			m_socket.send(packet);
+		});
+
+	if (m_host)
+	{
+		m_gui_container.Pack(two_minutes_button);
+		m_gui_container.Pack(five_minutes_button);
+		m_gui_container.Pack(fifteen_minutes_button);
+	}
+
 	sf::IpAddress ip;
 	if(m_host)
 	{
@@ -92,18 +163,30 @@ MultiplayerGameState::MultiplayerGameState(StateStack& stack, Context context, b
 
 void MultiplayerGameState::Draw()
 {
-	if(m_connected)
+	if (m_connected && m_game_started)
 	{
-		//std::cout << "Connected";
 		m_world.Draw();
 
 		//Show broadcast messages in default view
 		m_window.setView(m_window.getDefaultView());
 
-		if(!m_broadcasts.empty())
+		if (!m_broadcasts.empty())
 		{
 			m_window.draw(m_broadcast_text);
 		}
+	}
+	else if (m_connected && !m_game_started)
+	{
+		if (m_host)
+		{
+			m_window.draw(m_gui_container);
+			m_window.draw(m_time_selection_text);
+		}
+		else
+		{
+			m_window.draw(m_waiting_text);
+		}
+		m_window.draw(m_players_connected_text);
 	}
 	else
 	{
@@ -111,10 +194,16 @@ void MultiplayerGameState::Draw()
 	}
 }
 
+/// <summary>
+/// Edited By: Patrick Nugent
+///
+/// Added checks to prevent the game from starting until the host
+/// chooses to start the game on the lobby screen
+/// </summary>
 bool MultiplayerGameState::Update(sf::Time dt)
 {
 	//Connected to the Server: Handle all the network logic
-	if(m_connected)
+	if(m_connected && m_game_started)
 	{
 		m_world.Update(dt);
 
@@ -229,6 +318,43 @@ bool MultiplayerGameState::Update(sf::Time dt)
 		m_time_since_last_packet += dt;
 	}
 
+	//Connected to the Server but waiting for host to start: Handle all the network logic
+	else if (!m_game_started && m_tick_clock.getElapsedTime() > sf::seconds(1.f / 20.f))
+	{
+		m_time_since_last_packet += dt;
+
+		//Send a packet to the server to let it know that this client
+		//is waiting in the lobby and avoid timeouts
+		sf::Packet waitingPacket;
+		waitingPacket << static_cast<sf::Int32>(Client::PacketType::Waiting);
+		m_socket.send(waitingPacket);
+
+		//Handle messages from the server that may have arrived
+		sf::Packet packet;
+		if (m_socket.receive(packet) == sf::Socket::Done)
+		{
+			m_time_since_last_packet = sf::seconds(0.f);
+			sf::Int32 packet_type;
+			packet >> packet_type;
+
+			HandlePacket(packet_type, packet);
+		}
+		else
+		{
+			//Check for timeout with the server
+			if (m_time_since_last_packet > m_client_timeout)
+			{
+				m_connected = false;
+				m_failed_connection_text.setString("Lost connection to the server");
+				Utility::CentreOrigin(m_failed_connection_text);
+
+				m_failed_connection_clock.restart();
+			}
+		}
+
+		UpdateBroadcastMessage(dt);
+	}
+
 	//Failed to connect and waited for more than 5 seconds: Back to menu
 	else if(m_failed_connection_clock.getElapsedTime() >= sf::seconds(5.f))
 	{
@@ -240,6 +366,12 @@ bool MultiplayerGameState::Update(sf::Time dt)
 
 bool MultiplayerGameState::HandleEvent(const sf::Event& event)
 {
+	//Host start button handling	
+	if (!m_game_started)
+	{
+		m_gui_container.HandleEvent(event);
+	}
+
 	//Game input handling
 	CommandQueue& commands = m_world.GetCommandQueue();
 
@@ -282,6 +414,20 @@ void MultiplayerGameState::OnDestroy()
 		sf::Packet packet;
 		packet << static_cast<sf::Int32>(Client::PacketType::Quit);
 		m_socket.send(packet);
+	}
+}
+
+/// <summary>
+/// Written by: Patrick Nugent
+///
+///	Takes in the amount of connected players and updates the players connected
+/// text if the lobby screen is still being displayed.
+/// </summary>
+void MultiplayerGameState::DisplayPlayers(sf::Int8 connectedPlayers)
+{
+	if (!m_game_started)
+	{
+		m_players_connected_text.setString("Players connected: " + std::to_string(connectedPlayers+1));
 	}
 }
 
@@ -452,20 +598,26 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 	}
 	break;
 
-	//Sent by the server to spawn player 1 airplane on connect
+	//Sent by the server to spawn player 1 character on connect
 	case Server::PacketType::SpawnSelf:
 	{
 		sf::Int32 character_identifier;
 		sf::Vector2f character_position;
 		sf::Int16 character_score;
-		packet >> character_identifier >> character_position.x >> character_position.y >> character_score;
+		sf::Int8 has_game_started;
+		packet >> character_identifier >> character_position.x >> character_position.y >> has_game_started;
 		Character* character = m_world.AddCharacter(character_identifier, *GetContext().characterSelection, true);
 		character->setPosition(character_position);
 		character->SetScore(0);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, GetContext().keys1));
 		m_local_player_identifiers.push_back(character_identifier);
+		
+		if (has_game_started == static_cast<int>(1))
+		{
+			m_game_started = true;
+		}
+
 		SendCharacterSelection();
-		m_game_started = true;
 	}
 	break;
 
@@ -475,33 +627,42 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 		sf::Vector2f character_position;
 		sf::Int16 character_score;
 		sf::Int8 character_type;
-		packet >> character_identifier >> character_position.x >> character_position.y >> character_type;
+		sf::Int8 connected_players;
+		packet >> character_identifier >> character_position.x >> character_position.y >> character_type >> connected_players;
 
 		Character* character = m_world.AddCharacter(character_identifier, DetermineCharacterFromNumber(character_type), false);
 		character->setPosition(character_position);
 		m_players[character_identifier].reset(new Player(&m_socket, character_identifier, nullptr));
+		
+		DisplayPlayers(connected_players);
 	}
 	break;
 
 	case Server::PacketType::PlayerDisconnect:
 	{
 		sf::Int32 character_identifier;
-		packet >> character_identifier;
+		sf::Int8 connected_players;
+		packet >> character_identifier >> connected_players;
 		m_world.RemoveCharacter(character_identifier);
 		m_players.erase(character_identifier);
+
+		DisplayPlayers(connected_players);
 	}
 	break;
 
 	case Server::PacketType::InitialState:
 	{
 		sf::Int32 character_count;
+		sf::Int8 connected_players;
 		float world_height, current_scroll;
 		packet >> world_height >> current_scroll;
 
 		m_world.SetWorldHeight(world_height);
-		//m_world.SetCurrentBattleFieldPosition(current_scroll);
 
 		packet >> character_count;
+
+		DisplayPlayers(character_count);
+
 		for (sf::Int32 i = 0; i < character_count; ++i)
 		{
 			sf::Int32 character_identifier;
@@ -630,6 +791,12 @@ void MultiplayerGameState::HandlePacket(sf::Int32 packet_type, sf::Packet& packe
 				character->SetType(DetermineCharacterFromNumber(character_type));
 			}
 		}
+	}
+	break;
+
+	case Server::PacketType::StartGame:
+	{
+		m_game_started = true;
 	}
 	break;
 	}

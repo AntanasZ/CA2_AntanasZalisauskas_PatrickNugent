@@ -161,16 +161,6 @@ void World::RemoveCharacter(int identifier)
 /// </summary>
 Character* World::AddCharacter(int identifier, CharacterType type, bool local_player)
 {
-	/*CharacterType player_character;
-	if(m_player_characters.empty())
-	{
-		player_character = CharacterType::kShaggy;
-	}
-	else
-	{
-		player_character = CharacterType::kScooby;
-	}*/
-
 	if (local_player)
 	{
 		m_local_player_identifier = identifier;
@@ -217,11 +207,7 @@ bool World::HasPlayerReachedEnd() const
 
 void World::LoadTextures()
 {
-	m_textures.Load(Textures::kEntities, "Media/Textures/Entities.png");
-	m_textures.Load(Textures::kJungle, "Media/Textures/Jungle.png");
-	m_textures.Load(Textures::kExplosion, "Media/Textures/Explosion.png");
 	m_textures.Load(Textures::kParticle, "Media/Textures/Particle.png");
-	m_textures.Load(Textures::kFinishLine, "Media/Textures/FinishLine.png");
 	m_textures.Load(Textures::kBackground, "Media/Textures/Background.png");
 	m_textures.Load(Textures::kPlatformForest, "Media/Textures/PlatformForest.png");
 	m_textures.Load(Textures::kPlatformCastle, "Media/Textures/PlatformCastle.png");
