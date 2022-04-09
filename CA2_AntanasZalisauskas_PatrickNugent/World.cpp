@@ -659,9 +659,13 @@ void World::HandleCollisions()
 			auto& projectile = static_cast<Projectile&>(*pair.second);
 			if (!player.GetInvulnerable())
 			{
-				m_sounds.Play(SoundEffect::kStun);
-				player.SetStunned(true);
-				player.SetInvulnerable(true);
+				if (player.IsLocal())
+				{
+					m_sounds.Play(SoundEffect::kStun);
+					player.SetStunned(true);
+					player.SetInvulnerable(true);
+					m_network_node->NotifyGameAction(GameActions::StunPlayer, player.GetIdentifier());
+				}
 				projectile.Destroy();
 			}
 		}
@@ -827,7 +831,6 @@ void World::StunPlayer(int identifier)
 		{
 			if (m_player_characters[i]->GetIdentifier() == identifier)
 			{
-				//m_sounds.Play(SoundEffect::kStun);
 				m_player_characters[i]->SetStunned(true);
 				m_player_characters[i]->SetInvulnerable(true);
 			}

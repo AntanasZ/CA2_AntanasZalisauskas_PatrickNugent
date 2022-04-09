@@ -14,17 +14,17 @@ MenuState::MenuState(StateStack& stack, Context context)
 
 	m_background_sprite.setTexture(texture);
 
-	auto play_button = std::make_shared<GUI::Button>(context);
+	/*auto play_button = std::make_shared<GUI::Button>(context);
 	play_button->setPosition(400, 225);
 	play_button->SetText("Play");
 	play_button->SetCallback([this, context]()
 	{
 		*context.modeSelection = StateID::kGame;
 		RequestStackPush(StateID::kCharacterSelection);
-	});
+	});*/
 
 	auto host_play_button = std::make_shared<GUI::Button>(context);
-	host_play_button->setPosition(400, 300);
+	host_play_button->setPosition(400, 200);
 	host_play_button->SetText("Host");
 	host_play_button->SetCallback([this, context]()
 	{
@@ -34,7 +34,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	});
 
 	auto join_play_button = std::make_shared<GUI::Button>(context);
-	join_play_button->setPosition(400, 375);
+	join_play_button->setPosition(400, 275);
 	join_play_button->SetText("Join");
 	join_play_button->SetCallback([this, context]()
 	{
@@ -44,7 +44,7 @@ MenuState::MenuState(StateStack& stack, Context context)
 	});
 
 	auto settings_button = std::make_shared<GUI::Button>(context);
-	settings_button->setPosition(400, 450);
+	settings_button->setPosition(400, 350);
 	settings_button->SetText("Settings");
 	settings_button->SetCallback([this]()
 	{
@@ -52,14 +52,14 @@ MenuState::MenuState(StateStack& stack, Context context)
 	});
 
 	auto exit_button = std::make_shared<GUI::Button>(context);
-	exit_button->setPosition(400, 525);
+	exit_button->setPosition(400, 425);
 	exit_button->SetText("Exit");
 	exit_button->SetCallback([this]()
 	{
 		RequestStackPop();
 	});
 
-	m_gui_container.Pack(play_button);
+	//m_gui_container.Pack(play_button);
 	m_gui_container.Pack(host_play_button);
 	m_gui_container.Pack(join_play_button);
 	m_gui_container.Pack(settings_button);
