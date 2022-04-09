@@ -48,7 +48,7 @@ std::vector<CharacterData> InitializeCharacterData()
 	data[static_cast<int>(CharacterType::kFred)].m_hitpoints = 100;
 	data[static_cast<int>(CharacterType::kFred)].m_speed = 200.f;
 	data[static_cast<int>(CharacterType::kFred)].m_texture = Textures::kFred;
-	data[static_cast<int>(CharacterType::kFred)].m_fire_interval = sf::seconds(1);
+	data[static_cast<int>(CharacterType::kFred)].m_fire_interval = sf::seconds(5);
 	data[static_cast<int>(CharacterType::kFred)].m_jump_height = 200.f;
 	data[static_cast<int>(CharacterType::kFred)].m_has_run_animation = true;
 
