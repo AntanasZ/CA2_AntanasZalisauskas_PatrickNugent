@@ -642,11 +642,11 @@ void Character::CreateBullets(SceneNode& node, const TextureHolder& textures) co
 	float x_offset;
 	if(m_is_facing_right > 0)
 	{
-		x_offset = 0.5f;
+		x_offset = 1.f;
 	}
 	else
 	{
-		x_offset = -0.5f;
+		x_offset = -1.f;
 	}
 	CreateProjectile(node, type, x_offset, 0.0f, textures);
 }
