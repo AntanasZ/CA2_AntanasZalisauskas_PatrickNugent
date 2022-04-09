@@ -13,6 +13,7 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 
 #include "DataTables.hpp"
+#include "Projectile.hpp"
 #include "ResourceHolder.hpp"
 #include "SoundNode.hpp"
 #include "Utility.hpp"
@@ -78,8 +79,15 @@ Character::Character(CharacterType type, TextureHolder& textures, const FontHold
 	m_is_marked_for_removal(false),
 	m_identifier(0),
 	m_is_local_character(isLocalCharacter),
-	m_has_reset(false)
+	m_has_reset(false),
+	m_fire_rate(1)
 {
+	m_fire_command.category = static_cast<int>(Category::Type::kScene);
+	m_fire_command.action = [this, &textures](SceneNode& node, sf::Time)
+	{
+		CreateBullets(node, textures);
+	};
+
 	if (m_is_local_character)
 	{
 		m_sprite = sf::Sprite(textures.Get(Table[static_cast<int>(type)].m_texture));
@@ -220,6 +228,7 @@ void Character::UpdateCurrent(sf::Time dt, CommandQueue& commands)
 		m_running.Update(dt);
 	}
 
+	CheckProjectileLaunch(dt, commands);
 	UpdateMovementPattern(dt);
 	Entity::UpdateCurrent(dt, commands);
 
@@ -616,5 +625,68 @@ sf::Color Character::DetermineDisplayColor()
 		}
 		break;
 		default: return sf::Color::Color(245, 245, 220, 255);
+	}
+}
+
+void Character::Fire()
+{
+	if (Table[static_cast<int>(m_type)].m_fire_interval != sf::Time::Zero)
+	{
+		m_is_firing = true;
+	}
+}
+
+void Character::CreateBullets(SceneNode& node, const TextureHolder& textures) const
+{
+	ProjectileType type = ProjectileType::kAlliedBullet;
+	float x_offset;
+	if(m_is_facing_right > 0)
+	{
+		x_offset = 1.f;
+	}
+	else
+	{
+		x_offset = -1.f;
+	}
+	CreateProjectile(node, type, x_offset, 0.0f, textures);
+}
+
+void Character::CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset,
+	const TextureHolder& textures) const
+{
+	std::unique_ptr<Projectile> projectile(new Projectile(type, textures));
+	sf::Vector2f offset(x_offset * m_sprite.getGlobalBounds().width, y_offset * m_sprite.getGlobalBounds().height);
+
+	sf::Vector2f velocity;
+
+	if(m_is_facing_right)
+	{
+		velocity.x = projectile->GetMaxSpeed();
+	}
+	else
+	{
+		velocity.x = -projectile->GetMaxSpeed();
+	}
+
+	projectile->setPosition(GetWorldPosition() + offset);
+	projectile->SetVelocity(velocity);
+	node.AttachChild(std::move(projectile));
+}
+
+void Character::CheckProjectileLaunch(sf::Time dt, CommandQueue& commands)
+{
+	//Rate the bullets - default to 2 times a second
+	if (m_is_firing && m_fire_countdown <= sf::Time::Zero)
+	{
+		PlayLocalSound(commands, SoundEffect::kAlliedGunfire);
+		commands.Push(m_fire_command);
+		m_fire_countdown += Table[static_cast<int>(m_type)].m_fire_interval / (m_fire_rate + 1.f);
+		m_is_firing = false;
+	}
+	else if (m_fire_countdown > sf::Time::Zero)
+	{
+		//Wait, can't fire yet
+		m_fire_countdown -= dt;
+		m_is_firing = false;
 	}
 }

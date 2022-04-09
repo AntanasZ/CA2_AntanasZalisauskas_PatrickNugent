@@ -60,6 +60,22 @@ struct CharacterJump
 	int character_id;
 };
 
+struct CharacterFireTrigger
+{
+	CharacterFireTrigger(int identifier)
+		: character_id(identifier)
+	{
+	}
+
+	void operator() (Character& character, sf::Time) const
+	{
+		if (character.GetIdentifier() == character_id)
+			character.Fire();
+	}
+
+	int character_id;
+};
+
 Player::Player(sf::TcpSocket* socket, sf::Int32 identifier, const KeyBinding* binding)
 	: m_key_binding(binding)
 	, m_current_mission_status(MissionStatus::kMissionRunning)
@@ -196,6 +212,7 @@ void Player::InitialiseActions()
 	m_action_binding[PlayerAction::kMoveLeft].action = DerivedAction<Character>(CharacterMover(-1, 0, m_identifier));
 	m_action_binding[PlayerAction::kMoveRight].action = DerivedAction<Character>(CharacterMover(+1, 0, m_identifier));
 	m_action_binding[PlayerAction::kMoveUp].action = DerivedAction<Character>(CharacterJump(m_identifier));
+	m_action_binding[PlayerAction::kFire].action = DerivedAction<Character>(CharacterFireTrigger(m_identifier));
 }
 
 

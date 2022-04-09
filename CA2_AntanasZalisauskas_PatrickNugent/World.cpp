@@ -630,6 +630,23 @@ void World::HandleCollisions()
 
 			//m_network_node->NotifyGameAction(GameActions::CollectPickup, pickup.GetValue());
 		}
+		else if(MatchesCategories(pair, Category::Type::kPlayerCharacter, Category::Type::kAlliedProjectile))
+		{
+			auto& player = static_cast<Character&>(*pair.first);
+			auto& projectile = static_cast<Projectile&>(*pair.second);
+			if (!player.GetInvulnerable())
+			{
+				m_sounds.Play(SoundEffect::kStun);
+				player.SetStunned(true);
+				player.SetInvulnerable(true);
+				projectile.Destroy();
+			}
+		}
+		else if(MatchesCategories(pair, Category::Type::kAlliedProjectile, Category::Type::kPlatform))
+		{
+			auto& projectile = static_cast<Projectile&>(*pair.first);
+			projectile.Destroy();
+		}
 	}
 }
 

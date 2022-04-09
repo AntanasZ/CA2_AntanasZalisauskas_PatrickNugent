@@ -49,6 +49,7 @@ struct CharacterData
 	float m_speed;
 	float m_jump_height;
 	Textures m_texture;
+	sf::Time m_fire_interval;
 	std::vector<Direction> m_directions;
 	bool m_has_run_animation;
 };

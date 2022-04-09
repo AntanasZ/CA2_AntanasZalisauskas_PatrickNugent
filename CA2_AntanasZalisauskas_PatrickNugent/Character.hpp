@@ -14,6 +14,7 @@
 #include "ResourceIdentifiers.hpp"
 #include "TextNode.hpp"
 #include "Animation.hpp"
+#include "ProjectileType.hpp"
 
 /// <summary>
 /// Written by: Antanas Zalisauskas
@@ -61,12 +62,18 @@ public:
 	void Remove() override;
 	void PlayLocalSound(CommandQueue& commands, SoundEffect effect);
 
+	void Fire();
+	void CreateBullets(SceneNode& node, const TextureHolder& textures) const;
+	void CreateProjectile(SceneNode& node, ProjectileType type, float x_offset, float y_offset, const TextureHolder& textures) const;
+
 private:
 	virtual void DrawCurrent(sf::RenderTarget& target, sf::RenderStates states) const override;
 	virtual void UpdateCurrent(sf::Time dt, CommandQueue& commands) override;
 	bool isPlayer() const;
 	void UpdateScore() const;
 	sf::Color DetermineDisplayColor();
+
+	void CheckProjectileLaunch(sf::Time dt, CommandQueue& commands);
 
 private:
 	TextureHolder& m_texture_holder;
@@ -91,5 +98,10 @@ private:
 
 	int m_identifier;
 	bool m_has_reset;
+
+	Command m_fire_command;
+	sf::Time m_fire_countdown;
+	bool m_is_firing;
+	unsigned int m_fire_rate;
 };
 
