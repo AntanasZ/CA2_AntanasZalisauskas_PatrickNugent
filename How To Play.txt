@@ -1,10 +1,20 @@
--Scooby Food Fight is a competitive game played by two players.
--Player 1 controls Shaggy and player 2 controls Scooby.
--The controls for each player can be viewed and changed in the settings menu.
--Each player must collect as many falling food items as possible within 2 minutes.
--Enemies will spawn and stun the player for a few seconds if they collide with one of them.
--Each food item has a different score value as shown below:
+The Story:
+The mystery gang is investigating a mansion following reports of strange activity around the area.
+They find that a powerful sorcerer has managed to open portals to other dimensions. Chaos occurs and 
+strange characters, worlds and food all start coming out of the portals. It's up to the gang to put an end 
+to the sorcerer's madness, but not before they have an eating contest with the all you can eat buffet falling
+from the sky.
 
+Gameplay:
+-The objective is to catch as much falling food as possible. Some food types are worth more than others.
+-You must avoid being trampled by the multiversal characters spawning in from the portals on the left and right.
+Getting hit by one of these enemies will stun you for a period of time.
+-You can also throw projectiles at other players to stun them.
+-When starting a game, you can choose any of the five mystery gang members as your character.
+-If you are hosting a game, you can select the length of the game. The options are 2, 5 and 15 minutes.
+-The game can be enjoyed solo and up to 14 other players can join your game.
+
+Food point values:
 Apple: 10
 Orange: 10
 Carrot: 20
@@ -15,4 +25,8 @@ Melon: 35
 Ice Cream: 40
 Cake: 50
 
-
+Controls:
+-A and D move your character left and right.
+-W makes your character jump
+-Spacebar shoots a projectile if the cooldown period is over.
+-These controls can be changed in the settings menu.
