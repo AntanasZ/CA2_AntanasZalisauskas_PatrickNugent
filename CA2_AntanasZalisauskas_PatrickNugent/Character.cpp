@@ -474,24 +474,16 @@ CharacterType Character::GetType()
 
 void Character::SetType(CharacterType type)
 {
-	//if (m_type == CharacterType::kShaggy && type == CharacterType::kShaggy && !m_has_reset)
-	//{
-	//	m_has_reset = true;
-	//	//m_type = type;
-	//	SetSprites(true);
-	//}
 	if (m_type != type)
 	{
 		m_type = type;
 		SetSprites(true);
 	}
-	
-	/*if (!m_has_reset)
-	{
-		m_has_reset = true;
-		m_type = type;
-		SetSprites(true);
-	}*/
+}
+
+bool Character::IsLocal()
+{
+	return m_is_local_character;
 }
 
 void Character::Remove()

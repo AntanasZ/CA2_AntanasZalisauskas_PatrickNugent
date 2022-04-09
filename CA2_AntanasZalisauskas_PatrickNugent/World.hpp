@@ -23,6 +23,7 @@
 #include "NetworkProtocol.hpp"
 #include "PickupType.hpp"
 #include "PlayerAction.hpp"
+#include "Pickup.hpp"
 
 namespace sf
 {
@@ -49,19 +50,19 @@ public:
 	void AddEnemy(CharacterType type, bool isFlying, float rel_x, float rel_y);
 	void SpawnEnemies(sf::Int8 enemyType);
 	void SpawnFlyingEnemies(sf::Int8 enemyType);
-	void SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition);
-	//void SortEnemies();
-
+	void SpawnPickups(sf::Int8 pickupType, sf::Int16 pickupPosition, sf::Int16 pickupIdentifier);
 	bool HasAlivePlayer() const;
 	bool HasPlayerReachedEnd() const;
 
 	void SetWorldScrollCompensation(float compensation);
 	Character* GetCharacter(int identifier) const;
+	Pickup* GetPickup(int identifier) const;
 	sf::FloatRect GetBattlefieldBounds() const;
-	//void CreatePickup(sf::Vector2f position, PickupType type);
 	void AddPickup(PickupType type, int value, float relX, float relY);
+	void RemovePickup(sf::Int16 pickupIdentifier);
 	bool PollGameAction(GameActions::Action& out);
 	bool IsGameOver() const;
+	void StunPlayer(int identifier);
 
 	void DisplayRemainingGameTime(float remaining_time);
 	void DisplayWinner();
@@ -73,11 +74,8 @@ private:
 	void AdaptPlayerVelocity(sf::Time dt);
 	int GetPlayerIndex(int identifier);
 	
-	
-	
 	void AddEnemies();
 	void AddPickups();
-	//void GuideMissiles();
 	void HandleCollisions();
 	void DestroyEntitiesOutsideView();
 	void UpdateSounds();
@@ -147,7 +145,7 @@ private:
 	TextNode* m_game_timer_display;
 	bool m_game_over;
 	bool m_game_ending;
-
 	int m_local_player_identifier;
+	std::vector<Pickup*> m_active_pickups;
 };
 

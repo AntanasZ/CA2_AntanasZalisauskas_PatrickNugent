@@ -18,9 +18,14 @@ void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Vector2f position
 }
 
 
-void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Int8 value)
+void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Int16 pickupIdentifier, sf::Int8 playerIdentifier)
 {
-	m_pending_actions.push(GameActions::Action(type, value));
+	m_pending_actions.push(GameActions::Action(type, pickupIdentifier, playerIdentifier));
+}
+
+void NetworkNode::NotifyGameAction(GameActions::Type type, sf::Int8 playerIdentifier)
+{
+	m_pending_actions.push(GameActions::Action(type, playerIdentifier));
 }
 
 bool NetworkNode::PollGameAction(GameActions::Action& out)

@@ -98,5 +98,7 @@ private:
 	
 	bool m_game_started;
 	bool m_game_over;
+
+	sf::Int16 m_pickup_identifier_counter;
 };
 
