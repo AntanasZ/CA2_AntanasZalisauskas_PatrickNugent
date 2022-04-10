@@ -368,6 +368,7 @@ void GameServer::HandleIncomingPacket(sf::Packet& packet, RemotePeer& receiving_
 			SendToAll(packet);
 		}
 	}
+	break;
 
 	case Client::PacketType::HostStartGame:
 	{
