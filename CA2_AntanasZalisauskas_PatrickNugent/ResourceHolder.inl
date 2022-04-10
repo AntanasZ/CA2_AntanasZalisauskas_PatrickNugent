@@ -1,3 +1,10 @@
+/// <summary>
+/// Name: Patrick Nugent
+/// Student Number: D00218208
+///
+/// Name: Antanas Zalisauskas
+/// Student Number: D00218148
+/// </summary>
 template<typename Resource, typename Identifier>
 void ResourceHolder<Resource, Identifier>::Load(Identifier id, const std::string& filename)
 {

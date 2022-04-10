@@ -1,3 +1,10 @@
+/// <summary>
+/// Name: Patrick Nugent
+/// Student Number: D00218208
+///
+/// Name: Antanas Zalisauskas
+/// Student Number: D00218148
+/// </summary>
 #include "Player.hpp"
 #include "NetworkProtocol.hpp"
 #include <SFML/Network/Packet.hpp>

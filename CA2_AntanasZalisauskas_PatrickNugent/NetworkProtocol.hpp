@@ -2,6 +2,14 @@
 #include <SFML/System/Vector2.hpp>
 
 /// <summary>
+/// Name: Patrick Nugent
+/// Student Number: D00218208
+///
+/// Name: Antanas Zalisauskas
+/// Student Number: D00218148
+/// </summary>
+
+/// <summary>
 /// Edited by: Patrick Nugent
 ///
 /// Added overloaded constructor for Action which takes in value

@@ -1,3 +1,10 @@
+/// <summary>
+/// Name: Patrick Nugent
+/// Student Number: D00218208
+///
+/// Name: Antanas Zalisauskas
+/// Student Number: D00218148
+/// </summary>
 #include "SettingsState.hpp"
 #include "Utility.hpp"
 #include "ResourceHolder.hpp"

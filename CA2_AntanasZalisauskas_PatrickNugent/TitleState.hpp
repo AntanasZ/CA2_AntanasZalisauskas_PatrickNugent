@@ -1,3 +1,10 @@
+/// <summary>
+/// Name: Patrick Nugent
+/// Student Number: D00218208
+///
+/// Name: Antanas Zalisauskas
+/// Student Number: D00218148
+/// </summary>
 #pragma once
 #include <SFML/Graphics/Sprite.hpp>
 #include <SFML/Graphics/Text.hpp>
